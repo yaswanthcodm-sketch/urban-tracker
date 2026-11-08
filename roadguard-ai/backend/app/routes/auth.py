@@ -365,10 +365,17 @@ def send_otp(payload: OtpSendRequest, db: Session = Depends(get_db)):
             detail="Only valid email addresses are accepted (e.g. name@company.com)."
         )
 
-    # Rate limiting: minimum 30 seconds between requests for the same email
+    # Rate limiting: minimum 30 seconds between requests + max 5 per hour
     existing_record = OTP_STORE.get(email)
     now = time.time()
+    send_history = []
     if existing_record:
+        send_history = [t for t in existing_record.get("send_history", []) if now - t < 3600]
+        if len(send_history) >= 5:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Maximum verification requests reached for this hour (5 requests max). Please wait before requesting another code."
+            )
         elapsed = now - existing_record["created_at"]
         if elapsed < 30:
             retry_after = int(30 - elapsed)
@@ -380,6 +387,7 @@ def send_otp(payload: OtpSendRequest, db: Session = Depends(get_db)):
     # Generate cryptographically secure random 6-digit OTP
     code = f"{secrets.randbelow(900000) + 100000}"
 
+    send_history.append(now)
     # Invalidate previous code: overwrite with fresh OTP, 5-minute expiry (300 seconds), 0 attempts
     OTP_STORE[email] = {
         "code": code,
@@ -387,6 +395,7 @@ def send_otp(payload: OtpSendRequest, db: Session = Depends(get_db)):
         "created_at": now,
         "expires_at": now + 300,  # Exactly 5 minutes
         "attempts": 0,
+        "send_history": send_history,
     }
 
     delivery = dispatch_email_otp(email, code)

@@ -2073,6 +2073,13 @@
             sendOtpBtn.disabled = false;
             sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
             return;
+          } else if (resp.status === 400) {
+            let data = {};
+            try { data = await resp.json(); } catch (_) {}
+            showError(data?.detail || 'Invalid email format. Please enter a valid email address.');
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
+            return;
           }
         } catch (backendErr) {
           console.warn('[AUTH] Backend send-otp unreachable, falling back to direct EmailJS browser dispatch:', backendErr);
@@ -2091,7 +2098,8 @@
             }));
           } catch (emailJsErr) {
             console.error('[AUTH] Direct EmailJS send error:', emailJsErr);
-            showError('Failed to dispatch verification code. Please check your email address or network.');
+            const detailedMsg = (emailJsErr && emailJsErr.message) ? emailJsErr.message : 'Please check your email address and internet connection.';
+            showError('Unable to send verification code: ' + detailedMsg);
             sendOtpBtn.disabled = false;
             sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
             return;
