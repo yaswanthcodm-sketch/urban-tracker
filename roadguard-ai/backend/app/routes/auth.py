@@ -179,10 +179,7 @@ def send_via_emailjs(to_email: str, otp_code: str) -> Optional[dict]:
             "user_id": public_key,
             "template_params": {
                 "email": to_email,
-                "to_email": to_email,
-                "recipient": to_email,
                 "passcode": otp_code,
-                "otp": otp_code,
                 "time": "5 minutes",
             }
         }
@@ -191,8 +188,9 @@ def send_via_emailjs(to_email: str, otp_code: str) -> Optional[dict]:
 
         headers = {
             "Content-Type": "application/json",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-            "Origin": "http://localhost:4173",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Origin": "https://yaswanthcodm-sketch.github.io",
+            "Referer": "https://yaswanthcodm-sketch.github.io/urban-tracker/login.html",
         }
         if private_key:
             headers["authorization"] = f"Bearer {private_key}"

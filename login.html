@@ -1950,6 +1950,15 @@
           loginBtn.textContent = 'Verifying...';
           loginBtn.disabled = true;
 
+          // Check if locally registered user exists (online fallback mode)
+          try {
+            const registered = JSON.parse(localStorage.getItem('urban_tracker_registered_users') || '{}');
+            if (registered[identity] && registered[identity].password === password) {
+              enterPlatform(identity, identity.split('@')[0], 'citizen', 'client_token_' + Date.now(), 'password');
+              return;
+            }
+          } catch (_) {}
+
           try {
             const resp = await fetch('/api/roadguard/auth/login', {
               method: 'POST',
@@ -1997,6 +2006,40 @@
         });
       }
 
+      // ================= EMAILJS CLIENT-SIDE DIRECT DISPATCH =================
+      const EMAILJS_CFG = {
+        serviceId: 'service_6lrm73n',
+        templateId: 'template_yzxx7gf',
+        publicKey: 'uSaF57l9OYZ3jQT5Z'
+      };
+
+      async function sendViaEmailJsBrowser(targetEmail, code) {
+        const payload = {
+          service_id: EMAILJS_CFG.serviceId,
+          template_id: EMAILJS_CFG.templateId,
+          user_id: EMAILJS_CFG.publicKey,
+          template_params: {
+            email: targetEmail,
+            passcode: code,
+            time: '5 minutes'
+          }
+        };
+
+        const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(errText || 'EmailJS service response error');
+        }
+        return true;
+      }
+
       // ================= SIGN-UP / FORGOT: SEND OTP =================
       async function requestOtp(email) {
         clearFeedback();
@@ -2010,6 +2053,9 @@
         sendOtpBtn.disabled = true;
         sendOtpBtn.textContent = 'Sending OTP...';
 
+        let dispatched = false;
+
+        // 1. Try Backend if server is accessible
         try {
           const resp = await fetch('/api/roadguard/auth/send-otp', {
             method: 'POST',
@@ -2017,31 +2063,47 @@
             body: JSON.stringify({ email: cleanEmail })
           });
 
-          let data = {};
-          try {
-            data = await resp.json();
-          } catch (parseErr) {
-            try { const text = await resp.text(); data = { detail: text }; } catch (_) {}
-          }
-          if (!resp.ok) {
-            showError(data?.detail || data?.message || 'Failed to dispatch verification code. Please try again.');
+          if (resp.ok) {
+            dispatched = true;
+            sessionStorage.removeItem('ut_client_otp');
+          } else if (resp.status === 429) {
+            let data = {};
+            try { data = await resp.json(); } catch (_) {}
+            showError(data?.detail || 'Please wait before requesting another code.');
             sendOtpBtn.disabled = false;
             sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
             return;
           }
-
-          // OTP Dispatched successfully
-          setMode('otp');
-          showSuccess('Verification code sent successfully. Please check your email.');
-          startResendCountdown();
-        } catch (err) {
-          console.error('OTP send request error:', err);
-          const msg = (err && err.message && !err.message.includes('fetch')) ? err.message : 'Could not connect to authentication server. Please check your network.';
-          showError(msg);
-        } finally {
-          sendOtpBtn.disabled = false;
-          sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
+        } catch (backendErr) {
+          console.warn('[AUTH] Backend send-otp unreachable, falling back to direct EmailJS browser dispatch:', backendErr);
         }
+
+        // 2. Direct browser EmailJS dispatch (guarantees delivery on GitHub Pages, Vercel, or when backend is sleeping)
+        if (!dispatched) {
+          const clientCode = String(Math.floor(100000 + Math.random() * 900000));
+          try {
+            await sendViaEmailJsBrowser(cleanEmail, clientCode);
+            dispatched = true;
+            sessionStorage.setItem('ut_client_otp', JSON.stringify({
+              email: cleanEmail,
+              code: clientCode,
+              expiresAt: Date.now() + 300000
+            }));
+          } catch (emailJsErr) {
+            console.error('[AUTH] Direct EmailJS send error:', emailJsErr);
+            showError('Failed to dispatch verification code. Please check your email address or network.');
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
+            return;
+          }
+        }
+
+        // OTP Dispatched successfully
+        setMode('otp');
+        showSuccess('Verification code sent successfully. Please check your email.');
+        startResendCountdown();
+        sendOtpBtn.disabled = false;
+        sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
       }
 
       if (signupForm) {
@@ -2138,43 +2200,74 @@
         verifyOtpBtn.disabled = true;
         verifyOtpBtn.textContent = 'Verifying Code...';
 
-        try {
-          const resp = await fetch('/api/roadguard/auth/verify-otp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: currentTargetEmail,
-              otp: code,
-              mode: currentFlowMode
-            })
-          });
+        let verified = false;
+        let token = '';
 
-          let data = {};
+        // Check if there is an active client-side OTP from direct EmailJS
+        const storedClientOtp = sessionStorage.getItem('ut_client_otp');
+        if (storedClientOtp) {
           try {
-            data = await resp.json();
-          } catch (parseErr) {
-            try { const text = await resp.text(); data = { detail: text }; } catch (_) {}
-          }
-          if (!resp.ok) {
-            showError(data?.detail || data?.message || 'Invalid verification code. Please check your code.');
+            const parsed = JSON.parse(storedClientOtp);
+            if (parsed.email === currentTargetEmail) {
+              if (Date.now() > parsed.expiresAt) {
+                showError('Verification code has expired. Please request a new code.');
+                verifyOtpBtn.disabled = false;
+                verifyOtpBtn.textContent = 'Verify Code & Continue →';
+                return;
+              }
+              if (parsed.code === code) {
+                verified = true;
+                token = 'client_token_' + Math.random().toString(36).slice(2);
+                sessionStorage.removeItem('ut_client_otp');
+              }
+            }
+          } catch (_) {}
+        }
+
+        // If not verified via client OTP, try backend verification
+        if (!verified) {
+          try {
+            const resp = await fetch('/api/roadguard/auth/verify-otp', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: currentTargetEmail,
+                otp: code,
+                mode: currentFlowMode
+              })
+            });
+
+            if (resp.ok) {
+              const data = await resp.json();
+              verified = true;
+              token = data.verification_token || ('tok_' + Date.now());
+            } else {
+              let data = {};
+              try { data = await resp.json(); } catch (_) {}
+              showError(data?.detail || data?.message || 'Invalid verification code. Please check your code.');
+              otpDigits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
+              otpDigits[0].focus();
+              verifyOtpBtn.disabled = false;
+              verifyOtpBtn.textContent = 'Verify Code & Continue →';
+              return;
+            }
+          } catch (netErr) {
+            showError('Invalid verification code. Please check your code.');
             otpDigits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
             otpDigits[0].focus();
+            verifyOtpBtn.disabled = false;
+            verifyOtpBtn.textContent = 'Verify Code & Continue →';
             return;
           }
-
-          // OTP verified successfully! Advance to Create/Reset Password view
-          currentVerificationToken = data.verification_token || '';
-          const targetFlow = data.flow || (currentFlowMode === 'forgot' ? 'reset_password' : 'create_password');
-          setMode('password', targetFlow);
-          showSuccess(data.message || 'Verification code confirmed. Please set your password.');
-        } catch (err) {
-          console.error('Verification error:', err);
-          const msg = (err && err.message && !err.message.includes('fetch')) ? err.message : 'Verification request failed. Please check network connection.';
-          showError(msg);
-        } finally {
-          verifyOtpBtn.disabled = false;
-          verifyOtpBtn.textContent = 'Verify Code & Continue →';
         }
+
+        // OTP verified successfully! Advance to Create/Reset Password view
+        currentVerificationToken = token;
+        const targetFlow = (currentFlowMode === 'forgot' ? 'reset_password' : 'create_password');
+        setMode('password', targetFlow);
+        showSuccess('Verification code confirmed. Please set your password.');
+        verifyOtpBtn.disabled = false;
+        verifyOtpBtn.textContent = 'Verify Code & Continue →';
       }
 
       verifyOtpBtn.addEventListener('click', checkAndVerifyOtp);
@@ -2198,6 +2291,28 @@
 
           btnSavePassword.disabled = true;
           btnSavePassword.textContent = 'Securing Account...';
+
+          // Client-side fallback registration for online static hosting
+          if (currentVerificationToken && currentVerificationToken.startsWith('client_token_')) {
+            try {
+              const registered = JSON.parse(localStorage.getItem('urban_tracker_registered_users') || '{}');
+              registered[currentTargetEmail] = {
+                email: currentTargetEmail,
+                password: newPasswordInput.value,
+                updatedAt: Date.now()
+              };
+              localStorage.setItem('urban_tracker_registered_users', JSON.stringify(registered));
+            } catch (_) {}
+
+            currentVerificationToken = '';
+            setMode('signin');
+            if (identityInput) identityInput.value = currentTargetEmail;
+            if (pwInput) { pwInput.value = ''; pwInput.focus(); }
+            showSuccess('Password saved successfully! Please sign in with your email and password.');
+            btnSavePassword.disabled = false;
+            btnSavePassword.textContent = (currentFlowMode === 'forgot') ? 'Reset Password & Sign In →' : 'Create Account & Sign In →';
+            return;
+          }
 
           try {
             const resp = await fetch('/api/roadguard/auth/set-password', {

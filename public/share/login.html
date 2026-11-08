@@ -730,14 +730,13 @@
     .google-oauth-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.82);
-      backdrop-filter: blur(12px);
+      background: #000000;
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 2000;
       padding: 20px;
-      animation: modalFadeIn 0.2s ease;
+      animation: modalFadeIn 0.15s ease;
     }
 
     .google-oauth-backdrop.active {
@@ -752,21 +751,15 @@
     .google-oauth-sheet {
       width: 100%;
       max-width: 960px;
-      background: #1e1f20;
-      border: 1px solid #3c4043;
+      background: #141414;
+      border: 1px solid #2e3035;
       border-radius: 28px;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.95), 0 0 1px rgba(255, 255, 255, 0.2);
-      padding: 34px 44px 28px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95);
+      padding: 38px 44px 28px;
       display: flex;
       flex-direction: column;
       position: relative;
-      animation: cardPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       box-sizing: border-box;
-    }
-
-    @keyframes cardPopIn {
-      from { transform: scale(0.96) translateY(8px); opacity: 0; }
-      to { transform: scale(1) translateY(0); opacity: 1; }
     }
 
     .google-oauth-topbar {
@@ -790,15 +783,16 @@
       background: none;
       border: none;
       color: #9aa0a6;
-      font-size: 20px;
+      font-size: 13px;
       cursor: pointer;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
+      padding: 6px 12px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.15s ease;
+      font-family: inherit;
+      text-decoration: none;
     }
 
     .google-oauth-close:hover {
@@ -821,22 +815,30 @@
     }
 
     .google-app-badge {
-      width: 52px;
-      height: 52px;
-      background: #131314;
-      border: 1px solid #444746;
-      border-radius: 14px;
+      width: 56px;
+      height: 56px;
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 22px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    .google-app-badge img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .google-main-title {
-      font-size: 32px;
+      font-size: 34px;
       font-weight: 400;
-      color: #f1f3f4;
+      color: #ffffff;
       line-height: 1.25;
       margin: 0 0 10px;
       letter-spacing: -0.02em;
@@ -850,8 +852,8 @@
     }
 
     .app-highlight {
-      color: #f1f3f4;
-      font-weight: 500;
+      color: #ffffff;
+      font-weight: 600;
     }
 
     .google-col-right {
@@ -860,9 +862,9 @@
     }
 
     .google-accounts-card {
-      background: #131314;
-      border: 1px solid #444746;
-      border-radius: 12px;
+      background: transparent;
+      border: 1.5px solid #ffffff;
+      border-radius: 4px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -872,13 +874,14 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 13px 18px;
+      padding: 13px 20px;
       cursor: pointer;
-      border-bottom: 1px solid #282a2d;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
       transition: background 0.12s ease;
       text-decoration: none;
       outline: none;
       user-select: none;
+      background: transparent;
     }
 
     .g-account-row:last-child {
@@ -887,15 +890,28 @@
 
     .g-account-row:hover,
     .g-account-row:focus-visible {
-      background: #2a2b2f;
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .g-account-row:active {
-      background: #333539;
+      background: rgba(255, 255, 255, 0.14);
     }
 
     .g-avatar-wrap {
       flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .g-avatar-wrap img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
     }
 
     .g-avatar-circle {
@@ -1446,22 +1462,18 @@
           </svg>
           <span>Sign in with Google</span>
         </div>
-        <button type="button" class="google-oauth-close" id="google-modal-close" aria-label="Close Google Sign-in">✕</button>
+        <button type="button" class="google-oauth-close" id="google-modal-close" aria-label="Cancel Google Sign-in">← Back</button>
       </div>
 
       <!-- Main Two-Column Layout (Matching Image 3) -->
       <div class="google-oauth-body">
         <!-- Left Column: App Branding & Heading -->
         <div class="google-col-left">
-          <div class="google-app-badge">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="2" y1="12" x2="22" y2="12"/>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            </svg>
+          <div class="google-app-badge" title="Urban Tracker">
+            <img src="/favicon.svg?v=3" alt="Urban Tracker Logo" width="56" height="56">
           </div>
           <h1 class="google-main-title" id="google-modal-title">Choose an account</h1>
-          <p class="google-main-sub">to continue to <span class="app-highlight">Urban Tracker & RoadGuard AI</span></p>
+          <p class="google-main-sub">to continue to <span class="app-highlight">Urban Tracker</span></p>
         </div>
 
         <!-- Right Column: Account Selection Box -->
@@ -1470,9 +1482,7 @@
             <!-- Account 1: yaswanth codm -->
             <div class="g-account-row" role="button" tabindex="0" data-email="yaswanthcodm@gmail.com" data-name="yaswanth codm">
               <div class="g-avatar-wrap">
-                <div class="g-avatar-circle g-avatar-photo">
-                  <span class="avatar-letter">Y</span>
-                </div>
+                <img src="/assets/avatars/avatar_yaswanthcodm.png" alt="yaswanth codm" width="34" height="34">
               </div>
               <div class="g-account-info">
                 <span class="g-account-name">yaswanth codm</span>
@@ -1483,9 +1493,7 @@
             <!-- Account 2: Yaswanth Avirneni -->
             <div class="g-account-row" role="button" tabindex="0" data-email="yaswanthavirneni77@gmail.com" data-name="Yaswanth Avirneni">
               <div class="g-avatar-wrap">
-                <div class="g-avatar-circle g-avatar-dark">
-                  <span class="avatar-letter">Y</span>
-                </div>
+                <img src="/assets/avatars/avatar_yaswanthavirneni.png" alt="Yaswanth Avirneni" width="34" height="34">
               </div>
               <div class="g-account-info">
                 <span class="g-account-name">Yaswanth Avirneni</span>
@@ -1496,9 +1504,7 @@
             <!-- Account 3: hero one -->
             <div class="g-account-row" role="button" tabindex="0" data-email="oneh51522@gmail.com" data-name="hero one">
               <div class="g-avatar-wrap">
-                <div class="g-avatar-circle g-avatar-magenta">
-                  <span class="avatar-letter">h</span>
-                </div>
+                <div class="g-avatar-circle g-avatar-magenta" style="width:34px;height:34px;border-radius:50%;background:#e91e63;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;">h</div>
               </div>
               <div class="g-account-info">
                 <span class="g-account-name">hero one</span>
@@ -1509,9 +1515,7 @@
             <!-- Account 4: ben tenneson -->
             <div class="g-account-row" role="button" tabindex="0" data-email="tennesonb3@gmail.com" data-name="ben tenneson">
               <div class="g-avatar-wrap">
-                <div class="g-avatar-circle g-avatar-teal">
-                  <span class="avatar-letter">b</span>
-                </div>
+                <div class="g-avatar-circle g-avatar-teal" style="width:34px;height:34px;border-radius:50%;background:#00897b;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;">b</div>
               </div>
               <div class="g-account-info">
                 <span class="g-account-name">ben tenneson</span>
@@ -1946,6 +1950,15 @@
           loginBtn.textContent = 'Verifying...';
           loginBtn.disabled = true;
 
+          // Check if locally registered user exists (online fallback mode)
+          try {
+            const registered = JSON.parse(localStorage.getItem('urban_tracker_registered_users') || '{}');
+            if (registered[identity] && registered[identity].password === password) {
+              enterPlatform(identity, identity.split('@')[0], 'citizen', 'client_token_' + Date.now(), 'password');
+              return;
+            }
+          } catch (_) {}
+
           try {
             const resp = await fetch('/api/roadguard/auth/login', {
               method: 'POST',
@@ -1993,6 +2006,40 @@
         });
       }
 
+      // ================= EMAILJS CLIENT-SIDE DIRECT DISPATCH =================
+      const EMAILJS_CFG = {
+        serviceId: 'service_6lrm73n',
+        templateId: 'template_yzxx7gf',
+        publicKey: 'uSaF57l9OYZ3jQT5Z'
+      };
+
+      async function sendViaEmailJsBrowser(targetEmail, code) {
+        const payload = {
+          service_id: EMAILJS_CFG.serviceId,
+          template_id: EMAILJS_CFG.templateId,
+          user_id: EMAILJS_CFG.publicKey,
+          template_params: {
+            email: targetEmail,
+            passcode: code,
+            time: '5 minutes'
+          }
+        };
+
+        const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(errText || 'EmailJS service response error');
+        }
+        return true;
+      }
+
       // ================= SIGN-UP / FORGOT: SEND OTP =================
       async function requestOtp(email) {
         clearFeedback();
@@ -2006,6 +2053,9 @@
         sendOtpBtn.disabled = true;
         sendOtpBtn.textContent = 'Sending OTP...';
 
+        let dispatched = false;
+
+        // 1. Try Backend if server is accessible
         try {
           const resp = await fetch('/api/roadguard/auth/send-otp', {
             method: 'POST',
@@ -2013,31 +2063,47 @@
             body: JSON.stringify({ email: cleanEmail })
           });
 
-          let data = {};
-          try {
-            data = await resp.json();
-          } catch (parseErr) {
-            try { const text = await resp.text(); data = { detail: text }; } catch (_) {}
-          }
-          if (!resp.ok) {
-            showError(data?.detail || data?.message || 'Failed to dispatch verification code. Please try again.');
+          if (resp.ok) {
+            dispatched = true;
+            sessionStorage.removeItem('ut_client_otp');
+          } else if (resp.status === 429) {
+            let data = {};
+            try { data = await resp.json(); } catch (_) {}
+            showError(data?.detail || 'Please wait before requesting another code.');
             sendOtpBtn.disabled = false;
             sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
             return;
           }
-
-          // OTP Dispatched successfully
-          setMode('otp');
-          showSuccess('Verification code sent successfully. Please check your email.');
-          startResendCountdown();
-        } catch (err) {
-          console.error('OTP send request error:', err);
-          const msg = (err && err.message && !err.message.includes('fetch')) ? err.message : 'Could not connect to authentication server. Please check your network.';
-          showError(msg);
-        } finally {
-          sendOtpBtn.disabled = false;
-          sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
+        } catch (backendErr) {
+          console.warn('[AUTH] Backend send-otp unreachable, falling back to direct EmailJS browser dispatch:', backendErr);
         }
+
+        // 2. Direct browser EmailJS dispatch (guarantees delivery on GitHub Pages, Vercel, or when backend is sleeping)
+        if (!dispatched) {
+          const clientCode = String(Math.floor(100000 + Math.random() * 900000));
+          try {
+            await sendViaEmailJsBrowser(cleanEmail, clientCode);
+            dispatched = true;
+            sessionStorage.setItem('ut_client_otp', JSON.stringify({
+              email: cleanEmail,
+              code: clientCode,
+              expiresAt: Date.now() + 300000
+            }));
+          } catch (emailJsErr) {
+            console.error('[AUTH] Direct EmailJS send error:', emailJsErr);
+            showError('Failed to dispatch verification code. Please check your email address or network.');
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
+            return;
+          }
+        }
+
+        // OTP Dispatched successfully
+        setMode('otp');
+        showSuccess('Verification code sent successfully. Please check your email.');
+        startResendCountdown();
+        sendOtpBtn.disabled = false;
+        sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
       }
 
       if (signupForm) {
@@ -2134,43 +2200,74 @@
         verifyOtpBtn.disabled = true;
         verifyOtpBtn.textContent = 'Verifying Code...';
 
-        try {
-          const resp = await fetch('/api/roadguard/auth/verify-otp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: currentTargetEmail,
-              otp: code,
-              mode: currentFlowMode
-            })
-          });
+        let verified = false;
+        let token = '';
 
-          let data = {};
+        // Check if there is an active client-side OTP from direct EmailJS
+        const storedClientOtp = sessionStorage.getItem('ut_client_otp');
+        if (storedClientOtp) {
           try {
-            data = await resp.json();
-          } catch (parseErr) {
-            try { const text = await resp.text(); data = { detail: text }; } catch (_) {}
-          }
-          if (!resp.ok) {
-            showError(data?.detail || data?.message || 'Invalid verification code. Please check your code.');
+            const parsed = JSON.parse(storedClientOtp);
+            if (parsed.email === currentTargetEmail) {
+              if (Date.now() > parsed.expiresAt) {
+                showError('Verification code has expired. Please request a new code.');
+                verifyOtpBtn.disabled = false;
+                verifyOtpBtn.textContent = 'Verify Code & Continue →';
+                return;
+              }
+              if (parsed.code === code) {
+                verified = true;
+                token = 'client_token_' + Math.random().toString(36).slice(2);
+                sessionStorage.removeItem('ut_client_otp');
+              }
+            }
+          } catch (_) {}
+        }
+
+        // If not verified via client OTP, try backend verification
+        if (!verified) {
+          try {
+            const resp = await fetch('/api/roadguard/auth/verify-otp', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: currentTargetEmail,
+                otp: code,
+                mode: currentFlowMode
+              })
+            });
+
+            if (resp.ok) {
+              const data = await resp.json();
+              verified = true;
+              token = data.verification_token || ('tok_' + Date.now());
+            } else {
+              let data = {};
+              try { data = await resp.json(); } catch (_) {}
+              showError(data?.detail || data?.message || 'Invalid verification code. Please check your code.');
+              otpDigits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
+              otpDigits[0].focus();
+              verifyOtpBtn.disabled = false;
+              verifyOtpBtn.textContent = 'Verify Code & Continue →';
+              return;
+            }
+          } catch (netErr) {
+            showError('Invalid verification code. Please check your code.');
             otpDigits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
             otpDigits[0].focus();
+            verifyOtpBtn.disabled = false;
+            verifyOtpBtn.textContent = 'Verify Code & Continue →';
             return;
           }
-
-          // OTP verified successfully! Advance to Create/Reset Password view
-          currentVerificationToken = data.verification_token || '';
-          const targetFlow = data.flow || (currentFlowMode === 'forgot' ? 'reset_password' : 'create_password');
-          setMode('password', targetFlow);
-          showSuccess(data.message || 'Verification code confirmed. Please set your password.');
-        } catch (err) {
-          console.error('Verification error:', err);
-          const msg = (err && err.message && !err.message.includes('fetch')) ? err.message : 'Verification request failed. Please check network connection.';
-          showError(msg);
-        } finally {
-          verifyOtpBtn.disabled = false;
-          verifyOtpBtn.textContent = 'Verify Code & Continue →';
         }
+
+        // OTP verified successfully! Advance to Create/Reset Password view
+        currentVerificationToken = token;
+        const targetFlow = (currentFlowMode === 'forgot' ? 'reset_password' : 'create_password');
+        setMode('password', targetFlow);
+        showSuccess('Verification code confirmed. Please set your password.');
+        verifyOtpBtn.disabled = false;
+        verifyOtpBtn.textContent = 'Verify Code & Continue →';
       }
 
       verifyOtpBtn.addEventListener('click', checkAndVerifyOtp);
@@ -2194,6 +2291,28 @@
 
           btnSavePassword.disabled = true;
           btnSavePassword.textContent = 'Securing Account...';
+
+          // Client-side fallback registration for online static hosting
+          if (currentVerificationToken && currentVerificationToken.startsWith('client_token_')) {
+            try {
+              const registered = JSON.parse(localStorage.getItem('urban_tracker_registered_users') || '{}');
+              registered[currentTargetEmail] = {
+                email: currentTargetEmail,
+                password: newPasswordInput.value,
+                updatedAt: Date.now()
+              };
+              localStorage.setItem('urban_tracker_registered_users', JSON.stringify(registered));
+            } catch (_) {}
+
+            currentVerificationToken = '';
+            setMode('signin');
+            if (identityInput) identityInput.value = currentTargetEmail;
+            if (pwInput) { pwInput.value = ''; pwInput.focus(); }
+            showSuccess('Password saved successfully! Please sign in with your email and password.');
+            btnSavePassword.disabled = false;
+            btnSavePassword.textContent = (currentFlowMode === 'forgot') ? 'Reset Password & Sign In →' : 'Create Account & Sign In →';
+            return;
+          }
 
           try {
             const resp = await fetch('/api/roadguard/auth/set-password', {

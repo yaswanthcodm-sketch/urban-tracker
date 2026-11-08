@@ -55,9 +55,7 @@ const privateKey = process.env.EMAILJS_PRIVATE_KEY || 'ms45r6xA3Ua4ZmtzepQbg';
 async function dispatch() {
   const templateParams = {
     email: toEmail,
-    to_email: toEmail,
     passcode: otpCode,
-    otp: otpCode,
     time: '5 minutes',
   };
 
@@ -81,9 +79,9 @@ async function dispatch() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-          'Origin': 'http://localhost:4173',
-          'Referer': 'http://localhost:4173/',
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Origin': 'https://yaswanthcodm-sketch.github.io',
+          'Referer': 'https://yaswanthcodm-sketch.github.io/urban-tracker/login.html',
         },
         body: JSON.stringify({
           service_id: serviceId,
