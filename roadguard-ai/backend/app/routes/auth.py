@@ -111,16 +111,10 @@ def get_live_email_credentials() -> dict:
 
 def send_via_emailjs(to_email: str, otp_code: str) -> Optional[dict]:
     """
-    Sends verification email via official @emailjs/nodejs SDK server-side,
-    falling back to direct HTTPS REST API.
+    Sends verification email via EmailJS using system curl with authentic browser headers.
     """
     import subprocess
-    import ssl
-    try:
-        import certifi
-        ssl_ctx = ssl.create_default_context(cafile=certifi.where())
-    except Exception:
-        ssl_ctx = ssl._create_unverified_context()
+    import shutil
 
     creds = get_live_email_credentials()
     service_id = creds["service_id"]
@@ -131,13 +125,52 @@ def send_via_emailjs(to_email: str, otp_code: str) -> Optional[dict]:
     if not (service_id and template_id and public_key):
         return None
 
-    # Method 1: Server-side official @emailjs/nodejs SDK
+    payload = {
+        "service_id": service_id,
+        "template_id": template_id,
+        "user_id": public_key,
+        "template_params": {
+            "email": to_email,
+            "passcode": otp_code,
+            "time": "5 minutes",
+        }
+    }
+    if private_key:
+        payload["accessToken"] = private_key
+
+    # Method 1: System curl with browser origin & referer
+    curl_bin = shutil.which("curl") or "/usr/bin/curl"
+    try:
+        cmd = [
+            curl_bin, "-s", "-i",
+            "-X", "POST", "https://api.emailjs.com/api/v1.0/email/send",
+            "-H", "Content-Type: application/json",
+            "-H", "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "-H", "Origin: https://yaswanthcodm-sketch.github.io",
+            "-H", "Referer: https://yaswanthcodm-sketch.github.io/urban-tracker/login.html",
+            "-d", json.dumps(payload),
+            "--max-time", "12"
+        ]
+        res = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
+        output = (res.stdout or "") + (res.stderr or "")
+        if "200" in output or "OK" in output:
+            print(f"[AUTH EMAILJS CURL SUCCESS] Delivered OTP to {to_email} via service {service_id}")
+            return {
+                "delivered": True,
+                "provider": "EmailJS-CURL",
+                "message": f"Verification code successfully delivered to {to_email} via EmailJS."
+            }
+        else:
+            print(f"[AUTH EMAILJS CURL NOTICE] Output: {output}")
+    except Exception as curl_err:
+        print(f"[AUTH EMAILJS CURL ERROR] {curl_err}")
+
+    # Method 2: Node.js SDK script fallback
     try:
         current_file = Path(__file__).resolve()
         workspace_dir = current_file.parent.parent.parent.parent.parent
         script_path = workspace_dir / "scripts" / "send_emailjs.mjs"
-        if not script_path.exists():
-            script_path = Path("scripts/send_emailjs.mjs").resolve()
+        node_bin = shutil.which("node") or "/usr/local/bin/node"
 
         if script_path.exists():
             env = os.environ.copy()
@@ -147,89 +180,28 @@ def send_via_emailjs(to_email: str, otp_code: str) -> Optional[dict]:
             env["EMAILJS_PRIVATE_KEY"] = private_key
 
             proc = subprocess.run(
-                ["node", str(script_path), to_email, otp_code],
+                [node_bin, str(script_path), to_email, otp_code],
                 capture_output=True,
                 text=True,
                 env=env,
                 timeout=15
             )
             if proc.returncode == 0:
-                print(f"[AUTH EMAILJS NODE-SDK SUCCESS] Delivered OTP to {to_email} via service {service_id}")
+                print(f"[AUTH EMAILJS NODE SUCCESS] Delivered OTP to {to_email} via service {service_id}")
                 return {
                     "delivered": True,
-                    "provider": "EmailJS-NodeSDK",
+                    "provider": "EmailJS-Node",
                     "message": f"Verification code successfully sent to {to_email} via EmailJS."
                 }
-            else:
-                err_data = {}
-                try:
-                    err_data = json.loads(proc.stderr.strip() or proc.stdout.strip())
-                except Exception:
-                    pass
-                err_text = err_data.get("text") or proc.stderr.strip() or proc.stdout.strip()
-                print(f"[AUTH EMAILJS NODE-SDK NOTICE] {err_text}. Trying direct HTTPS REST API...")
-    except Exception as e:
-        print(f"[AUTH EMAILJS NODE-SDK ERROR] {e}. Trying direct HTTPS REST API...")
+    except Exception as node_err:
+        print(f"[AUTH EMAILJS NODE ERROR] {node_err}")
 
-    # Method 2: Direct HTTPS REST API with Origin & SSL Context
-    try:
-        payload = {
-            "service_id": service_id,
-            "template_id": template_id,
-            "user_id": public_key,
-            "template_params": {
-                "email": to_email,
-                "passcode": otp_code,
-                "time": "5 minutes",
-            }
-        }
-        if private_key:
-            payload["accessToken"] = private_key
-
-        headers = {
-            "Content-Type": "application/json",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Origin": "https://yaswanthcodm-sketch.github.io",
-            "Referer": "https://yaswanthcodm-sketch.github.io/urban-tracker/login.html",
-        }
-        if private_key:
-            headers["authorization"] = f"Bearer {private_key}"
-
-        req = urllib.request.Request(
-            "https://api.emailjs.com/api/v1.0/email/send",
-            data=json.dumps(payload).encode("utf-8"),
-            headers=headers
-        )
-        with urllib.request.urlopen(req, timeout=12, context=ssl_ctx) as response:
-            if response.status == 200:
-                print(f"[AUTH EMAILJS HTTPS SUCCESS] Delivered OTP to {to_email} via EmailJS service {service_id}")
-                return {
-                    "delivered": True,
-                    "provider": "EmailJS-REST",
-                    "message": f"Verification code successfully delivered to {to_email} via EmailJS."
-                }
-    except urllib.error.HTTPError as e:
-        err_msg = ""
-        try:
-            err_msg = e.read().decode("utf-8")
-        except Exception:
-            err_msg = str(e)
-        print(f"[AUTH EMAILJS ERROR] HTTP {e.code}: {e.reason} ({err_msg}).")
-        return {
-            "delivered": False,
-            "provider": "EmailJS",
-            "reason": f"HTTP_{e.code}",
-            "message": f"EmailJS delivery error: {err_msg or e.reason}"
-        }
-    except Exception as e:
-        print(f"[AUTH EMAILJS NOTICE] EmailJS delivery error: {e}.")
-        return {
-            "delivered": False,
-            "provider": "EmailJS",
-            "reason": "CONNECTION_ERROR",
-            "message": f"EmailJS connection error: {str(e)}"
-        }
-    return None
+    return {
+        "delivered": False,
+        "provider": "EmailJS",
+        "reason": "DELIVERY_ERROR",
+        "message": "Failed to dispatch verification code via EmailJS. Please verify recipient email."
+    }
 
 
 def send_via_smtp(to_email: str, otp_code: str) -> dict:
