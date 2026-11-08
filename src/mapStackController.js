@@ -50,6 +50,10 @@ const DEFAULT_OSM_CREDIT = '© OpenStreetMap contributors';
 // line. Terms note in DATA_SOURCES.md.
 const ESRI_WORLD_IMAGERY_URL =
   'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer';
+const ESRI_BOUNDARIES_PLACES_URL =
+  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer';
+const ESRI_TRANSPORTATION_URL =
+  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer';
 const ESRI_IMAGERY_CREDIT =
   'Powered by Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community';
 // The on-screen notice Esri requires when a third-party library draws its
@@ -86,6 +90,10 @@ export class MapStackController {
     this._onError = onError;
     this._activeId = googleTileset ? initialStack : 'esri-imagery';
     this._imageryLayer = null;
+    this._boundariesLayer = null;
+    this._boundariesOverlayEnabled = false;
+    this._roadsLayer = null;
+    this._roadsOverlayEnabled = false;
     this._activeImageryProvider = null;
     this._removeImageryErrorListener = null;
     this._esriFallbackPending = false;
@@ -242,7 +250,85 @@ export class MapStackController {
       status,
       lastError: this._lastError,
       hasCesiumIonToken: !!this.cesiumToken,
+      boundariesOverlay: this._boundariesOverlayEnabled,
+      roadsOverlay: this._roadsOverlayEnabled,
     };
+  }
+
+  /**
+   * Toggle or set the transparent World Boundaries & Place Names overlay.
+   * Renders state/national borders, cities, towns, and village labels on top of
+   * satellite imagery.
+   * @param {boolean} [enable]
+   * @returns {Promise<boolean>}
+   */
+  async setBoundariesOverlay(enable = !this._boundariesOverlayEnabled) {
+    this._boundariesOverlayEnabled = !!enable;
+    if (this._boundariesOverlayEnabled) {
+      if (!this._boundariesLayer && this.viewer?.imageryLayers) {
+        try {
+          const provider = await Cesium.ArcGisMapServerImageryProvider.fromUrl(ESRI_BOUNDARIES_PLACES_URL, {
+            enablePickFeatures: false,
+          });
+          this._boundariesLayer = new Cesium.ImageryLayer(provider);
+          this.viewer.imageryLayers.add(this._boundariesLayer);
+        } catch (e) {
+          console.warn('[MapStack] Could not load World Boundaries & Places overlay:', e);
+          this._boundariesOverlayEnabled = false;
+        }
+      } else if (this._boundariesLayer) {
+        this._boundariesLayer.show = true;
+      }
+    } else {
+      if (this._boundariesLayer) {
+        this._boundariesLayer.show = false;
+      }
+    }
+    governorRequestRender('map-stack');
+    this._emitChange?.('ready');
+    return this._boundariesOverlayEnabled;
+  }
+
+  isBoundariesOverlayEnabled() {
+    return !!this._boundariesOverlayEnabled;
+  }
+
+  /**
+   * Toggle or set the transparent World Transportation (Roads & Highways) overlay.
+   * Renders expressways, national highways, arterial roads, and local streets on top of
+   * satellite imagery.
+   * @param {boolean} [enable]
+   * @returns {Promise<boolean>}
+   */
+  async setRoadsOverlay(enable = !this._roadsOverlayEnabled) {
+    this._roadsOverlayEnabled = !!enable;
+    if (this._roadsOverlayEnabled) {
+      if (!this._roadsLayer && this.viewer?.imageryLayers) {
+        try {
+          const provider = await Cesium.ArcGisMapServerImageryProvider.fromUrl(ESRI_TRANSPORTATION_URL, {
+            enablePickFeatures: false,
+          });
+          this._roadsLayer = new Cesium.ImageryLayer(provider);
+          this.viewer.imageryLayers.add(this._roadsLayer);
+        } catch (e) {
+          console.warn('[MapStack] Could not load World Transportation overlay:', e);
+          this._roadsOverlayEnabled = false;
+        }
+      } else if (this._roadsLayer) {
+        this._roadsLayer.show = true;
+      }
+    } else {
+      if (this._roadsLayer) {
+        this._roadsLayer.show = false;
+      }
+    }
+    governorRequestRender('map-stack');
+    this._emitChange?.('ready');
+    return this._roadsOverlayEnabled;
+  }
+
+  isRoadsOverlayEnabled() {
+    return !!this._roadsOverlayEnabled;
   }
 
   async _activatePhotoreal(gen) {

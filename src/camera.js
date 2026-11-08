@@ -29,6 +29,22 @@ export const CAMERA_PRESETS = {
       roll: 0.0,
     },
   },
+  india: {
+    destination: Cesium.Cartesian3.fromDegrees(78.9629, 20.5, 2800000),
+    orientation: {
+      heading: Cesium.Math.toRadians(0),
+      pitch: Cesium.Math.toRadians(-55),
+      roll: 0.0,
+    },
+  },
+  delhi: {
+    destination: Cesium.Cartesian3.fromDegrees(77.2090, 28.6139, 1500),
+    orientation: {
+      heading: Cesium.Math.toRadians(15),
+      pitch: Cesium.Math.toRadians(-35),
+      roll: 0.0,
+    },
+  },
 };
 
 /**
@@ -47,12 +63,12 @@ export function flyToPreset(viewer, presetName, duration = 3.0) {
 }
 
 /**
- * Set camera to Austin on load with a cinematic fly-in.
+ * Set camera to India on load with a cinematic fly-in.
  */
-export function flyToAustin(viewer) {
-  // Start from a high altitude, then fly down
+export function flyToIndia(viewer) {
+  // Start from high orbit directly over India
   viewer.camera.setView({
-    destination: Cesium.Cartesian3.fromDegrees(-97.7431, 30.2672, 25000),
+    destination: Cesium.Cartesian3.fromDegrees(78.9629, 21.5, 9500000),
     orientation: {
       heading: Cesium.Math.toRadians(0),
       pitch: Cesium.Math.toRadians(-90),
@@ -60,17 +76,25 @@ export function flyToAustin(viewer) {
     },
   });
 
-  // Cinematic fly-in after a brief pause
+  // Smooth cinematic fly-in to Indian subcontinent overview showing all moving flights & cities
   setTimeout(() => {
     viewer.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(-97.7431, 30.2672, 600),
+      destination: Cesium.Cartesian3.fromDegrees(78.9629, 20.5, 2800000),
       orientation: {
-        heading: Cesium.Math.toRadians(15),
-        pitch: Cesium.Math.toRadians(-30),
+        heading: Cesium.Math.toRadians(0),
+        pitch: Cesium.Math.toRadians(-55),
         roll: 0.0,
       },
-      duration: 4.0,
+      duration: 3.5,
       easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
     });
-  }, 500);
+  }, 350);
 }
+
+/**
+ * Legacy preset helper: fly to Austin, TX.
+ */
+export function flyToAustin(viewer) {
+  flyToIndia(viewer);
+}
+

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Satellite & Geospatial Monitoring — RoadGuard AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/static/index.html" class="brand">
+      <div class="brand-logo">🛡️</div>
+      <div class="brand-text">
+        <h1>RoadGuard AI</h1>
+        <p>Satellite Corridor Screening</p>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/static/index.html">Home</a></li>
+      <li><a href="/static/dashboard.html">Live Dashboard</a></li>
+      <li><a href="/static/detect.html">AI Detection</a></li>
+      <li><a href="/static/cameras.html">CCTV Feeds</a></li>
+      <li><a href="/static/satellite.html" class="active">Satellite Screening</a></li>
+      <li><a href="/static/map.html">Damage Map</a></li>
+      <li><a href="/static/report.html">Report Damage</a></li>
+      <li><a href="/static/track.html">Track Complaint</a></li>
+      <li><a href="/static/admin.html">Officer Portal</a></li>
+    </ul>
+
+    <div class="demo-mode-pill">Copernicus / Cartosat Gateway</div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <div style="margin-bottom: 1.5rem;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; color: white;">Satellite & Macroscopic Road Screening</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Regional corridor reflectance analysis to screen for road shoulder washouts, base structural subsidence, and severe waterlogging.
+      </p>
+    </div>
+
+    <!-- Mandatory Technical Limitation Warning -->
+    <div style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid var(--warning); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem;">
+      <div style="font-weight: 700; color: #fbbf24; margin-bottom: 0.25rem;">⚠️ Scientific & Technical Limitation Notice</div>
+      <p style="font-size: 0.85rem; color: #f8fafc; line-height: 1.5;">
+        Ordinary satellite imagery (0.5m – 10m resolution) <strong>cannot reliably identify individual small potholes or hairline cracks</strong>. 
+        RoadGuard AI applies satellite reflectance indices for <em>macroscopic corridor screening</em> (e.g. embankments eroded by monsoon floods, major road washouts, and extensive pavement dislodgement). 
+        Flagged segments are scheduled for localized on-ground verification using CCTV patrol vehicles or citizen mobile uploads. 
+        Roads are never marked as defective merely due to cloud shadow or sensor noise.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem;">
+      
+      <!-- Interactive Area of Interest (AOI) Map -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Select Area of Interest (AOI)</h3>
+          <span class="badge badge-low">Multi-Spectral</span>
+        </div>
+        <div id="satellite-map" style="height: 480px; border-radius: var(--radius-md);"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted);">
+          <span>Pan and zoom to select your corridor region.</span>
+          <button id="btn-run-screening" class="btn btn-primary btn-sm">
+            <span>🛰️</span> Run Optical Screening on AOI
+          </button>
+        </div>
+      </div>
+
+      <!-- Analysis Results & Metadata -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Satellite Sensor Telemetry</h3>
+          <span id="sat-status-badge" class="badge badge-submitted">Ready to Scan</span>
+        </div>
+
+        <div id="sat-metadata" style="background: rgba(0,0,0,0.25); padding: 1rem; border-radius: 8px; margin-bottom: 1.25rem; font-size: 0.825rem;">
+          <div style="margin-bottom: 0.35rem;"><strong>Sensor Provider:</strong> Sentinel-2 / Cartosat-3 Optical High-Res</div>
+          <div style="margin-bottom: 0.35rem;"><strong>Acquisition Window:</strong> Current Season (Latest Available Pass)</div>
+          <div style="margin-bottom: 0.35rem;"><strong>Ground Resolution:</strong> Sub-meter to 10m Multi-spectral</div>
+          <div><strong>Spectral Model:</strong> Multi-Temporal Road Surface Index (MTRSI v2.1)</div>
+        </div>
+
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 0.75rem;">Flagged Road Segments</h4>
+        
+        <div id="anomalies-list" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 280px; overflow-y: auto;">
+          <div style="text-align: center; color: var(--text-dim); padding: 2rem 0;">
+            Click "Run Optical Screening on AOI" to calculate surface reflectance variance across the visible map region.
+          </div>
+        </div>
+
+        <div id="sat-action-box" style="display: none; margin-top: 1.25rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <button id="btn-dispatch-drone" class="btn btn-secondary btn-sm" style="width: 100%;">
+            <span>🚁</span> Schedule Physical Survey for Flagged Corridors
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer>
+    <p>RoadGuard AI — Certified Geospatial Satellite Screening Module</p>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/satellite.js"></script>
+</body>
+</html>

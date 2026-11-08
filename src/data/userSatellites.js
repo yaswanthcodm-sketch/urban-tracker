@@ -1,0 +1,14061 @@
+/**
+ * @module userSatellites
+ * @description Decoded telemetry catalog and helper API for 1,389 orbital satellites.
+ */
+
+export const USER_SATELLITES_METADATA = Object.freeze({
+  total: 1389,
+  categoryCounts: {"science": 8, "other": 1288, "military": 56, "earth_obs": 28, "comms": 6, "navigation": 3},
+  source: "celestrak (1488 TLEs: 0 new, 1488 cached)",
+  timestamp: "2026-10-17T17:11:20.642Z",
+});
+
+export const USER_SATELLITES_RAW = [
+  {
+    "name": "ISS (ZARYA)",
+    "lat": 37.3078,
+    "lng": -87.1737,
+    "alt": 427,
+    "mission": "Space Station",
+    "color": "#FFD700",
+    "category": "science",
+    "noradId": "25544"
+  },
+  {
+    "name": "NEMO-HD",
+    "lat": -30.5516,
+    "lng": -116.7763,
+    "alt": 438,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46277"
+  },
+  {
+    "name": "OBJECT G",
+    "lat": -45.5704,
+    "lng": -86.1025,
+    "alt": 577,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44885"
+  },
+  {
+    "name": "METEOR M2-2",
+    "lat": 7.1129,
+    "lng": 176.9517,
+    "alt": 814,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44387"
+  },
+  {
+    "name": "EAGLET 1",
+    "lat": 45.2614,
+    "lng": 45.5518,
+    "alt": 535,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43790"
+  },
+  {
+    "name": "RANGE A",
+    "lat": -56.3788,
+    "lng": 56.818,
+    "alt": 540,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43773"
+  },
+  {
+    "name": "AO-95",
+    "lat": -24.3246,
+    "lng": -116.7998,
+    "alt": 486,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43770"
+  },
+  {
+    "name": "ES'HAIL 2",
+    "lat": 0.0346,
+    "lng": 25.8238,
+    "alt": 35788,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43700"
+  },
+  {
+    "name": "DIWATA 2B",
+    "lat": -50.912,
+    "lng": -141.687,
+    "alt": 593,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43678"
+  },
+  {
+    "name": "TEN-KOH",
+    "lat": -39.6984,
+    "lng": 17.4852,
+    "alt": 578,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43677"
+  },
+  {
+    "name": "CARTOSAT 2F",
+    "lat": -3.2603,
+    "lng": 65.4204,
+    "alt": 513,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43111"
+  },
+  {
+    "name": "CZ-11 R/B",
+    "lat": -8.7411,
+    "lng": -100.3262,
+    "alt": 660,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41847"
+  },
+  {
+    "name": "ALSAT 1N",
+    "lat": 36.8936,
+    "lng": -169.5099,
+    "alt": 650,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41789"
+  },
+  {
+    "name": "CARTOSAT 2C",
+    "lat": 82.2165,
+    "lng": -43.4788,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41599"
+  },
+  {
+    "name": "LILACSAT 2",
+    "lat": -74.8081,
+    "lng": 77.0225,
+    "alt": 432,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40908"
+  },
+  {
+    "name": "VELOX 1",
+    "lat": -80.4176,
+    "lng": 40.0114,
+    "alt": 596,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40057"
+  },
+  {
+    "name": "CANX-4",
+    "lat": -6.6041,
+    "lng": 65.3896,
+    "alt": 637,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40055"
+  },
+  {
+    "name": "AISAT",
+    "lat": 80.0204,
+    "lng": 163.0269,
+    "alt": 544,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40054"
+  },
+  {
+    "name": "TIGRISAT",
+    "lat": -28.1355,
+    "lng": 158.2097,
+    "alt": 606,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40043"
+  },
+  {
+    "name": "NANOSAT C BR1",
+    "lat": 72.1641,
+    "lng": 24.225,
+    "alt": 471,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40024"
+  },
+  {
+    "name": "UNISAT 6",
+    "lat": -10.4126,
+    "lng": -24.0435,
+    "alt": 637,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40012"
+  },
+  {
+    "name": "AIST 1",
+    "lat": -19.4011,
+    "lng": 50.7871,
+    "alt": 576,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39492"
+  },
+  {
+    "name": "HINCUBE",
+    "lat": 71.9198,
+    "lng": -178.0404,
+    "alt": 533,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39445"
+  },
+  {
+    "name": "FUNCUBE-1",
+    "lat": 75.7661,
+    "lng": -166.4069,
+    "alt": 528,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39444"
+  },
+  {
+    "name": "ZACUBE",
+    "lat": 27.5117,
+    "lng": 153.7915,
+    "alt": 545,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39417"
+  },
+  {
+    "name": "ESTCube-1",
+    "lat": 37.7978,
+    "lng": 50.4721,
+    "alt": 626,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39161"
+  },
+  {
+    "name": "CUBEBUG 1",
+    "lat": 59.7539,
+    "lng": 158.0392,
+    "alt": 577,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39153"
+  },
+  {
+    "name": "BRITE-A TUGSAT-1",
+    "lat": -39.4915,
+    "lng": -169.916,
+    "alt": 785,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39091"
+  },
+  {
+    "name": "AAUSAT3",
+    "lat": 2.4579,
+    "lng": 8.0772,
+    "alt": 754,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "39087"
+  },
+  {
+    "name": "FENGYUN 3B",
+    "lat": 56.8575,
+    "lng": 39.2329,
+    "alt": 864,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "37214"
+  },
+  {
+    "name": "TISAT 1",
+    "lat": 40.9307,
+    "lng": 151.6293,
+    "alt": 461,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "36799"
+  },
+  {
+    "name": "NOAA 19",
+    "lat": -36.0737,
+    "lng": 84.0956,
+    "alt": 860,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "33591"
+  },
+  {
+    "name": "FENGYUN 3A",
+    "lat": 33.9353,
+    "lng": 131.125,
+    "alt": 825,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "32958"
+  },
+  {
+    "name": "YUBELEINY",
+    "lat": -42.384,
+    "lng": -177.9665,
+    "alt": 1525,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "32953"
+  },
+  {
+    "name": "CARTOSAT 2A",
+    "lat": -17.8072,
+    "lng": -131.3884,
+    "alt": 643,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "32783"
+  },
+  {
+    "name": "MOZHAYETS 4",
+    "lat": 80.8081,
+    "lng": 78.9096,
+    "alt": 669,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "27939"
+  },
+  {
+    "name": "NOAA 9",
+    "lat": 65.7002,
+    "lng": -123.2655,
+    "alt": 849,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "15427"
+  },
+  {
+    "name": "OSCAR 11 (UOSAT 2)",
+    "lat": 64.1293,
+    "lng": -45.3691,
+    "alt": 603,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "14781"
+  },
+  {
+    "name": "OSCAR 7",
+    "lat": 74.0748,
+    "lng": -26.6045,
+    "alt": 1471,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "07530"
+  },
+  {
+    "name": "PROX-1",
+    "lat": -11.4101,
+    "lng": 63.2337,
+    "alt": 586,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44339"
+  },
+  {
+    "name": "AUTCUBE 2",
+    "lat": -28.1699,
+    "lng": -136.3559,
+    "alt": 539,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43681"
+  },
+  {
+    "name": "CZ-4B R/B",
+    "lat": -3.3451,
+    "lng": 113.7787,
+    "alt": 787,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43656"
+  },
+  {
+    "name": "CORVUS BC1",
+    "lat": 14.8214,
+    "lng": 162.3505,
+    "alt": 539,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42847"
+  },
+  {
+    "name": "NORSAT 2",
+    "lat": 59.4294,
+    "lng": 11.0817,
+    "alt": 508,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42828"
+  },
+  {
+    "name": "CARTOSAT 2E",
+    "lat": -4.2422,
+    "lng": -116.1494,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42767"
+  },
+  {
+    "name": "CHUBUSAT 3",
+    "lat": 14.2162,
+    "lng": 120.4179,
+    "alt": 505,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "41339"
+  },
+  {
+    "name": "SINOD-D 1",
+    "lat": -50.6097,
+    "lng": 67.4179,
+    "alt": 557,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40974"
+  },
+  {
+    "name": "FOX-1",
+    "lat": -45.2604,
+    "lng": -177.8249,
+    "alt": 685,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40967"
+  },
+  {
+    "name": "LQSAT",
+    "lat": 67.6699,
+    "lng": -25.006,
+    "alt": 661,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40958"
+  },
+  {
+    "name": "UKUBE 1",
+    "lat": -64.1134,
+    "lng": -174.6833,
+    "alt": 547,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40074"
+  },
+  {
+    "name": "POLYITAN 1",
+    "lat": -8.5811,
+    "lng": 46.0603,
+    "alt": 459,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40042"
+  },
+  {
+    "name": "QB50P1",
+    "lat": -74.6258,
+    "lng": 175.5922,
+    "alt": 535,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40025"
+  },
+  {
+    "name": "BUGSAT 1",
+    "lat": -58.3416,
+    "lng": 119.6471,
+    "alt": 558,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40014"
+  },
+  {
+    "name": "UWE-3",
+    "lat": 61.8632,
+    "lng": -51.2125,
+    "alt": 612,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39446"
+  },
+  {
+    "name": "FENGYUN 3C",
+    "lat": -77.8603,
+    "lng": 18.8398,
+    "alt": 872,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "39260"
+  },
+  {
+    "name": "STRAND 1",
+    "lat": -54.6327,
+    "lng": -164.1204,
+    "alt": 788,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39090"
+  },
+  {
+    "name": "HORYU-2",
+    "lat": 4.8935,
+    "lng": -34.5006,
+    "alt": 591,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38340"
+  },
+  {
+    "name": "O/OREOS (USA 219)",
+    "lat": -71.7213,
+    "lng": 137.199,
+    "alt": 607,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "37224"
+  },
+  {
+    "name": "CARTOSAT 2B",
+    "lat": 28.8701,
+    "lng": -119.2588,
+    "alt": 629,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "36795"
+  },
+  {
+    "name": "XIWANG-1 (HOPE-1)",
+    "lat": 0.1013,
+    "lng": 138.6235,
+    "alt": 1205,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "36122"
+  },
+  {
+    "name": "ITUPSAT 1",
+    "lat": -79.5384,
+    "lng": -32.2934,
+    "alt": 717,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "35935"
+  },
+  {
+    "name": "BEESAT",
+    "lat": 72.7943,
+    "lng": -112.2655,
+    "alt": 701,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "35933"
+  },
+  {
+    "name": "SWISSCUBE",
+    "lat": 71.3623,
+    "lng": 122.4229,
+    "alt": 696,
+    "mission": "Space Station",
+    "color": "#FFD700",
+    "category": "science",
+    "noradId": "35932"
+  },
+  {
+    "name": "KKS-1 (KISEKI)",
+    "lat": 74.6529,
+    "lng": 142.1805,
+    "alt": 635,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33499"
+  },
+  {
+    "name": "EYESAT-A",
+    "lat": 5.6341,
+    "lng": 73.0895,
+    "alt": 791,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "22825"
+  },
+  {
+    "name": "UWE-4",
+    "lat": 15.9928,
+    "lng": 123.5812,
+    "alt": 405,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43880"
+  },
+  {
+    "name": "SUOMI100",
+    "lat": -57.5665,
+    "lng": 78.4546,
+    "alt": 497,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43804"
+  },
+  {
+    "name": "ASTROCAST-01",
+    "lat": -10.1447,
+    "lng": -91.625,
+    "alt": 394,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43798"
+  },
+  {
+    "name": "ITASAT",
+    "lat": 27.3054,
+    "lng": -120.4429,
+    "alt": 513,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43786"
+  },
+  {
+    "name": "SNUGLITE",
+    "lat": 46.4316,
+    "lng": 52.0622,
+    "alt": 486,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43784"
+  },
+  {
+    "name": "SNUSAT-2",
+    "lat": 74.5749,
+    "lng": -93.9237,
+    "alt": 511,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "43782"
+  },
+  {
+    "name": "S-NET D",
+    "lat": -43.6362,
+    "lng": 83.482,
+    "alt": 531,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43186"
+  },
+  {
+    "name": "S-NET C",
+    "lat": 56.9342,
+    "lng": 102.6371,
+    "alt": 528,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43189"
+  },
+  {
+    "name": "S-NET B",
+    "lat": 32.1229,
+    "lng": 95.397,
+    "alt": 522,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43187"
+  },
+  {
+    "name": "S-NET A",
+    "lat": -53.3047,
+    "lng": 80.7461,
+    "alt": 533,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43188"
+  },
+  {
+    "name": "AO-91",
+    "lat": 2.9279,
+    "lng": -129.0093,
+    "alt": 538,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43017"
+  },
+  {
+    "name": "CZ-4C R/B",
+    "lat": -26.6655,
+    "lng": -65.5899,
+    "alt": 680,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43012"
+  },
+  {
+    "name": "TECHNOSAT",
+    "lat": 73.5909,
+    "lng": 6.0245,
+    "alt": 557,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42829"
+  },
+  {
+    "name": "DSAT",
+    "lat": -29.3216,
+    "lng": -10.264,
+    "alt": 554,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42794"
+  },
+  {
+    "name": "QB50P2",
+    "lat": -12.9308,
+    "lng": -170.5079,
+    "alt": 521,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40032"
+  },
+  {
+    "name": "DTUSAT 2",
+    "lat": 81.8849,
+    "lng": -85.0596,
+    "alt": 529,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "40030"
+  },
+  {
+    "name": "CUBEBUG 2",
+    "lat": 13.0881,
+    "lng": 138.1384,
+    "alt": 625,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39440"
+  },
+  {
+    "name": "GOMX 1",
+    "lat": -49.9021,
+    "lng": 10.2792,
+    "alt": 772,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39430"
+  },
+  {
+    "name": "SRMSAT",
+    "lat": 5.4077,
+    "lng": 128.7702,
+    "alt": 852,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37841"
+  },
+  {
+    "name": "JUGNU",
+    "lat": -18.3672,
+    "lng": -114.64,
+    "alt": 851,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37839"
+  },
+  {
+    "name": "CUTE-1.7+APD 2",
+    "lat": 13.0055,
+    "lng": -10.9986,
+    "alt": 532,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "32785"
+  },
+  {
+    "name": "CUBESAT XI 5",
+    "lat": 64.1897,
+    "lng": 2.4911,
+    "alt": 658,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28895"
+  },
+  {
+    "name": "NOAA 18",
+    "lat": 67.9914,
+    "lng": 62.105,
+    "alt": 858,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "28654"
+  },
+  {
+    "name": "XI-IV",
+    "lat": -68.6401,
+    "lng": 170.4686,
+    "alt": 834,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "27848"
+  },
+  {
+    "name": "CUTE-1",
+    "lat": 31.8042,
+    "lng": -160.896,
+    "alt": 809,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "27844"
+  },
+  {
+    "name": "PCSAT",
+    "lat": -63.5864,
+    "lng": -118.7131,
+    "alt": 804,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "26931"
+  },
+  {
+    "name": "GO-32",
+    "lat": 42.7463,
+    "lng": -5.8146,
+    "alt": 817,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "25397"
+  },
+  {
+    "name": "NOAA 15",
+    "lat": -73.4717,
+    "lng": 173.8894,
+    "alt": 829,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "25338"
+  },
+  {
+    "name": "JAS-2",
+    "lat": -42.8551,
+    "lng": 10.781,
+    "alt": 1044,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "24278"
+  },
+  {
+    "name": "ITAMSAT",
+    "lat": -58.6199,
+    "lng": 88.277,
+    "alt": 816,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "22826"
+  },
+  {
+    "name": "OSCAR 19 (LUSAT)",
+    "lat": 66.2959,
+    "lng": -127.4663,
+    "alt": 789,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "20442"
+  },
+  {
+    "name": "OBJECT C",
+    "lat": -4.4444,
+    "lng": -104.7687,
+    "alt": 619,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44881"
+  },
+  {
+    "name": "AISTECHSAT-2",
+    "lat": -62.0002,
+    "lng": 66.0964,
+    "alt": 540,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43768"
+  },
+  {
+    "name": "MINXSS-2",
+    "lat": -15.1115,
+    "lng": 89.259,
+    "alt": 409,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43758"
+  },
+  {
+    "name": "METOP-C",
+    "lat": 13.5764,
+    "lng": -113.6288,
+    "alt": 822,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43689"
+  },
+  {
+    "name": "STARS-AO",
+    "lat": 37.5266,
+    "lng": -137.9967,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43679"
+  },
+  {
+    "name": "FLYING LAPTOP",
+    "lat": -34.0118,
+    "lng": -27.1833,
+    "alt": 586,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42831"
+  },
+  {
+    "name": "CARTOSAT 2D",
+    "lat": -73.9096,
+    "lng": 90.6345,
+    "alt": 537,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41948"
+  },
+  {
+    "name": "PRATHAM",
+    "lat": -31.6167,
+    "lng": 3.0493,
+    "alt": 699,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41783"
+  },
+  {
+    "name": "CANX-5",
+    "lat": -22.4908,
+    "lng": 62.9618,
+    "alt": 640,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40056"
+  },
+  {
+    "name": "NEE 02 KRYSAOR",
+    "lat": 50.6327,
+    "lng": 134.7663,
+    "alt": 623,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39441"
+  },
+  {
+    "name": "VELOX-P 2",
+    "lat": -8.2154,
+    "lng": -40.5613,
+    "alt": 570,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39438"
+  },
+  {
+    "name": "ICUBE 1",
+    "lat": -4.2696,
+    "lng": -5.2438,
+    "alt": 485,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39432"
+  },
+  {
+    "name": "BRITE-PL",
+    "lat": 75.5387,
+    "lng": -37.8176,
+    "alt": 781,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39431"
+  },
+  {
+    "name": "DELFI-N3XT",
+    "lat": -79.4418,
+    "lng": 59.7308,
+    "alt": 620,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39428"
+  },
+  {
+    "name": "CINEMA 3",
+    "lat": 20.659,
+    "lng": -87.3464,
+    "alt": 692,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39426"
+  },
+  {
+    "name": "CASSIOPE",
+    "lat": 79.15,
+    "lng": 116.7733,
+    "alt": 469,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39265"
+  },
+  {
+    "name": "NEE 01 PEGASUS",
+    "lat": 65.7211,
+    "lng": 136.6596,
+    "alt": 590,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39151"
+  },
+  {
+    "name": "BRITE-U UNIBRITE",
+    "lat": -20.0459,
+    "lng": 0.1926,
+    "alt": 773,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39092"
+  },
+  {
+    "name": "SARAL",
+    "lat": -68.7415,
+    "lng": -145.6773,
+    "alt": 807,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39086"
+  },
+  {
+    "name": "METOP-B",
+    "lat": -61.4671,
+    "lng": -140.5038,
+    "alt": 845,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38771"
+  },
+  {
+    "name": "METEOR-M",
+    "lat": 35.8592,
+    "lng": 154.7068,
+    "alt": 821,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "35865"
+  },
+  {
+    "name": "STARS (KUKAI)",
+    "lat": -28.8365,
+    "lng": 134.6063,
+    "alt": 588,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33498"
+  },
+  {
+    "name": "HAMSAT",
+    "lat": 76.0794,
+    "lng": 0.7215,
+    "alt": 548,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28650"
+  },
+  {
+    "name": "INMARSAT 4-F1",
+    "lat": 4.5844,
+    "lng": 177.9604,
+    "alt": 35790,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28628"
+  },
+  {
+    "name": "OPAL",
+    "lat": 45.013,
+    "lng": -44.173,
+    "alt": 746,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "26063"
+  },
+  {
+    "name": "ORSTED",
+    "lat": -18.4201,
+    "lng": -111.5967,
+    "alt": 819,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "25635"
+  },
+  {
+    "name": "RADIO ROSTO",
+    "lat": 43.7944,
+    "lng": -25.6766,
+    "alt": 2141,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "23439"
+  },
+  {
+    "name": "OPS 6582 (TRANSIT 5B-5)",
+    "lat": 66.6342,
+    "lng": -80.1854,
+    "alt": 1083,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "00965"
+  },
+  {
+    "name": "M2 PATHFINDER",
+    "lat": -31.3432,
+    "lng": -155.9203,
+    "alt": 569,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "45727"
+  },
+  {
+    "name": "TAURUS-1",
+    "lat": -10.8051,
+    "lng": -2.3641,
+    "alt": 657,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44530"
+  },
+  {
+    "name": "FORMOSAT7-4/COSMIC2-4",
+    "lat": -20.8914,
+    "lng": -57.3873,
+    "alt": 579,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44350"
+  },
+  {
+    "name": "CENTAURI-1",
+    "lat": 60.5485,
+    "lng": 42.5021,
+    "alt": 532,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43809"
+  },
+  {
+    "name": "JY1SAT",
+    "lat": -31.6139,
+    "lng": -114.4175,
+    "alt": 463,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43803"
+  },
+  {
+    "name": "ESEO",
+    "lat": 80.3407,
+    "lng": -92.0052,
+    "alt": 574,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43792"
+  },
+  {
+    "name": "LUOJIA-1 01",
+    "lat": -55.9731,
+    "lng": -108.7965,
+    "alt": 634,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43485"
+  },
+  {
+    "name": "LAPAN A3",
+    "lat": -48.4041,
+    "lng": 170.8199,
+    "alt": 482,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41603"
+  },
+  {
+    "name": "CHUBUSAT 2",
+    "lat": 27.6363,
+    "lng": 72.4854,
+    "alt": 503,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "41338"
+  },
+  {
+    "name": "DX 1",
+    "lat": 55.4281,
+    "lng": -36.3807,
+    "alt": 610,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40071"
+  },
+  {
+    "name": "METEOR M2",
+    "lat": 61.8742,
+    "lng": 174.3665,
+    "alt": 829,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40069"
+  },
+  {
+    "name": "TRITON 1",
+    "lat": 25.6744,
+    "lng": -90.1269,
+    "alt": 686,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39427"
+  },
+  {
+    "name": "CAPE 1",
+    "lat": 81.5798,
+    "lng": -107.0022,
+    "alt": 645,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "31130"
+  },
+  {
+    "name": "METOP-A",
+    "lat": -62.9432,
+    "lng": -79.3029,
+    "alt": 775,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "29499"
+  },
+  {
+    "name": "SAUDISAT 1C",
+    "lat": -53.8943,
+    "lng": 46.225,
+    "alt": 590,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "27607"
+  },
+  {
+    "name": "BREEZE-KM R/B",
+    "lat": -36.0027,
+    "lng": 159.6665,
+    "alt": 1189,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44909"
+  },
+  {
+    "name": "LAPAN-A2",
+    "lat": 3.6278,
+    "lng": -129.6497,
+    "alt": 636,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40931"
+  },
+  {
+    "name": "SEEDS",
+    "lat": 6.1483,
+    "lng": 9.9812,
+    "alt": 459,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "32791"
+  },
+  {
+    "name": "CORVUS BC2",
+    "lat": -80.5904,
+    "lng": -145.1582,
+    "alt": 581,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42846"
+  },
+  {
+    "name": "AMSAT OSCAR 40",
+    "lat": 1.9417,
+    "lng": 59.142,
+    "alt": 40612,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "26609"
+  },
+  {
+    "name": "DEORBITSAIL",
+    "lat": -47.2438,
+    "lng": -130.5674,
+    "alt": 576,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40719"
+  },
+  {
+    "name": "OSCAR 10",
+    "lat": 1.0521,
+    "lng": -82.3346,
+    "alt": 27215,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "14129"
+  },
+  {
+    "name": "OBJECT BS",
+    "lat": -25.4014,
+    "lng": 57.4146,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43822"
+  },
+  {
+    "name": "OBJECT P",
+    "lat": 81.6565,
+    "lng": -46.8382,
+    "alt": 465,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43771"
+  },
+  {
+    "name": "OBJECT T",
+    "lat": 34.4154,
+    "lng": 41.9964,
+    "alt": 540,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43775"
+  },
+  {
+    "name": "OBJECT D",
+    "lat": -13.2683,
+    "lng": -138.807,
+    "alt": 552,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43761"
+  },
+  {
+    "name": "SDS 3F5",
+    "lat": 61.1106,
+    "lng": -109.2216,
+    "alt": 38875,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "32378"
+  },
+  {
+    "name": "SALSAT",
+    "lat": -58.4987,
+    "lng": 30.35,
+    "alt": 493,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46495"
+  },
+  {
+    "name": "NETSAT-1",
+    "lat": -11.8988,
+    "lng": -165.6927,
+    "alt": 461,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46506"
+  },
+  {
+    "name": "NETSAT-2",
+    "lat": 51.0901,
+    "lng": -144.6614,
+    "alt": 424,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46507"
+  },
+  {
+    "name": "NETSAT-3",
+    "lat": 78.9387,
+    "lng": -112.1681,
+    "alt": 441,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46505"
+  },
+  {
+    "name": "NETSAT-4",
+    "lat": -74.3393,
+    "lng": 54.4293,
+    "alt": 449,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46504"
+  },
+  {
+    "name": "DEKART",
+    "lat": -78.7413,
+    "lng": 161.2526,
+    "alt": 472,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46493"
+  },
+  {
+    "name": "NORBI",
+    "lat": -42.88,
+    "lng": -153.4484,
+    "alt": 421,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46494"
+  },
+  {
+    "name": "ATLAS 5 CENTAUR DEB",
+    "lat": 13.2157,
+    "lng": -148.1847,
+    "alt": 30775,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44694"
+  },
+  {
+    "name": "LES 1",
+    "lat": -32.0484,
+    "lng": 107.5221,
+    "alt": 2799,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "01002"
+  },
+  {
+    "name": "SOLRAD 7B",
+    "lat": -44.1285,
+    "lng": 31.2436,
+    "alt": 911,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "01291"
+  },
+  {
+    "name": "ALOUETTE 2",
+    "lat": -58.2683,
+    "lng": 85.1952,
+    "alt": 1707,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "01804"
+  },
+  {
+    "name": "OV3-3",
+    "lat": -8.4366,
+    "lng": -62.694,
+    "alt": 1731,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "02389"
+  },
+  {
+    "name": "ERS 15",
+    "lat": 11.9602,
+    "lng": -5.4646,
+    "alt": 3691,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "02412"
+  },
+  {
+    "name": "ISIS 1",
+    "lat": 44.8899,
+    "lng": 25.3163,
+    "alt": 2871,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "03669"
+  },
+  {
+    "name": "OPS 7613 (P/L 4)",
+    "lat": -2.4699,
+    "lng": 98.9703,
+    "alt": 923,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "04237"
+  },
+  {
+    "name": "OPS 7613 (P/L 1)",
+    "lat": 62.6195,
+    "lng": -86.595,
+    "alt": 921,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "04256"
+  },
+  {
+    "name": "SHINSEI (MS-F2)",
+    "lat": -28.2185,
+    "lng": -49.6548,
+    "alt": 1854,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "05485"
+  },
+  {
+    "name": "OPS 7898 (P/L 2)",
+    "lat": 65.7303,
+    "lng": -47.478,
+    "alt": 995,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "05680"
+  },
+  {
+    "name": "EUTE 1-F4 (ECS 4)",
+    "lat": -13.6862,
+    "lng": -27.2111,
+    "alt": 36253,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "18351"
+  },
+  {
+    "name": "MAKERSAT 0",
+    "lat": -41.4114,
+    "lng": -103.0426,
+    "alt": 508,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43016"
+  },
+  {
+    "name": "CLUSTER II-FM7",
+    "lat": 1.7814,
+    "lng": -26.1912,
+    "alt": 13019,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "26410"
+  },
+  {
+    "name": "CARTOSAT 3",
+    "lat": -70.3262,
+    "lng": 87.6787,
+    "alt": 543,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44804"
+  },
+  {
+    "name": "LINGQIAO VIDEO A",
+    "lat": -48.9481,
+    "lng": 166.6492,
+    "alt": 645,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40959"
+  },
+  {
+    "name": "LINGQIAO VIDEO B",
+    "lat": 40.4456,
+    "lng": -9.9272,
+    "alt": 653,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40960"
+  },
+  {
+    "name": "JILIN-1-03",
+    "lat": -69.0575,
+    "lng": 31.4374,
+    "alt": 464,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41914"
+  },
+  {
+    "name": "JILIN 1",
+    "lat": -80.7522,
+    "lng": 124.77,
+    "alt": 655,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40961"
+  },
+  {
+    "name": "JILIN-01-04",
+    "lat": 16.7929,
+    "lng": 117.603,
+    "alt": 433,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43022"
+  },
+  {
+    "name": "JILIN-01-05",
+    "lat": 73.316,
+    "lng": -39.4534,
+    "alt": 469,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43023"
+  },
+  {
+    "name": "JILIN-01-06",
+    "lat": 78.6941,
+    "lng": 70.6693,
+    "alt": 473,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43024"
+  },
+  {
+    "name": "JILIN-01-07",
+    "lat": -74.2123,
+    "lng": 49.7259,
+    "alt": 482,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43159"
+  },
+  {
+    "name": "JILIN-01-08",
+    "lat": 79.4627,
+    "lng": -115.0693,
+    "alt": 474,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43160"
+  },
+  {
+    "name": "JILIN-01-09",
+    "lat": -18.6466,
+    "lng": -81.8749,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43943"
+  },
+  {
+    "name": "JILIN-01-10",
+    "lat": -36.5147,
+    "lng": 111.1293,
+    "alt": 502,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43946"
+  },
+  {
+    "name": "CSSWE",
+    "lat": -36.4612,
+    "lng": -47.2701,
+    "alt": 429,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38761"
+  },
+  {
+    "name": "FIREBIRD-B",
+    "lat": -8.5148,
+    "lng": 100.4152,
+    "alt": 306,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39464"
+  },
+  {
+    "name": "IPEX",
+    "lat": -16.2388,
+    "lng": -69.3022,
+    "alt": 501,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39471"
+  },
+  {
+    "name": "CP5",
+    "lat": 63.5173,
+    "lng": -106.1164,
+    "alt": 458,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38763"
+  },
+  {
+    "name": "PROSPERO (BLACK ARROW)",
+    "lat": 11.6467,
+    "lng": -99.1465,
+    "alt": 1142,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "05580"
+  },
+  {
+    "name": "CUBEL",
+    "lat": -26.1127,
+    "lng": 59.8492,
+    "alt": 443,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47448"
+  },
+  {
+    "name": "SECOR 4 (EGRS 4)",
+    "lat": 74.5012,
+    "lng": -84.7156,
+    "alt": 1319,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "01315"
+  },
+  {
+    "name": "UNISAT 7",
+    "lat": -22.7082,
+    "lng": 89.9466,
+    "alt": 450,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47945"
+  },
+  {
+    "name": "OBJECT F",
+    "lat": 67.1355,
+    "lng": 105.0636,
+    "alt": 473,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47937"
+  },
+  {
+    "name": "HJ-1A",
+    "lat": -55.8072,
+    "lng": 156.4814,
+    "alt": 649,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33320"
+  },
+  {
+    "name": "HJ-1B",
+    "lat": 80.4426,
+    "lng": -136.6686,
+    "alt": 613,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33321"
+  },
+  {
+    "name": "TURKSAT 3U",
+    "lat": 37.7015,
+    "lng": -76.953,
+    "alt": 581,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39152"
+  },
+  {
+    "name": "CSS (TIANHE-1)",
+    "lat": -30.0424,
+    "lng": -125.7029,
+    "alt": 393,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48274"
+  },
+  {
+    "name": "SIRION PATHFINDER-2",
+    "lat": 74.9966,
+    "lng": 23.9243,
+    "alt": 537,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43759"
+  },
+  {
+    "name": "MEGSAT 1",
+    "lat": -19.3161,
+    "lng": -58.2137,
+    "alt": 544,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "26546"
+  },
+  {
+    "name": "DEMO8(TENZING)",
+    "lat": -11.6996,
+    "lng": -148.603,
+    "alt": 395,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48951"
+  },
+  {
+    "name": "FENGYUN 3D",
+    "lat": 70.2699,
+    "lng": -42.7612,
+    "alt": 836,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "43010"
+  },
+  {
+    "name": "FENGYUN 3E",
+    "lat": -41.4512,
+    "lng": -179.038,
+    "alt": 843,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "49008"
+  },
+  {
+    "name": "ISS (NAUKA)",
+    "lat": 37.3076,
+    "lng": -87.1735,
+    "alt": 427,
+    "mission": "Space Station",
+    "color": "#FFD700",
+    "category": "science",
+    "noradId": "49044"
+  },
+  {
+    "name": "ELEKTRO-L 3",
+    "lat": -0.0089,
+    "lng": -31.5982,
+    "alt": 36027,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44903"
+  },
+  {
+    "name": "NOAA 20",
+    "lat": -5.3492,
+    "lng": -54.0981,
+    "alt": 831,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "43013"
+  },
+  {
+    "name": "PROBA 1",
+    "lat": -0.7702,
+    "lng": 19.6299,
+    "alt": 532,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "26958"
+  },
+  {
+    "name": "CUPID",
+    "lat": 18.2444,
+    "lng": -111.1159,
+    "alt": 493,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49264"
+  },
+  {
+    "name": "ZHUHAI-1 OHS-02",
+    "lat": -33.3079,
+    "lng": 28.3921,
+    "alt": 504,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43441"
+  },
+  {
+    "name": "PERSEUS M1",
+    "lat": -29.6237,
+    "lng": -42.5535,
+    "alt": 590,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40039"
+  },
+  {
+    "name": "ORBCOMM FM 36",
+    "lat": 25.2185,
+    "lng": 165.8612,
+    "alt": 762,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "25984"
+  },
+  {
+    "name": "DMSP 5D-2 F15 (USA 147)",
+    "lat": -46.5531,
+    "lng": -142.8817,
+    "alt": 858,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "25991"
+  },
+  {
+    "name": "GEOSAT",
+    "lat": 47.428,
+    "lng": -106.941,
+    "alt": 766,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "15595"
+  },
+  {
+    "name": "FORTE",
+    "lat": -9.214,
+    "lng": -3.4266,
+    "alt": 799,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "24920"
+  },
+  {
+    "name": "LEMUR 2 FURIAUS",
+    "lat": -68.906,
+    "lng": -14.7199,
+    "alt": 491,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42840"
+  },
+  {
+    "name": "ZHUHAI-1 OVS-02",
+    "lat": -23.6324,
+    "lng": -166.3564,
+    "alt": 494,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43440"
+  },
+  {
+    "name": "3CAT-5/A (TYVAK-0161)",
+    "lat": -6.5726,
+    "lng": -111.2185,
+    "alt": 423,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46292"
+  },
+  {
+    "name": "3CAT-5/B (TYVAK-0162)",
+    "lat": -66.8434,
+    "lng": -126.2713,
+    "alt": 440,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46293"
+  },
+  {
+    "name": "SEAHAWK-1",
+    "lat": -16.4759,
+    "lng": -124.8542,
+    "alt": 495,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43820"
+  },
+  {
+    "name": "GLOBAL-4",
+    "lat": 41.7245,
+    "lng": 20.3789,
+    "alt": 328,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44499"
+  },
+  {
+    "name": "TIANQI-6",
+    "lat": -19.2863,
+    "lng": 62.2011,
+    "alt": 552,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46810"
+  },
+  {
+    "name": "WNISAT 1R",
+    "lat": -47.2392,
+    "lng": -29.6285,
+    "alt": 585,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42835"
+  },
+  {
+    "name": "FORMOSAT7-3/COSMIC2-3",
+    "lat": -7.6129,
+    "lng": -31.9833,
+    "alt": 534,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44343"
+  },
+  {
+    "name": "FORMOSAT7-1/COSMIC2-1",
+    "lat": 0.858,
+    "lng": 3.9243,
+    "alt": 575,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44349"
+  },
+  {
+    "name": "FORMOSAT7-2/COSMIC2-2",
+    "lat": 20.9336,
+    "lng": -120.2832,
+    "alt": 574,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44351"
+  },
+  {
+    "name": "FORMOSAT7-6/COSMIC2-6",
+    "lat": 19.726,
+    "lng": 66.0018,
+    "alt": 573,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44353"
+  },
+  {
+    "name": "FORMOSAT7-5/COSMIC2-5",
+    "lat": -20.9425,
+    "lng": 116.7721,
+    "alt": 579,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44358"
+  },
+  {
+    "name": "NAPA-1",
+    "lat": 58.7098,
+    "lng": 74.8618,
+    "alt": 286,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46320"
+  },
+  {
+    "name": "TYVAK-0173",
+    "lat": -45.5697,
+    "lng": -133.6248,
+    "alt": 643,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48892"
+  },
+  {
+    "name": "MANDRAKE 2 ABLE",
+    "lat": 64.3703,
+    "lng": -170.0334,
+    "alt": 401,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48907"
+  },
+  {
+    "name": "TYVAK-0130",
+    "lat": -37.6797,
+    "lng": -143.0341,
+    "alt": 495,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48606"
+  },
+  {
+    "name": "TYVAK-182A",
+    "lat": -82.4199,
+    "lng": 145.9727,
+    "alt": 571,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48271"
+  },
+  {
+    "name": "MANDRAKE 2 BAKER",
+    "lat": -82.3121,
+    "lng": -53.8889,
+    "alt": 398,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48908"
+  },
+  {
+    "name": "Z-SAT",
+    "lat": 15.0941,
+    "lng": -139.7651,
+    "alt": 500,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49399"
+  },
+  {
+    "name": "TEIKYOSAT-4 (OORURI)",
+    "lat": -50.4012,
+    "lng": -157.5745,
+    "alt": 549,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49396"
+  },
+  {
+    "name": "KOSEN-1",
+    "lat": 81.9274,
+    "lng": -17.536,
+    "alt": 487,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49402"
+  },
+  {
+    "name": "XW-3 (CAS 9)",
+    "lat": 9.8709,
+    "lng": 96.8988,
+    "alt": 755,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "50466"
+  },
+  {
+    "name": "PROBA V",
+    "lat": 68.3829,
+    "lng": -178.9911,
+    "alt": 821,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39159"
+  },
+  {
+    "name": "PROBA 2",
+    "lat": -60.4026,
+    "lng": -156.9366,
+    "alt": 726,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "36037"
+  },
+  {
+    "name": "SMAP",
+    "lat": -20.4466,
+    "lng": -170.9919,
+    "alt": 690,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40376"
+  },
+  {
+    "name": "HAIYANG 1B",
+    "lat": 13.1657,
+    "lng": -18.1141,
+    "alt": 800,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "31113"
+  },
+  {
+    "name": "HYPSO-1",
+    "lat": 40.1791,
+    "lng": -78.9967,
+    "alt": 275,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "51053"
+  },
+  {
+    "name": "BRO-5",
+    "lat": -38.311,
+    "lng": -104.0234,
+    "alt": 423,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "51061"
+  },
+  {
+    "name": "ION SCV-004",
+    "lat": -18.8746,
+    "lng": 64.4836,
+    "alt": 477,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "50993"
+  },
+  {
+    "name": "AIST 2",
+    "lat": -50.2283,
+    "lng": 146.3579,
+    "alt": 494,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39133"
+  },
+  {
+    "name": "OBJECT V",
+    "lat": 79.301,
+    "lng": 115.4056,
+    "alt": 457,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52751"
+  },
+  {
+    "name": "ION SCV-006",
+    "lat": 37.7211,
+    "lng": 155.6256,
+    "alt": 417,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52761"
+  },
+  {
+    "name": "KAZEOSAT 1",
+    "lat": 71.4756,
+    "lng": -78.3288,
+    "alt": 763,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39731"
+  },
+  {
+    "name": "GLOBAL-2",
+    "lat": 17.5308,
+    "lng": -139.6242,
+    "alt": 539,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43812"
+  },
+  {
+    "name": "BRITE TORONTO",
+    "lat": -64.0443,
+    "lng": -63.2082,
+    "alt": 622,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40020"
+  },
+  {
+    "name": "BRITE-PL 2",
+    "lat": -45.8023,
+    "lng": -68.4753,
+    "alt": 610,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40119"
+  },
+  {
+    "name": "SHERPA-AC1",
+    "lat": -22.9009,
+    "lng": 164.5274,
+    "alt": 458,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52763"
+  },
+  {
+    "name": "HILAT",
+    "lat": 79.4721,
+    "lng": -105.5393,
+    "alt": 803,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "14154"
+  },
+  {
+    "name": "AII-BRAVO",
+    "lat": 7.6177,
+    "lng": 57.7394,
+    "alt": 560,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48270"
+  },
+  {
+    "name": "OMNI-L2",
+    "lat": 15.9809,
+    "lng": 58.5666,
+    "alt": 627,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52771"
+  },
+  {
+    "name": "BRO-6",
+    "lat": 64.3553,
+    "lng": 85.4319,
+    "alt": 397,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52422"
+  },
+  {
+    "name": "OBJECT L",
+    "lat": 24.9192,
+    "lng": -92.9421,
+    "alt": 592,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44889"
+  },
+  {
+    "name": "OBJECT H",
+    "lat": -51.7504,
+    "lng": 104.1524,
+    "alt": 599,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44886"
+  },
+  {
+    "name": "CBERS 2B",
+    "lat": -39.7912,
+    "lng": 122.2039,
+    "alt": 775,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "32062"
+  },
+  {
+    "name": "PEGASUS R/B",
+    "lat": 18.0961,
+    "lng": 159.0583,
+    "alt": 680,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "22491"
+  },
+  {
+    "name": "NOAA 2 (ITOS-D)",
+    "lat": -41.6974,
+    "lng": 37.424,
+    "alt": 1464,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "06235"
+  },
+  {
+    "name": "DMC 2",
+    "lat": 0.6604,
+    "lng": 138.6799,
+    "alt": 644,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "35683"
+  },
+  {
+    "name": "DMC 3-FM1",
+    "lat": 49.2392,
+    "lng": -141.9679,
+    "alt": 615,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40715"
+  },
+  {
+    "name": "DMC 3-FM2",
+    "lat": -64.0413,
+    "lng": -115.5434,
+    "alt": 636,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40716"
+  },
+  {
+    "name": "DMC 3-FM3",
+    "lat": 14.4423,
+    "lng": 52.3678,
+    "alt": 616,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40717"
+  },
+  {
+    "name": "SSTL S1-4",
+    "lat": -24.632,
+    "lng": 49.7565,
+    "alt": 571,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43618"
+  },
+  {
+    "name": "MOHAMMED VI-B",
+    "lat": -29.9918,
+    "lng": 81.811,
+    "alt": 650,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43717"
+  },
+  {
+    "name": "MOHAMMED VI-A",
+    "lat": 30.7321,
+    "lng": -98.0424,
+    "alt": 642,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43005"
+  },
+  {
+    "name": "CARBONITE 1",
+    "lat": -8.4732,
+    "lng": -179.1653,
+    "alt": 623,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40718"
+  },
+  {
+    "name": "STEP CUBE LAB-II",
+    "lat": -81.7196,
+    "lng": -127.827,
+    "alt": 711,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52897"
+  },
+  {
+    "name": "RANDEV",
+    "lat": 75.3733,
+    "lng": 117.2412,
+    "alt": 691,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52898"
+  },
+  {
+    "name": "SNUGLITE-II",
+    "lat": -30.4862,
+    "lng": -33.4406,
+    "alt": 695,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52899"
+  },
+  {
+    "name": "AISSAT 1",
+    "lat": 1.4186,
+    "lng": 90.3586,
+    "alt": 583,
+    "mission": "Space Station",
+    "color": "#FFD700",
+    "category": "science",
+    "noradId": "36797"
+  },
+  {
+    "name": "MIMAN",
+    "lat": 75.9521,
+    "lng": 113.5015,
+    "alt": 698,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52900"
+  },
+  {
+    "name": "YOUTHSAT",
+    "lat": 18.9059,
+    "lng": 158.1697,
+    "alt": 819,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37388"
+  },
+  {
+    "name": "IRS 1B",
+    "lat": 2.9833,
+    "lng": 17.1839,
+    "alt": 888,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "21688"
+  },
+  {
+    "name": "GOES 17",
+    "lat": 1.1553,
+    "lng": -89.5046,
+    "alt": 35783,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "43226"
+  },
+  {
+    "name": "ATS 5",
+    "lat": -0.2637,
+    "lng": 157.6252,
+    "alt": 36031,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "4068"
+  },
+  {
+    "name": "AVUM R/B",
+    "lat": 64.3786,
+    "lng": 102.845,
+    "alt": 5864,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53109"
+  },
+  {
+    "name": "CELESTA",
+    "lat": 6.0129,
+    "lng": 154.6114,
+    "alt": 5681,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53111"
+  },
+  {
+    "name": "MT-CUBE-2",
+    "lat": -38.4367,
+    "lng": -44.3225,
+    "alt": 5849,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53106"
+  },
+  {
+    "name": "TRISAT-R",
+    "lat": -26.0872,
+    "lng": 163.9839,
+    "alt": 5853,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53108"
+  },
+  {
+    "name": "ALPHA",
+    "lat": -0.1105,
+    "lng": -27.3839,
+    "alt": 6136,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53110"
+  },
+  {
+    "name": "LARES-2",
+    "lat": -13.3854,
+    "lng": -25.6821,
+    "alt": 5888,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53105"
+  },
+  {
+    "name": "VIGORIDE 3",
+    "lat": 36.9153,
+    "lng": -24.0913,
+    "alt": 485,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52760"
+  },
+  {
+    "name": "COSMOS 2499",
+    "lat": -18.6775,
+    "lng": -116.8399,
+    "alt": 1341,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "39765"
+  },
+  {
+    "name": "SAUDISAT 4",
+    "lat": -52.1679,
+    "lng": 158.7823,
+    "alt": 650,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40016"
+  },
+  {
+    "name": "SAUDISAT 2",
+    "lat": 54.8405,
+    "lng": -2.4114,
+    "alt": 724,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28371"
+  },
+  {
+    "name": "YAM-3",
+    "lat": -17.2968,
+    "lng": 19.4638,
+    "alt": 421,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48915"
+  },
+  {
+    "name": "TIROS N",
+    "lat": -44.9609,
+    "lng": 30.6339,
+    "alt": 842,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "11060"
+  },
+  {
+    "name": "TIROS 10",
+    "lat": 1.6273,
+    "lng": -54.211,
+    "alt": 767,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "01430"
+  },
+  {
+    "name": "SECOR 7 (EGRS 7)",
+    "lat": -66.7545,
+    "lng": 174.0596,
+    "alt": 3706,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "02411"
+  },
+  {
+    "name": "SECOR 13 (EGRS 13)",
+    "lat": 42.0856,
+    "lng": -136.0494,
+    "alt": 1105,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "03891"
+  },
+  {
+    "name": "OMNI-L1",
+    "lat": 13.5047,
+    "lng": 81.5437,
+    "alt": 624,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52157"
+  },
+  {
+    "name": "KHAYYAM",
+    "lat": 28.2575,
+    "lng": -95.4421,
+    "alt": 494,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53370"
+  },
+  {
+    "name": "FENGYUN 1D",
+    "lat": -12.0091,
+    "lng": -125.5623,
+    "alt": 859,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "27431"
+  },
+  {
+    "name": "STARLINK-3100",
+    "lat": -69.8244,
+    "lng": 70.6186,
+    "alt": 572,
+    "mission": "Commercial Comms",
+    "color": "#00E676",
+    "category": "comms",
+    "noradId": "49144"
+  },
+  {
+    "name": "STARLINK-4410",
+    "lat": 46.5824,
+    "lng": 62.9636,
+    "alt": 462,
+    "mission": "Commercial Comms",
+    "color": "#00E676",
+    "category": "comms",
+    "noradId": "53204"
+  },
+  {
+    "name": "STARLINK-4400",
+    "lat": -6.133,
+    "lng": 120.7942,
+    "alt": 470,
+    "mission": "Commercial Comms",
+    "color": "#00E676",
+    "category": "comms",
+    "noradId": "53468"
+  },
+  {
+    "name": "STARLINK-4621",
+    "lat": 72.7989,
+    "lng": 83.429,
+    "alt": 503,
+    "mission": "Commercial Comms",
+    "color": "#00E676",
+    "category": "comms",
+    "noradId": "53676"
+  },
+  {
+    "name": "STARLINK-4362",
+    "lat": 45.1906,
+    "lng": 8.4295,
+    "alt": 472,
+    "mission": "Commercial Comms",
+    "color": "#00E676",
+    "category": "comms",
+    "noradId": "53043"
+  },
+  {
+    "name": "BLUEWALKER 3",
+    "lat": -44.4,
+    "lng": -152.6223,
+    "alt": 464,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53807"
+  },
+  {
+    "name": "OTB-3-GAZELLE",
+    "lat": -10.3633,
+    "lng": 175.0348,
+    "alt": 745,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54023"
+  },
+  {
+    "name": "KSM1-A",
+    "lat": 9.6221,
+    "lng": 113.7528,
+    "alt": 482,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46912"
+  },
+  {
+    "name": "KSM1-B",
+    "lat": 25.0828,
+    "lng": 148.1323,
+    "alt": 490,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46914"
+  },
+  {
+    "name": "KSM1-C",
+    "lat": 22.0594,
+    "lng": 129.8554,
+    "alt": 480,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46906"
+  },
+  {
+    "name": "SHERPA-LTC2",
+    "lat": 52.4398,
+    "lng": -117.9197,
+    "alt": 750,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53754"
+  },
+  {
+    "name": "OSCAR 16 (PACSAT)",
+    "lat": 45.1065,
+    "lng": -125.9226,
+    "alt": 786,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "20439"
+  },
+  {
+    "name": "WREN",
+    "lat": -44.4019,
+    "lng": 130.2992,
+    "alt": 531,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39435"
+  },
+  {
+    "name": "COSMOS 2463",
+    "lat": -43.7776,
+    "lng": -131.1128,
+    "alt": 1037,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "36519"
+  },
+  {
+    "name": "COSMOS 2414",
+    "lat": -71.5735,
+    "lng": 5.2371,
+    "alt": 946,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "28521"
+  },
+  {
+    "name": "COSMOS 2407",
+    "lat": 71.2089,
+    "lng": -141.1248,
+    "alt": 1016,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "28380"
+  },
+  {
+    "name": "KSM1-D",
+    "lat": 10.9724,
+    "lng": -85.9708,
+    "alt": 484,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46907"
+  },
+  {
+    "name": "IRIDIUM 116",
+    "lat": -63.2854,
+    "lng": -20.4607,
+    "alt": 803,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43072"
+  },
+  {
+    "name": "IRIDIUM 113",
+    "lat": 14.1297,
+    "lng": 165.9822,
+    "alt": 780,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42803"
+  },
+  {
+    "name": "IRIDIUM 130",
+    "lat": 79.0972,
+    "lng": 147.9829,
+    "alt": 790,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43073"
+  },
+  {
+    "name": "JILIN-01 GAOFEN 3H",
+    "lat": 30.8097,
+    "lng": -109.9786,
+    "alt": 215,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46460"
+  },
+  {
+    "name": "JILIN-01 GAOFEN 3F",
+    "lat": 68.2747,
+    "lng": -101.602,
+    "alt": 345,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46458"
+  },
+  {
+    "name": "JILIN-01 GAOFEN 3E",
+    "lat": 45.2879,
+    "lng": -109.0852,
+    "alt": 316,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46457"
+  },
+  {
+    "name": "ARKTIKA-M 1",
+    "lat": 56.2365,
+    "lng": 164.2327,
+    "alt": 31973,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47719"
+  },
+  {
+    "name": "EOS-6",
+    "lat": 68.7649,
+    "lng": -54.6817,
+    "alt": 747,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54361"
+  },
+  {
+    "name": "CORIOLIS",
+    "lat": -80.7499,
+    "lng": 122.2388,
+    "alt": 847,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "27640"
+  },
+  {
+    "name": "CLOUDSAT",
+    "lat": -54.4253,
+    "lng": 62.4974,
+    "alt": 627,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "29107"
+  },
+  {
+    "name": "ELEKTRO-L",
+    "lat": 9.6391,
+    "lng": -155.5039,
+    "alt": 35795,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37344"
+  },
+  {
+    "name": "ELEKTRO-L 2",
+    "lat": -2.4448,
+    "lng": -14.6893,
+    "alt": 35777,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41105"
+  },
+  {
+    "name": "CENTISPACE-1 S6",
+    "lat": 49.1176,
+    "lng": -145.4695,
+    "alt": 688,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54021"
+  },
+  {
+    "name": "CENTISPACE-1 S3",
+    "lat": 36.1868,
+    "lng": 17.0243,
+    "alt": 691,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53757"
+  },
+  {
+    "name": "APRIZESAT 9",
+    "lat": 9.2772,
+    "lng": 135.705,
+    "alt": 692,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40018"
+  },
+  {
+    "name": "APRIZESAT 7",
+    "lat": 41.5235,
+    "lng": -48.6876,
+    "alt": 611,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39416"
+  },
+  {
+    "name": "APRIZESAT 8",
+    "lat": 6.6403,
+    "lng": 133.4202,
+    "alt": 596,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39425"
+  },
+  {
+    "name": "APRIZESAT 6",
+    "lat": 27.9536,
+    "lng": 103.9881,
+    "alt": 646,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37793"
+  },
+  {
+    "name": "MATS",
+    "lat": -76.898,
+    "lng": 43.0558,
+    "alt": 584,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54227"
+  },
+  {
+    "name": "LYNK TOWER 3",
+    "lat": 76.8336,
+    "lng": 33.3675,
+    "alt": 458,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55046"
+  },
+  {
+    "name": "LYNK TOWER 4",
+    "lat": -70.2176,
+    "lng": -136.3153,
+    "alt": 493,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55034"
+  },
+  {
+    "name": "KUWAITSAT-1",
+    "lat": 33.3845,
+    "lng": -95.4105,
+    "alt": 411,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55103"
+  },
+  {
+    "name": "CONNECTA T1.2",
+    "lat": 57.904,
+    "lng": 68.5733,
+    "alt": 390,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55012"
+  },
+  {
+    "name": "BRO-8",
+    "lat": -45.3973,
+    "lng": -113.2475,
+    "alt": 417,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55011"
+  },
+  {
+    "name": "HUYGENS",
+    "lat": -35.209,
+    "lng": -111.082,
+    "alt": 459,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55093"
+  },
+  {
+    "name": "OBJECT A",
+    "lat": 17.1591,
+    "lng": 69.5315,
+    "alt": 428,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55009"
+  },
+  {
+    "name": "BIRKELAND",
+    "lat": -35.7151,
+    "lng": -110.2534,
+    "alt": 459,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55015"
+  },
+  {
+    "name": "SKYKRAFT-1A",
+    "lat": -7.9753,
+    "lng": 63.1468,
+    "alt": 477,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55054"
+  },
+  {
+    "name": "ORBITER SN1",
+    "lat": -60.7665,
+    "lng": 62.7817,
+    "alt": 3572,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "70377"
+  },
+  {
+    "name": "EOSSAT-1",
+    "lat": 40.5988,
+    "lng": 59.9079,
+    "alt": 461,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55053"
+  },
+  {
+    "name": "ION SCV-008",
+    "lat": -80.4142,
+    "lng": 156.6632,
+    "alt": 496,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55051"
+  },
+  {
+    "name": "ION SCV-007",
+    "lat": 79.0083,
+    "lng": 21.9769,
+    "alt": 656,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55060"
+  },
+  {
+    "name": "VIGORIDE 5",
+    "lat": -79.7344,
+    "lng": -141.3948,
+    "alt": 373,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55056"
+  },
+  {
+    "name": "YAM-5",
+    "lat": -79.1951,
+    "lng": 111.5052,
+    "alt": 475,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55076"
+  },
+  {
+    "name": "SAUDISAT 5A",
+    "lat": 35.6653,
+    "lng": 60.6271,
+    "alt": 477,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43831"
+  },
+  {
+    "name": "SAUDISAT 5B",
+    "lat": 33.1186,
+    "lng": 64.3899,
+    "alt": 476,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43833"
+  },
+  {
+    "name": "EPIC CHIMERA LEO 1",
+    "lat": -72.5796,
+    "lng": 110.717,
+    "alt": 445,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "88310"
+  },
+  {
+    "name": "NEWSAT 32",
+    "lat": -81.7506,
+    "lng": -15.4318,
+    "alt": 30154,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "70365"
+  },
+  {
+    "name": "CONTINUUM-1",
+    "lat": 45.1184,
+    "lng": -104.1074,
+    "alt": 473,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55045"
+  },
+  {
+    "name": "NEWSAT 33",
+    "lat": 21.2934,
+    "lng": -90.8981,
+    "alt": 19952,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "70369"
+  },
+  {
+    "name": "NEWSAT 35",
+    "lat": 18.3901,
+    "lng": -98.0495,
+    "alt": 10735,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "70374"
+  },
+  {
+    "name": "ETV-A1",
+    "lat": -48.1348,
+    "lng": -115.4282,
+    "alt": 454,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "51060"
+  },
+  {
+    "name": "GAOFEN 6",
+    "lat": -61.5598,
+    "lng": -125.6001,
+    "alt": 667,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43484"
+  },
+  {
+    "name": "GAOFEN 7",
+    "lat": -34.463,
+    "lng": -117.3781,
+    "alt": 522,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44703"
+  },
+  {
+    "name": "CBERS 4A",
+    "lat": -26.3475,
+    "lng": -109.8448,
+    "alt": 635,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44883"
+  },
+  {
+    "name": "NINGXIA-1 1",
+    "lat": -36.9101,
+    "lng": -63.4863,
+    "alt": 903,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44779"
+  },
+  {
+    "name": "ZY 3 2",
+    "lat": -54.766,
+    "lng": 90.5011,
+    "alt": 521,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41556"
+  },
+  {
+    "name": "HJ-2E",
+    "lat": -12.1674,
+    "lng": 10.3564,
+    "alt": 507,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54035"
+  },
+  {
+    "name": "LT-1 01A",
+    "lat": -73.5246,
+    "lng": 164.8709,
+    "alt": 631,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "51284"
+  },
+  {
+    "name": "ICEYE-X6",
+    "lat": -38.2142,
+    "lng": 179.8934,
+    "alt": 572,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46497"
+  },
+  {
+    "name": "ASNARO-2",
+    "lat": 75.5448,
+    "lng": -18.3815,
+    "alt": 510,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43152"
+  },
+  {
+    "name": "EGYPTSAT A",
+    "lat": -27.0704,
+    "lng": -114.4081,
+    "alt": 664,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44047"
+  },
+  {
+    "name": "SUPERVIEW-1 03",
+    "lat": 33.6046,
+    "lng": -83.5565,
+    "alt": 422,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43099"
+  },
+  {
+    "name": "HODOYOSHI 4",
+    "lat": -67.5519,
+    "lng": -12.9683,
+    "alt": 614,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40011"
+  },
+  {
+    "name": "HYSIS",
+    "lat": 64.4765,
+    "lng": -90.6828,
+    "alt": 644,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43719"
+  },
+  {
+    "name": "CFOSAT",
+    "lat": 75.7142,
+    "lng": -142.0522,
+    "alt": 527,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43662"
+  },
+  {
+    "name": "COSMOS 2561",
+    "lat": 51.0226,
+    "lng": 52.6548,
+    "alt": 414,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "54109"
+  },
+  {
+    "name": "SHARJAHSAT-1",
+    "lat": -81.2015,
+    "lng": -157.9925,
+    "alt": 436,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55104"
+  },
+  {
+    "name": "XINGYUN-2 01",
+    "lat": 66.2606,
+    "lng": -20.5737,
+    "alt": 538,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "45602"
+  },
+  {
+    "name": "ARCSAT-1",
+    "lat": 21.5899,
+    "lng": 98.1098,
+    "alt": 400,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52161"
+  },
+  {
+    "name": "GLOBAL-13",
+    "lat": 39.6236,
+    "lng": -55.8364,
+    "alt": 418,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49773"
+  },
+  {
+    "name": "GLOBAL-12",
+    "lat": -24.0282,
+    "lng": -131.2791,
+    "alt": 392,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49772"
+  },
+  {
+    "name": "SKIF-D",
+    "lat": -82.48,
+    "lng": -6.9543,
+    "alt": 8092,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54153"
+  },
+  {
+    "name": "OBJECT J",
+    "lat": -80.322,
+    "lng": 114.8441,
+    "alt": 535,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "51832"
+  },
+  {
+    "name": "HAIYANG 1D",
+    "lat": 50.5153,
+    "lng": 136.0786,
+    "alt": 783,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "45721"
+  },
+  {
+    "name": "TANSAT",
+    "lat": -12.9574,
+    "lng": 12.5559,
+    "alt": 691,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41898"
+  },
+  {
+    "name": "SHIJIAN 6 03A (SJ-6 03A)",
+    "lat": -2.9662,
+    "lng": -136.1468,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33408"
+  },
+  {
+    "name": "SJ-9A",
+    "lat": 1.9295,
+    "lng": 154.566,
+    "alt": 600,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38860"
+  },
+  {
+    "name": "KL-ALPHA A",
+    "lat": 11.1921,
+    "lng": 104.9381,
+    "alt": 1048,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44785"
+  },
+  {
+    "name": "GAOFEN 3",
+    "lat": -35.6788,
+    "lng": -173.4372,
+    "alt": 765,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41727"
+  },
+  {
+    "name": "LEMUR 2 GREENBERG",
+    "lat": -72.5526,
+    "lng": -148.6811,
+    "alt": 483,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42837"
+  },
+  {
+    "name": "HAIYANG 2D",
+    "lat": 33.9228,
+    "lng": -121.7383,
+    "alt": 959,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48621"
+  },
+  {
+    "name": "GLOBAL-18",
+    "lat": 21.6781,
+    "lng": -92.3419,
+    "alt": 417,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52196"
+  },
+  {
+    "name": "HAIYANG 1C",
+    "lat": 29.5741,
+    "lng": -98.0427,
+    "alt": 777,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43609"
+  },
+  {
+    "name": "CENTISPACE-1 S5",
+    "lat": 1.432,
+    "lng": 159.5089,
+    "alt": 675,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54020"
+  },
+  {
+    "name": "HAIYANG 2C",
+    "lat": 47.7265,
+    "lng": 15.3216,
+    "alt": 961,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46469"
+  },
+  {
+    "name": "SDGSAT 1",
+    "lat": -64.6743,
+    "lng": 64.3751,
+    "alt": 533,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49387"
+  },
+  {
+    "name": "R2",
+    "lat": 3.199,
+    "lng": 105.6755,
+    "alt": 487,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46913"
+  },
+  {
+    "name": "GLOBAL-14",
+    "lat": 27.4944,
+    "lng": 140.6291,
+    "alt": 386,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49469"
+  },
+  {
+    "name": "GLOBAL-9",
+    "lat": -34.7894,
+    "lng": -48.3571,
+    "alt": 423,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47971"
+  },
+  {
+    "name": "GLOBAL-16",
+    "lat": -25.902,
+    "lng": -29.5442,
+    "alt": 415,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49950"
+  },
+  {
+    "name": "EMISAT",
+    "lat": 0.949,
+    "lng": -115.1647,
+    "alt": 738,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44078"
+  },
+  {
+    "name": "IRS P6",
+    "lat": 71.1701,
+    "lng": -118.0954,
+    "alt": 813,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28051"
+  },
+  {
+    "name": "RESOURCESAT 2",
+    "lat": 72.133,
+    "lng": -78.4649,
+    "alt": 839,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37387"
+  },
+  {
+    "name": "ORBCOMM FM 114",
+    "lat": 44.7254,
+    "lng": -74.6951,
+    "alt": 699,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41179"
+  },
+  {
+    "name": "ORBCOMM FM 110",
+    "lat": 21.5151,
+    "lng": 16.5208,
+    "alt": 698,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41182"
+  },
+  {
+    "name": "ORBCOMM FM 117",
+    "lat": 46.0406,
+    "lng": 111.4699,
+    "alt": 700,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41188"
+  },
+  {
+    "name": "ORBCOMM FM 116",
+    "lat": -1.423,
+    "lng": -51.5145,
+    "alt": 696,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41189"
+  },
+  {
+    "name": "ORBCOMM FM 113",
+    "lat": 34.3631,
+    "lng": 166.5279,
+    "alt": 698,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41185"
+  },
+  {
+    "name": "ORBCOMM FM 112",
+    "lat": -36.2825,
+    "lng": 83.8209,
+    "alt": 708,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41184"
+  },
+  {
+    "name": "ORBCOMM FM 108",
+    "lat": -46.8127,
+    "lng": -60.1413,
+    "alt": 712,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41187"
+  },
+  {
+    "name": "NPP",
+    "lat": 64.1015,
+    "lng": -71.7576,
+    "alt": 837,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37849"
+  },
+  {
+    "name": "DMSP 5D-3 F18 (USA 210)",
+    "lat": 41.9461,
+    "lng": 175.3216,
+    "alt": 853,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "35951"
+  },
+  {
+    "name": "YAOGAN 10",
+    "lat": -70.5468,
+    "lng": 52.0543,
+    "alt": 639,
+    "mission": "Chinese Recon",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "36834"
+  },
+  {
+    "name": "OMNI-M1",
+    "lat": -44.4422,
+    "lng": -167.0128,
+    "alt": 10642,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "26857"
+  },
+  {
+    "name": "OCEANSAT 2",
+    "lat": -48.6812,
+    "lng": -9.2031,
+    "alt": 909,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "35931"
+  },
+  {
+    "name": "RESOURCESAT 2A",
+    "lat": -21.7871,
+    "lng": -104.4116,
+    "alt": 829,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41877"
+  },
+  {
+    "name": "ION SCV-010",
+    "lat": -72.0089,
+    "lng": 51.3791,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56192"
+  },
+  {
+    "name": "HJ-2B",
+    "lat": -44.8719,
+    "lng": 91.0685,
+    "alt": 658,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46479"
+  },
+  {
+    "name": "PAKTES 1A",
+    "lat": -72.6057,
+    "lng": -38.493,
+    "alt": 612,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43529"
+  },
+  {
+    "name": "PRSS 1",
+    "lat": -66.8322,
+    "lng": 89.5458,
+    "alt": 649,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43530"
+  },
+  {
+    "name": "ENMAP",
+    "lat": 3.1383,
+    "lng": -92.4165,
+    "alt": 648,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52159"
+  },
+  {
+    "name": "HORUS 2",
+    "lat": 30.8349,
+    "lng": -96.0908,
+    "alt": 498,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55844"
+  },
+  {
+    "name": "OBJECT B",
+    "lat": 19.5733,
+    "lng": -87.0467,
+    "alt": 587,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44880"
+  },
+  {
+    "name": "CENTISPACE-1 S4",
+    "lat": 51.0822,
+    "lng": 47.0019,
+    "alt": 696,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53758"
+  },
+  {
+    "name": "YAOGAN 7",
+    "lat": 33.1315,
+    "lng": 76.8716,
+    "alt": 653,
+    "mission": "Chinese Recon",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "36110"
+  },
+  {
+    "name": "LKW-3",
+    "lat": 80.8833,
+    "lng": 48.9499,
+    "alt": 468,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43146"
+  },
+  {
+    "name": "ZHUHAI-1 03D",
+    "lat": 2.4695,
+    "lng": -16.8067,
+    "alt": 395,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44538"
+  },
+  {
+    "name": "LT-1 01B",
+    "lat": 73.3897,
+    "lng": -14.8735,
+    "alt": 615,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "51822"
+  },
+  {
+    "name": "ASO-S",
+    "lat": 74.9908,
+    "lng": -22.6527,
+    "alt": 721,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54029"
+  },
+  {
+    "name": "CBERS-4",
+    "lat": 22.0945,
+    "lng": 56.1635,
+    "alt": 775,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40336"
+  },
+  {
+    "name": "JILIN-01 GAOFEN 2B",
+    "lat": 12.0521,
+    "lng": -100.5008,
+    "alt": 501,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44836"
+  },
+  {
+    "name": "JILIN-01 GAOFEN 2A",
+    "lat": -7.4838,
+    "lng": -87.4469,
+    "alt": 447,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44777"
+  },
+  {
+    "name": "LKW-2",
+    "lat": 76.4034,
+    "lng": -108.3925,
+    "alt": 494,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43080"
+  },
+  {
+    "name": "GAOFEN 3 02",
+    "lat": 35.6226,
+    "lng": 6.9879,
+    "alt": 754,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49495"
+  },
+  {
+    "name": "SKYMED 2",
+    "lat": 54.0743,
+    "lng": 19.4894,
+    "alt": 631,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "32376"
+  },
+  {
+    "name": "SKYMED 4",
+    "lat": 57.0045,
+    "lng": 176.2688,
+    "alt": 631,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37216"
+  },
+  {
+    "name": "ZY-1 02D",
+    "lat": 57.8832,
+    "lng": -97.4347,
+    "alt": 784,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44528"
+  },
+  {
+    "name": "DAQI 1",
+    "lat": -58.9013,
+    "lng": 109.3514,
+    "alt": 722,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52257"
+  },
+  {
+    "name": "GREGOIRE",
+    "lat": 12.0635,
+    "lng": -22.7467,
+    "alt": 446,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56946"
+  },
+  {
+    "name": "ORBITER SN3",
+    "lat": 49.2606,
+    "lng": 42.8044,
+    "alt": 290,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "70325"
+  },
+  {
+    "name": "ION SCV-011",
+    "lat": -25.3977,
+    "lng": 21.5241,
+    "alt": 489,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56957"
+  },
+  {
+    "name": "GHOST-3",
+    "lat": 63.9398,
+    "lng": 146.4983,
+    "alt": 424,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56958"
+  },
+  {
+    "name": "BLACKJACK ACES-2",
+    "lat": -3.6989,
+    "lng": 143.5502,
+    "alt": 513,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56955"
+  },
+  {
+    "name": "BLACKJACK ACES-1",
+    "lat": 52.6825,
+    "lng": 132.738,
+    "alt": 517,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56956"
+  },
+  {
+    "name": "BLACKJACK ACES-3",
+    "lat": 24.0864,
+    "lng": 139.5582,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56950"
+  },
+  {
+    "name": "GEISAT PRECURSOR",
+    "lat": -42.4763,
+    "lng": -35.0902,
+    "alt": 472,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56934"
+  },
+  {
+    "name": "VRSS-2",
+    "lat": 56.5509,
+    "lng": 28.3128,
+    "alt": 641,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42954"
+  },
+  {
+    "name": "ZHUHAI-1 03B",
+    "lat": 54.8152,
+    "lng": 161.0065,
+    "alt": 398,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44536"
+  },
+  {
+    "name": "HINODE (SOLAR B)",
+    "lat": -6.7955,
+    "lng": -159.9512,
+    "alt": 666,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "29479"
+  },
+  {
+    "name": "ZINYUAN-3",
+    "lat": -54.0353,
+    "lng": 84.1161,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "45939"
+  },
+  {
+    "name": "YAOGAN 12",
+    "lat": -78.7267,
+    "lng": 77.9128,
+    "alt": 516,
+    "mission": "Chinese Recon",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "37875"
+  },
+  {
+    "name": "LKW-4",
+    "lat": 42.6802,
+    "lng": -178.8439,
+    "alt": 355,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43236"
+  },
+  {
+    "name": "SPOT 5",
+    "lat": -74.0531,
+    "lng": -169.1508,
+    "alt": 646,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "27421"
+  },
+  {
+    "name": "CHUANG XIN 1-02(CX-1-02)",
+    "lat": -73.4307,
+    "lng": 62.0645,
+    "alt": 827,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33434"
+  },
+  {
+    "name": "HAIYANG 2B",
+    "lat": 4.8183,
+    "lng": -165.6264,
+    "alt": 969,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43655"
+  },
+  {
+    "name": "SHIJIAN 6 03B (SJ-6 03B)",
+    "lat": -16.6479,
+    "lng": -153.7726,
+    "alt": 571,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33409"
+  },
+  {
+    "name": "KOMPSAT 5",
+    "lat": -45.009,
+    "lng": 4.0158,
+    "alt": 573,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39227"
+  },
+  {
+    "name": "SHIJIAN 6 02B (SJ-6 02B)",
+    "lat": 68.6832,
+    "lng": 14.6714,
+    "alt": 567,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "29506"
+  },
+  {
+    "name": "AFR-1",
+    "lat": -39.5262,
+    "lng": -39.7963,
+    "alt": 488,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56964"
+  },
+  {
+    "name": "GRUS-1B",
+    "lat": -8.8617,
+    "lng": 64.4929,
+    "alt": 572,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47934"
+  },
+  {
+    "name": "OBJECT Z",
+    "lat": -53.3224,
+    "lng": -111.2862,
+    "alt": 471,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57189"
+  },
+  {
+    "name": "OBJECT AV",
+    "lat": 61.8394,
+    "lng": 58.3685,
+    "alt": 473,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57217"
+  },
+  {
+    "name": "OBJECT N",
+    "lat": -53.39,
+    "lng": 84.0872,
+    "alt": 484,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57178"
+  },
+  {
+    "name": "OBJECT AL",
+    "lat": 68.9185,
+    "lng": 65.9617,
+    "alt": 419,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57200"
+  },
+  {
+    "name": "OBJECT AP",
+    "lat": -26.8488,
+    "lng": -108.0721,
+    "alt": 477,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57203"
+  },
+  {
+    "name": "OBJECT AB",
+    "lat": 15.7495,
+    "lng": -114.2515,
+    "alt": 510,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57191"
+  },
+  {
+    "name": "OBJECT Q",
+    "lat": -3.3152,
+    "lng": 71.5307,
+    "alt": 473,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57180"
+  },
+  {
+    "name": "A-SEANSAT-PG1",
+    "lat": 35.3884,
+    "lng": 73.7874,
+    "alt": 444,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57197"
+  },
+  {
+    "name": "METEOR M2-3",
+    "lat": 52.6899,
+    "lng": 47.665,
+    "alt": 821,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57166"
+  },
+  {
+    "name": "GLOBAL-17",
+    "lat": -35.309,
+    "lng": 60.1001,
+    "alt": 401,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49949"
+  },
+  {
+    "name": "OBJECT U",
+    "lat": -37.4672,
+    "lng": -121.6235,
+    "alt": 529,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57184"
+  },
+  {
+    "name": "JILIN-01 KUANFU 01",
+    "lat": -77.6253,
+    "lng": 114.7812,
+    "alt": 556,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "45016"
+  },
+  {
+    "name": "GAOFEN DUOMO (GFDM)",
+    "lat": 63.9972,
+    "lng": 45.8556,
+    "alt": 642,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "45856"
+  },
+  {
+    "name": "COSMOS 2535",
+    "lat": -76.5996,
+    "lng": 176.4104,
+    "alt": 620,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "44421"
+  },
+  {
+    "name": "OBJECT AN",
+    "lat": 15.9949,
+    "lng": -113.0844,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57202"
+  },
+  {
+    "name": "OBJECT AF",
+    "lat": -82.02,
+    "lng": 176.7888,
+    "alt": 536,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57195"
+  },
+  {
+    "name": "GAOFEN 3 03",
+    "lat": 1.0216,
+    "lng": -166.3665,
+    "alt": 754,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52200"
+  },
+  {
+    "name": "OBJECT AG",
+    "lat": -54.4771,
+    "lng": 86.0743,
+    "alt": 482,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57196"
+  },
+  {
+    "name": "OBJECT Y",
+    "lat": -73.7523,
+    "lng": 97.6327,
+    "alt": 509,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57188"
+  },
+  {
+    "name": "GLOBAL-19",
+    "lat": 23.015,
+    "lng": 75.1871,
+    "alt": 446,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55982"
+  },
+  {
+    "name": "OBJECT AQ",
+    "lat": 52.7302,
+    "lng": 70.7028,
+    "alt": 445,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57204"
+  },
+  {
+    "name": "OBJECT AU",
+    "lat": -9.9971,
+    "lng": -100.382,
+    "alt": 445,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57208"
+  },
+  {
+    "name": "OBJECT AK",
+    "lat": -75.8883,
+    "lng": -130.9263,
+    "alt": 466,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57199"
+  },
+  {
+    "name": "OBJECT AM",
+    "lat": -46.3393,
+    "lng": -107.8233,
+    "alt": 460,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57201"
+  },
+  {
+    "name": "OBJECT AE",
+    "lat": 34.621,
+    "lng": -104.7908,
+    "alt": 490,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57194"
+  },
+  {
+    "name": "OBJECT AD",
+    "lat": 18.0415,
+    "lng": -103.5758,
+    "alt": 467,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57193"
+  },
+  {
+    "name": "OBJECT AC",
+    "lat": -48.1588,
+    "lng": 78.6736,
+    "alt": 501,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57192"
+  },
+  {
+    "name": "COSMOS 2197",
+    "lat": -18.7621,
+    "lng": -135.9046,
+    "alt": 1403,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "22034"
+  },
+  {
+    "name": "COSMOS 2484",
+    "lat": -80.555,
+    "lng": 93.6274,
+    "alt": 1538,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "39059"
+  },
+  {
+    "name": "GONETS M 05",
+    "lat": 22.0674,
+    "lng": -14.0158,
+    "alt": 1493,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39249"
+  },
+  {
+    "name": "GONETS M 07",
+    "lat": -17.6502,
+    "lng": 168.3129,
+    "alt": 1506,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39251"
+  },
+  {
+    "name": "COSMOS 2488",
+    "lat": 13.0104,
+    "lng": 170.0238,
+    "alt": 1511,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "39483"
+  },
+  {
+    "name": "COSMOS 2489",
+    "lat": 66.4583,
+    "lng": -27.8353,
+    "alt": 1501,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "39484"
+  },
+  {
+    "name": "COSMOS 2490",
+    "lat": -57.4046,
+    "lng": -0.4247,
+    "alt": 1503,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "39485"
+  },
+  {
+    "name": "COSMOS 2498",
+    "lat": -36.0019,
+    "lng": 102.5803,
+    "alt": 1523,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "39763"
+  },
+  {
+    "name": "COSMOS 2497",
+    "lat": -5.9735,
+    "lng": -69.5657,
+    "alt": 1482,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "39762"
+  },
+  {
+    "name": "COSMOS 2496",
+    "lat": 66.8427,
+    "lng": 125.8697,
+    "alt": 1509,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "39761"
+  },
+  {
+    "name": "GONETS M 10 (M20)",
+    "lat": -63.7884,
+    "lng": 142.909,
+    "alt": 1503,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40063"
+  },
+  {
+    "name": "GONETS M 11 (M21)",
+    "lat": 46.8024,
+    "lng": -157.4364,
+    "alt": 1491,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40552"
+  },
+  {
+    "name": "GONETS M 12 (M22)",
+    "lat": -74.9841,
+    "lng": -118.9591,
+    "alt": 1534,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40553"
+  },
+  {
+    "name": "GONETS M 13 (M23)",
+    "lat": 9.0868,
+    "lng": 31.5376,
+    "alt": 1490,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40554"
+  },
+  {
+    "name": "COSMOS 2507",
+    "lat": -52.4282,
+    "lng": -90.8687,
+    "alt": 1522,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "40920"
+  },
+  {
+    "name": "COSMOS 2508",
+    "lat": 67.5629,
+    "lng": 96.2988,
+    "alt": 1498,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "40921"
+  },
+  {
+    "name": "COSMOS 2509",
+    "lat": -35.5995,
+    "lng": 72.5113,
+    "alt": 1520,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "40922"
+  },
+  {
+    "name": "COSMOS 2530",
+    "lat": -72.1019,
+    "lng": -161.6804,
+    "alt": 1536,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "43751"
+  },
+  {
+    "name": "COSMOS 2531",
+    "lat": -19.7741,
+    "lng": 45.9988,
+    "alt": 1494,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "43752"
+  },
+  {
+    "name": "COSMOS 2532",
+    "lat": 71.2915,
+    "lng": -115.2464,
+    "alt": 1503,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "43753"
+  },
+  {
+    "name": "GONETS M 14 (M24)",
+    "lat": -48.7772,
+    "lng": 76.0487,
+    "alt": 1510,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44905"
+  },
+  {
+    "name": "GONETS M 15 (M25)",
+    "lat": -3.5584,
+    "lng": -94.4413,
+    "alt": 1496,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44906"
+  },
+  {
+    "name": "GONETS M 16 (M26)",
+    "lat": 70.2428,
+    "lng": 105.3053,
+    "alt": 1510,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44907"
+  },
+  {
+    "name": "GONETS M 17",
+    "lat": -45.7945,
+    "lng": -20.533,
+    "alt": 1530,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46486"
+  },
+  {
+    "name": "GONETS M 18",
+    "lat": 64.7907,
+    "lng": 150.1042,
+    "alt": 1489,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46487"
+  },
+  {
+    "name": "GONETS M 19",
+    "lat": -51.9388,
+    "lng": 176.402,
+    "alt": 1516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46488"
+  },
+  {
+    "name": "GONETS M 20",
+    "lat": 30.1561,
+    "lng": 117.8404,
+    "alt": 1507,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47227"
+  },
+  {
+    "name": "GONETS M 21",
+    "lat": -80.0832,
+    "lng": 169.3908,
+    "alt": 1513,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47228"
+  },
+  {
+    "name": "GONETS M 22",
+    "lat": 26.4484,
+    "lng": -54.4743,
+    "alt": 1505,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47229"
+  },
+  {
+    "name": "GONETS-M 23",
+    "lat": 77.877,
+    "lng": 25.667,
+    "alt": 1516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54150"
+  },
+  {
+    "name": "GONETS-M 25",
+    "lat": -78.2299,
+    "lng": -153.2244,
+    "alt": 1516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54152"
+  },
+  {
+    "name": "XINGYUN-2 02",
+    "lat": 57.2348,
+    "lng": -1.1926,
+    "alt": 545,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "45603"
+  },
+  {
+    "name": "GONETS-M 24",
+    "lat": -20.7375,
+    "lng": 169.9106,
+    "alt": 1510,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "54151"
+  },
+  {
+    "name": "ZHUHAI-1 03E",
+    "lat": 39.7512,
+    "lng": -12.3528,
+    "alt": 441,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44539"
+  },
+  {
+    "name": "ARCADE",
+    "lat": 4.5407,
+    "lng": -0.5942,
+    "alt": 371,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57485"
+  },
+  {
+    "name": "SCOOBII",
+    "lat": -3.8567,
+    "lng": 143.218,
+    "alt": 312,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57484"
+  },
+  {
+    "name": "VELOX-AM",
+    "lat": -0.1564,
+    "lng": 153.7528,
+    "alt": 425,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57482"
+  },
+  {
+    "name": "GALASSIA-2",
+    "lat": -4.1807,
+    "lng": -39.0234,
+    "alt": 450,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57486"
+  },
+  {
+    "name": "ORB-12 STRIDER",
+    "lat": 0.6352,
+    "lng": -11.0179,
+    "alt": 432,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57483"
+  },
+  {
+    "name": "NINGXIA-1 5",
+    "lat": 7.847,
+    "lng": -120.3457,
+    "alt": 894,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44783"
+  },
+  {
+    "name": "YUNHAI 1",
+    "lat": -54.8755,
+    "lng": -175.7901,
+    "alt": 807,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41857"
+  },
+  {
+    "name": "YUNHAI 1-03",
+    "lat": 41.2108,
+    "lng": -169.1785,
+    "alt": 789,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "53877"
+  },
+  {
+    "name": "THEA",
+    "lat": -71.7919,
+    "lng": 101.0314,
+    "alt": 476,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43796"
+  },
+  {
+    "name": "METEOR 2-1 DEB",
+    "lat": 64.609,
+    "lng": -28.7656,
+    "alt": 794,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57492"
+  },
+  {
+    "name": "HORUS 1",
+    "lat": -17.7714,
+    "lng": 80.95,
+    "alt": 504,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55690"
+  },
+  {
+    "name": "Optsat 3000",
+    "lat": -82.6527,
+    "lng": 154.4937,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42900"
+  },
+  {
+    "name": "LANDSAT 7",
+    "lat": 15.6925,
+    "lng": 2.5186,
+    "alt": 682,
+    "mission": "Earth Observation",
+    "color": "#90EE90",
+    "category": "earth_obs",
+    "noradId": "25682"
+  },
+  {
+    "name": "GAOFEN 1",
+    "lat": -29.9418,
+    "lng": 80.7143,
+    "alt": 654,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39150"
+  },
+  {
+    "name": "HIBARI",
+    "lat": -82.6837,
+    "lng": 134.7508,
+    "alt": 500,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49400"
+  },
+  {
+    "name": "PAZ",
+    "lat": 24.9642,
+    "lng": -164.2194,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43215"
+  },
+  {
+    "name": "IMAGE",
+    "lat": 80.8578,
+    "lng": -119.4715,
+    "alt": 45036,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "26113"
+  },
+  {
+    "name": "HJ-2A",
+    "lat": 26.83,
+    "lng": -93.9394,
+    "alt": 643,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46478"
+  },
+  {
+    "name": "SHIJIAN 6 04B (SJ-6 04B)",
+    "lat": -15.7633,
+    "lng": -168.8294,
+    "alt": 571,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37180"
+  },
+  {
+    "name": "KOMPSAT 3",
+    "lat": -45.3269,
+    "lng": -29.6268,
+    "alt": 707,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38338"
+  },
+  {
+    "name": "FENGYUN 3F",
+    "lat": -39.5574,
+    "lng": 81.5072,
+    "alt": 841,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "57490"
+  },
+  {
+    "name": "H2SAT",
+    "lat": -0.0106,
+    "lng": 0.7059,
+    "alt": 35785,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57213"
+  },
+  {
+    "name": "NPSAT1",
+    "lat": 23.9779,
+    "lng": -48.5157,
+    "alt": 639,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44340"
+  },
+  {
+    "name": "QIANKUN-1",
+    "lat": -0.455,
+    "lng": -137.796,
+    "alt": 263,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57422"
+  },
+  {
+    "name": "CALIPSO",
+    "lat": -65.4611,
+    "lng": 45.3723,
+    "alt": 688,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "29108"
+  },
+  {
+    "name": "TELEOS 2",
+    "lat": -8.8619,
+    "lng": 46.2923,
+    "alt": 575,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56310"
+  },
+  {
+    "name": "LAPAN-TUBSAT",
+    "lat": -64.1293,
+    "lng": 171.6424,
+    "alt": 637,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "29709"
+  },
+  {
+    "name": "HJ-2F",
+    "lat": 13.4034,
+    "lng": -168.5619,
+    "alt": 505,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57519"
+  },
+  {
+    "name": "ADITYA-L1",
+    "lat": 7.5708,
+    "lng": 87.5053,
+    "alt": 33614,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57754"
+  },
+  {
+    "name": "XRISM",
+    "lat": 23.3946,
+    "lng": 47.0275,
+    "alt": 523,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57800"
+  },
+  {
+    "name": "DMSP 5D-3 F17 (USA 191)",
+    "lat": 23.1374,
+    "lng": 7.0065,
+    "alt": 839,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "29522"
+  },
+  {
+    "name": "BEIDOU 13",
+    "lat": 49.4361,
+    "lng": 142.6817,
+    "alt": 21575,
+    "mission": "Navigation",
+    "color": "#448AFF",
+    "category": "navigation",
+    "noradId": "38251"
+  },
+  {
+    "name": "BEIDOU 2",
+    "lat": -7.5925,
+    "lng": -75.0607,
+    "alt": 22446,
+    "mission": "Navigation",
+    "color": "#448AFF",
+    "category": "navigation",
+    "noradId": "31115"
+  },
+  {
+    "name": "RADUGA 1M-2",
+    "lat": -3.3948,
+    "lng": 93.3505,
+    "alt": 36147,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "36358"
+  },
+  {
+    "name": "GAOFEN 2",
+    "lat": -61.0184,
+    "lng": -123.9437,
+    "alt": 647,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40118"
+  },
+  {
+    "name": "MERIDIAN 10",
+    "lat": 56.94,
+    "lng": -104.1613,
+    "alt": 32153,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52145"
+  },
+  {
+    "name": "SJ-7",
+    "lat": -24.034,
+    "lng": -143.31,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28737"
+  },
+  {
+    "name": "DAMPE",
+    "lat": -35.9822,
+    "lng": 18.2082,
+    "alt": 481,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41173"
+  },
+  {
+    "name": "DEIMOS 2",
+    "lat": 56.474,
+    "lng": 68.226,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40013"
+  },
+  {
+    "name": "ZY-1 02E",
+    "lat": 59.7204,
+    "lng": -84.2872,
+    "alt": 782,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "50465"
+  },
+  {
+    "name": "VRSS-1",
+    "lat": -0.2152,
+    "lng": -23.1328,
+    "alt": 643,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38782"
+  },
+  {
+    "name": "INDEX",
+    "lat": -65.2346,
+    "lng": -61.0548,
+    "alt": 569,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28810"
+  },
+  {
+    "name": "ION SCV-002",
+    "lat": -22.5866,
+    "lng": -176.7675,
+    "alt": 442,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47504"
+  },
+  {
+    "name": "RUNNER-1 (TYVAK-1005)",
+    "lat": 32.8349,
+    "lng": 148.8109,
+    "alt": 455,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56953"
+  },
+  {
+    "name": "S6 MICHAEL FREILICH",
+    "lat": -50.5772,
+    "lng": 169.0374,
+    "alt": 1351,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46984"
+  },
+  {
+    "name": "ANSER-FLW1",
+    "lat": 17.1336,
+    "lng": -74.4573,
+    "alt": 383,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58019"
+  },
+  {
+    "name": "ANSER-FLW2",
+    "lat": 11.039,
+    "lng": -76.1059,
+    "alt": 382,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58018"
+  },
+  {
+    "name": "PRETTY",
+    "lat": -68.8765,
+    "lng": 109.4254,
+    "alt": 516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58023"
+  },
+  {
+    "name": "CSC-1",
+    "lat": 12.4829,
+    "lng": -104.0713,
+    "alt": 528,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58022"
+  },
+  {
+    "name": "YAOGAN 21",
+    "lat": 76.718,
+    "lng": -106.5022,
+    "alt": 494,
+    "mission": "Chinese Recon",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "40143"
+  },
+  {
+    "name": "FORMOSAT-5",
+    "lat": -64.5379,
+    "lng": -118.3715,
+    "alt": 756,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42920"
+  },
+  {
+    "name": "CSC-2",
+    "lat": 12.3977,
+    "lng": -94.5996,
+    "alt": 493,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58021"
+  },
+  {
+    "name": "PVCC",
+    "lat": -51.4337,
+    "lng": 92.4315,
+    "alt": 537,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58025"
+  },
+  {
+    "name": "MACSAT",
+    "lat": 8.1366,
+    "lng": 88.2407,
+    "alt": 502,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58024"
+  },
+  {
+    "name": "NESS",
+    "lat": -50.6117,
+    "lng": -93.8627,
+    "alt": 486,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58020"
+  },
+  {
+    "name": "T2V",
+    "lat": 7.2779,
+    "lng": -103.1242,
+    "alt": 626,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58016"
+  },
+  {
+    "name": "FORMOSAT-7R/TRITON",
+    "lat": 58.6515,
+    "lng": -79.8631,
+    "alt": 603,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58017"
+  },
+  {
+    "name": "APRIZESAT 10",
+    "lat": 46.7472,
+    "lng": 122.4803,
+    "alt": 718,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40019"
+  },
+  {
+    "name": "OPS 5644",
+    "lat": -2.5628,
+    "lng": -119.3517,
+    "alt": 773,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "10033"
+  },
+  {
+    "name": "NOAA 21",
+    "lat": -17.2756,
+    "lng": 120.7084,
+    "alt": 833,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "54234"
+  },
+  {
+    "name": "USA 17",
+    "lat": -55.9724,
+    "lng": 68.2366,
+    "alt": 1340,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "16625"
+  },
+  {
+    "name": "ICESAT-2",
+    "lat": -84.5528,
+    "lng": 61.3116,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43613"
+  },
+  {
+    "name": "SHIJIAN 6 02A (SJ-6 02A)",
+    "lat": -71.1926,
+    "lng": -154.3401,
+    "alt": 541,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "29505"
+  },
+  {
+    "name": "POLAR",
+    "lat": 28.9415,
+    "lng": -52.9226,
+    "alt": 52148,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "23802"
+  },
+  {
+    "name": "ION SCV-013",
+    "lat": -61.854,
+    "lng": -134.3082,
+    "alt": 590,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58300"
+  },
+  {
+    "name": "OBJECT CG",
+    "lat": -20.0581,
+    "lng": -77.5498,
+    "alt": 374,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58334"
+  },
+  {
+    "name": "SPACEVAN-001",
+    "lat": -50.5719,
+    "lng": -80.2273,
+    "alt": 401,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58295"
+  },
+  {
+    "name": "WEDGIERIDE HELLOTEST",
+    "lat": -43.6625,
+    "lng": 69.1802,
+    "alt": 599,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "70324"
+  },
+  {
+    "name": "PROTOMETHEE",
+    "lat": -78.8957,
+    "lng": -136.3954,
+    "alt": 501,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58321"
+  },
+  {
+    "name": "MAVERICK NLAS OMNILER1",
+    "lat": 20.6279,
+    "lng": -132.0644,
+    "alt": 585,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "70331"
+  },
+  {
+    "name": "UMBRA-07",
+    "lat": 48.8579,
+    "lng": -113.6808,
+    "alt": 541,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58297"
+  },
+  {
+    "name": "EQUALIZER03 HERONMK2",
+    "lat": -60.3198,
+    "lng": -162.418,
+    "alt": 530,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "70375"
+  },
+  {
+    "name": "BRO-11",
+    "lat": -30.1926,
+    "lng": 86.686,
+    "alt": 500,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58264"
+  },
+  {
+    "name": "GENMAT-1",
+    "lat": 36.0943,
+    "lng": -90.1827,
+    "alt": 457,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58276"
+  },
+  {
+    "name": "IMPULSE-1 MIRA",
+    "lat": -64.582,
+    "lng": 110.8555,
+    "alt": 493,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58301"
+  },
+  {
+    "name": "ICEYE-X31",
+    "lat": -81.0583,
+    "lng": 137.4205,
+    "alt": 480,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58288"
+  },
+  {
+    "name": "SUPERDOVE 003 A13",
+    "lat": -10.2955,
+    "lng": 40.8591,
+    "alt": 580,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "70346"
+  },
+  {
+    "name": "SKYKRAFT-1",
+    "lat": 78.2308,
+    "lng": 52.4845,
+    "alt": 334,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55041"
+  },
+  {
+    "name": "NOSS 3-5 (A)",
+    "lat": -21.428,
+    "lng": 33.1533,
+    "alt": 855,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37386"
+  },
+  {
+    "name": "NOSS 3-3 (A)",
+    "lat": -6.5119,
+    "lng": 10.4798,
+    "alt": 1530,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28537"
+  },
+  {
+    "name": "SKYKRAFT-1C",
+    "lat": 5.4403,
+    "lng": -121.7562,
+    "alt": 493,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55061"
+  },
+  {
+    "name": "TIANQI 24",
+    "lat": 47.051,
+    "lng": -170.6718,
+    "alt": 827,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57795"
+  },
+  {
+    "name": "GOES 18",
+    "lat": 0.0103,
+    "lng": -136.9968,
+    "alt": 35786,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "51850"
+  },
+  {
+    "name": "GAOFEN-5 02",
+    "lat": -9.0737,
+    "lng": 81.3275,
+    "alt": 705,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49122"
+  },
+  {
+    "name": "SHIJIAN 6 01A (SJ-6 01A)",
+    "lat": 23.2364,
+    "lng": 30.9135,
+    "alt": 507,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28413"
+  },
+  {
+    "name": "HAIYANG 3A",
+    "lat": -4.2642,
+    "lng": -97.4677,
+    "alt": 788,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58349"
+  },
+  {
+    "name": "PICO-1A-1",
+    "lat": 45.2716,
+    "lng": -92.3836,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99024"
+  },
+  {
+    "name": "PICO-1A-2",
+    "lat": 45.2716,
+    "lng": -92.3836,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99023"
+  },
+  {
+    "name": "PICO-1A-3",
+    "lat": 45.2716,
+    "lng": -92.3836,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99022"
+  },
+  {
+    "name": "PICO-1A-4",
+    "lat": 45.2716,
+    "lng": -92.3836,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99021"
+  },
+  {
+    "name": "PICO-1A-5",
+    "lat": 45.2716,
+    "lng": -92.3836,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99020"
+  },
+  {
+    "name": "PICO-1A-6",
+    "lat": 45.2716,
+    "lng": -92.3836,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99019"
+  },
+  {
+    "name": "PICO-1A-7",
+    "lat": 45.2716,
+    "lng": -92.3836,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99018"
+  },
+  {
+    "name": "PICO-1A-9",
+    "lat": 45.2716,
+    "lng": -92.3836,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99016"
+  },
+  {
+    "name": "MALLIGYONG-1",
+    "lat": 43.6937,
+    "lng": -122.316,
+    "alt": 501,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58400"
+  },
+  {
+    "name": "TIANQI 23",
+    "lat": 16.8152,
+    "lng": -121.6412,
+    "alt": 824,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57794"
+  },
+  {
+    "name": "TIANQI 22",
+    "lat": 28.7644,
+    "lng": 100.0893,
+    "alt": 813,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57793"
+  },
+  {
+    "name": "TIANQI 21",
+    "lat": -49.6868,
+    "lng": -7.2578,
+    "alt": 825,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57792"
+  },
+  {
+    "name": "SKYMED 1",
+    "lat": 62.8207,
+    "lng": 35.1373,
+    "alt": 584,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "31598"
+  },
+  {
+    "name": "KORSAT 7",
+    "lat": -12.1064,
+    "lng": 70.5026,
+    "alt": 565,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58463"
+  },
+  {
+    "name": "UHETSAT",
+    "lat": -77.9753,
+    "lng": 109.9777,
+    "alt": 491,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58466"
+  },
+  {
+    "name": "ION SCV-015",
+    "lat": -51.4983,
+    "lng": 108.042,
+    "alt": 482,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58469"
+  },
+  {
+    "name": "VENUS",
+    "lat": -48.2923,
+    "lng": 46.1399,
+    "alt": 536,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42901"
+  },
+  {
+    "name": "LKW-1",
+    "lat": 5.5611,
+    "lng": 33.7359,
+    "alt": 493,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43034"
+  },
+  {
+    "name": "ONEWEB-0639",
+    "lat": 64.7938,
+    "lng": 0.9128,
+    "alt": 1196,
+    "mission": "Commercial Comms",
+    "color": "#00E676",
+    "category": "comms",
+    "noradId": "55803"
+  },
+  {
+    "name": "FALCONSAT-10",
+    "lat": -35.6582,
+    "lng": -103.8145,
+    "alt": 495,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58291"
+  },
+  {
+    "name": "QUAKESAT",
+    "lat": 25.5863,
+    "lng": -161.9253,
+    "alt": 807,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "27845"
+  },
+  {
+    "name": "PRISMA",
+    "lat": 0.8584,
+    "lng": -100.2135,
+    "alt": 621,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44072"
+  },
+  {
+    "name": "RISAT-2BR2",
+    "lat": -37.0197,
+    "lng": -159.5624,
+    "alt": 583,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46905"
+  },
+  {
+    "name": "LEMUR 2 JK0903EM1407",
+    "lat": 43.2382,
+    "lng": -71.9228,
+    "alt": 400,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58336"
+  },
+  {
+    "name": "HOTSAT-1",
+    "lat": -63.9947,
+    "lng": 158.9191,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56954"
+  },
+  {
+    "name": "AAC-AIS-SAT2",
+    "lat": -81.2789,
+    "lng": -141.9071,
+    "alt": 672,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56996"
+  },
+  {
+    "name": "MISRSAT-2",
+    "lat": 52.0414,
+    "lng": -82.177,
+    "alt": 619,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58497"
+  },
+  {
+    "name": "ZHEDA PIXING 1C",
+    "lat": 47.3977,
+    "lng": 178.4577,
+    "alt": 606,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37167"
+  },
+  {
+    "name": "AURA",
+    "lat": -9.1003,
+    "lng": 142.8901,
+    "alt": 693,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28376"
+  },
+  {
+    "name": "AQUA",
+    "lat": -54.7456,
+    "lng": 146.4382,
+    "alt": 708,
+    "mission": "Earth Science",
+    "color": "#90EE90",
+    "category": "earth_obs",
+    "noradId": "27424"
+  },
+  {
+    "name": "LEMUR 2 PETERG",
+    "lat": -22.2038,
+    "lng": 9.3484,
+    "alt": 457,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42841"
+  },
+  {
+    "name": "CORVUS BC4",
+    "lat": -22.3447,
+    "lng": -137.0064,
+    "alt": 536,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43767"
+  },
+  {
+    "name": "MOMENTUS-X1",
+    "lat": -58.805,
+    "lng": -128.4782,
+    "alt": 351,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44408"
+  },
+  {
+    "name": "DMSP 5D-3 F16 (USA 172)",
+    "lat": -64.8959,
+    "lng": -168.344,
+    "alt": 869,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "28054"
+  },
+  {
+    "name": "NANOFF B",
+    "lat": 70.7005,
+    "lng": 50.3781,
+    "alt": 547,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58755"
+  },
+  {
+    "name": "FENGYUN 2H",
+    "lat": -3.2039,
+    "lng": 79.2318,
+    "alt": 35795,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "43491"
+  },
+  {
+    "name": "NANOFF A",
+    "lat": 70.5969,
+    "lng": 50.4833,
+    "alt": 545,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58810"
+  },
+  {
+    "name": "GRUS-1A",
+    "lat": -44.3435,
+    "lng": 40.9479,
+    "alt": 591,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43890"
+  },
+  {
+    "name": "ZY 1",
+    "lat": 13.5379,
+    "lng": 69.3046,
+    "alt": 765,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38038"
+  },
+  {
+    "name": "GPM",
+    "lat": -9.0226,
+    "lng": 157.69,
+    "alt": 433,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39574"
+  },
+  {
+    "name": "NINGXIA-1 2",
+    "lat": -36.8509,
+    "lng": 20.4026,
+    "alt": 895,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44780"
+  },
+  {
+    "name": "GNOMES-3",
+    "lat": 6.4257,
+    "lng": 79.8597,
+    "alt": 614,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52158"
+  },
+  {
+    "name": "ZHEDA PIXING 1B",
+    "lat": -26.465,
+    "lng": 161.926,
+    "alt": 592,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37166"
+  },
+  {
+    "name": "THEOS",
+    "lat": 69.4718,
+    "lng": 36.3593,
+    "alt": 836,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33396"
+  },
+  {
+    "name": "SHIYAN 3 (SY-3)",
+    "lat": -0.7508,
+    "lng": 32.0793,
+    "alt": 799,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33433"
+  },
+  {
+    "name": "NINGXIA-1 3",
+    "lat": 4.3499,
+    "lng": 71.0713,
+    "alt": 879,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44781"
+  },
+  {
+    "name": "ZHANGHENG 1",
+    "lat": -2.0587,
+    "lng": 175.1281,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43194"
+  },
+  {
+    "name": "WILDFIRE 5",
+    "lat": -3.7935,
+    "lng": 146.7073,
+    "alt": 950,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57769"
+  },
+  {
+    "name": "RISING 2",
+    "lat": 74.367,
+    "lng": -78.6317,
+    "alt": 583,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39769"
+  },
+  {
+    "name": "YAOGAN 3",
+    "lat": -51.7309,
+    "lng": -154.6469,
+    "alt": 616,
+    "mission": "Chinese Recon",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "32289"
+  },
+  {
+    "name": "TIRSAT",
+    "lat": 28.4981,
+    "lng": -112.6784,
+    "alt": 653,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58989"
+  },
+  {
+    "name": "WILDFIRE 3",
+    "lat": -25.4718,
+    "lng": -40.2429,
+    "alt": 947,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57758"
+  },
+  {
+    "name": "METEOR M2-4",
+    "lat": -12.597,
+    "lng": -33.5379,
+    "alt": 828,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59051"
+  },
+  {
+    "name": "EXO-0",
+    "lat": 63.8827,
+    "lng": 71.7969,
+    "alt": 461,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59175"
+  },
+  {
+    "name": "BNU-1",
+    "lat": 75.0524,
+    "lng": 103.7343,
+    "alt": 740,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44529"
+  },
+  {
+    "name": "SAOCOM 1-A",
+    "lat": -76.4955,
+    "lng": -23.3586,
+    "alt": 651,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43641"
+  },
+  {
+    "name": "HODOYOSHI 3",
+    "lat": 29.6453,
+    "lng": 160.5425,
+    "alt": 610,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40015"
+  },
+  {
+    "name": "METHANESAT",
+    "lat": -59.6421,
+    "lng": -55.0883,
+    "alt": 594,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59101"
+  },
+  {
+    "name": "RROCI-2",
+    "lat": -0.6756,
+    "lng": 140.6316,
+    "alt": 558,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59106"
+  },
+  {
+    "name": "BRO-12",
+    "lat": -17.0667,
+    "lng": -44.0204,
+    "alt": 585,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59108"
+  },
+  {
+    "name": "BRO-13",
+    "lat": 67.9993,
+    "lng": 118.3275,
+    "alt": 591,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59107"
+  },
+  {
+    "name": "LIZZIESAT",
+    "lat": 78.417,
+    "lng": 104.1547,
+    "alt": 494,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59132"
+  },
+  {
+    "name": "JACKAL-01",
+    "lat": -78.2845,
+    "lng": 124.5684,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98922"
+  },
+  {
+    "name": "OPTIMUS-2",
+    "lat": -26.6753,
+    "lng": 99.2322,
+    "alt": 576,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98924"
+  },
+  {
+    "name": "JACKAL-02",
+    "lat": 71.0743,
+    "lng": 65.1213,
+    "alt": 525,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98923"
+  },
+  {
+    "name": "APEX ARIES 1",
+    "lat": 54.1988,
+    "lng": 153.8608,
+    "alt": 390,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59129"
+  },
+  {
+    "name": "YAM-6",
+    "lat": 24.4261,
+    "lng": -25.0356,
+    "alt": 446,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59126"
+  },
+  {
+    "name": "PYXIS",
+    "lat": -43.5419,
+    "lng": -87.4722,
+    "alt": 583,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98928"
+  },
+  {
+    "name": "ROSE",
+    "lat": -52.6094,
+    "lng": 119.7445,
+    "alt": 589,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98927"
+  },
+  {
+    "name": "CONTECSAT-1",
+    "lat": 60.2469,
+    "lng": -15.2996,
+    "alt": 463,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59117"
+  },
+  {
+    "name": "SONATE-2",
+    "lat": 46.3035,
+    "lng": -6.4322,
+    "alt": 364,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59112"
+  },
+  {
+    "name": "PE2_FLT1 (TYVAK-0261)",
+    "lat": -61.2624,
+    "lng": -56.6992,
+    "alt": 600,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59105"
+  },
+  {
+    "name": "PE2_FLT2 (TYVAK-0262)",
+    "lat": -67.0041,
+    "lng": -61.0181,
+    "alt": 602,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59104"
+  },
+  {
+    "name": "MUSAT2",
+    "lat": 28.5366,
+    "lng": 144.1385,
+    "alt": 541,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "59099"
+  },
+  {
+    "name": "OBSERVER-1A",
+    "lat": -32.9483,
+    "lng": 96.4217,
+    "alt": 458,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58323"
+  },
+  {
+    "name": "GHOST-4",
+    "lat": -61.6237,
+    "lng": 170.8867,
+    "alt": 456,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59133"
+  },
+  {
+    "name": "COSMOS 2501 (GLONASS)",
+    "lat": -40.874,
+    "lng": -123.2781,
+    "alt": 19158,
+    "mission": "Navigation",
+    "color": "#448AFF",
+    "category": "navigation",
+    "noradId": "40315"
+  },
+  {
+    "name": "NAVSTAR 56 (USA 180)",
+    "lat": -5.1064,
+    "lng": -140.5162,
+    "alt": 20496,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "28474"
+  },
+  {
+    "name": "NAVSTAR 59 (USA 192)",
+    "lat": 50.967,
+    "lng": 45.2962,
+    "alt": 19958,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "29601"
+  },
+  {
+    "name": "LES 5",
+    "lat": -2.8791,
+    "lng": 84.6944,
+    "alt": 33296,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "02866"
+  },
+  {
+    "name": "QAEM 100 R/B",
+    "lat": -56.5604,
+    "lng": 106.6219,
+    "alt": 750,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58818"
+  },
+  {
+    "name": "USA 184",
+    "lat": 47.7784,
+    "lng": -31.5264,
+    "alt": 24190,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "29249"
+  },
+  {
+    "name": "ICEYE-X38",
+    "lat": 55.6845,
+    "lng": 142.399,
+    "alt": 532,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59100"
+  },
+  {
+    "name": "ICEYE-X37",
+    "lat": -51.1699,
+    "lng": 155.5939,
+    "alt": 556,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59102"
+  },
+  {
+    "name": "CAS500-1",
+    "lat": 59.2653,
+    "lng": 91.8036,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47932"
+  },
+  {
+    "name": "HORACIO",
+    "lat": -81.8679,
+    "lng": -146.4117,
+    "alt": 596,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59098"
+  },
+  {
+    "name": "LEMUR 2 CAEL",
+    "lat": -76.8901,
+    "lng": 5.8726,
+    "alt": 463,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58903"
+  },
+  {
+    "name": "GHOST-5",
+    "lat": 65.7209,
+    "lng": -6.8241,
+    "alt": 435,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59130"
+  },
+  {
+    "name": "TABLETSAT AURORA",
+    "lat": -38.3723,
+    "lng": -98.2359,
+    "alt": 521,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40017"
+  },
+  {
+    "name": "SJ-9B",
+    "lat": -9.0934,
+    "lng": 165.2101,
+    "alt": 588,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38861"
+  },
+  {
+    "name": "CENTAURI-6",
+    "lat": 44.1469,
+    "lng": 159.1072,
+    "alt": 551,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59451"
+  },
+  {
+    "name": "AAC-AIS-SAT3",
+    "lat": 82.046,
+    "lng": -22.0302,
+    "alt": 629,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58997"
+  },
+  {
+    "name": "HAWK-8A",
+    "lat": 22.678,
+    "lng": 102.9649,
+    "alt": 568,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59443"
+  },
+  {
+    "name": "KORSAT-1",
+    "lat": 38.2658,
+    "lng": 95.9423,
+    "alt": 572,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59452"
+  },
+  {
+    "name": "WSF-M",
+    "lat": 63.0633,
+    "lng": -149.5621,
+    "alt": 836,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59481"
+  },
+  {
+    "name": "COBE",
+    "lat": 31.4087,
+    "lng": 1.072,
+    "alt": 876,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "20322"
+  },
+  {
+    "name": "ACS 3",
+    "lat": -23.6473,
+    "lng": -97.8737,
+    "alt": 875,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59588"
+  },
+  {
+    "name": "NEONSAT-1",
+    "lat": 72.6841,
+    "lng": -64.5949,
+    "alt": 459,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59587"
+  },
+  {
+    "name": "STRIX-3",
+    "lat": -58.7043,
+    "lng": 151.6475,
+    "alt": 531,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59224"
+  },
+  {
+    "name": "ASNARO",
+    "lat": 62.0981,
+    "lng": 65.4121,
+    "alt": 514,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40298"
+  },
+  {
+    "name": "ICEYE-X25",
+    "lat": -82.213,
+    "lng": -93.7068,
+    "alt": 392,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "56963"
+  },
+  {
+    "name": "YAOGAN 4",
+    "lat": -57.715,
+    "lng": 106.6278,
+    "alt": 651,
+    "mission": "Chinese Recon",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "33446"
+  },
+  {
+    "name": "HAWK-9A",
+    "lat": -41.9613,
+    "lng": -39.2048,
+    "alt": 581,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59446"
+  },
+  {
+    "name": "EXCITE",
+    "lat": -50.0985,
+    "lng": -148.3222,
+    "alt": 560,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43819"
+  },
+  {
+    "name": "SHIJIAN 6 04A (SJ-6 04A)",
+    "lat": 2.8697,
+    "lng": 33.7512,
+    "alt": 522,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37179"
+  },
+  {
+    "name": "HAIYANG 2A",
+    "lat": -62.6449,
+    "lng": 167.7924,
+    "alt": 1023,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "37781"
+  },
+  {
+    "name": "SCISAT 1",
+    "lat": -15.6962,
+    "lng": -0.8069,
+    "alt": 625,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "27858"
+  },
+  {
+    "name": "NEXSAT-1",
+    "lat": -33.0315,
+    "lng": 84.12,
+    "alt": 473,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58921"
+  },
+  {
+    "name": "SWARM C",
+    "lat": 63.0167,
+    "lng": -99.9499,
+    "alt": 422,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39453"
+  },
+  {
+    "name": "SWARM B",
+    "lat": -57.0726,
+    "lng": 17.5559,
+    "alt": 502,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39451"
+  },
+  {
+    "name": "SWARM A",
+    "lat": 63.4648,
+    "lng": -98.6366,
+    "alt": 422,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39452"
+  },
+  {
+    "name": "ORBCOMM FM 107",
+    "lat": 20.3123,
+    "lng": 108.7302,
+    "alt": 697,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40087"
+  },
+  {
+    "name": "ORBCOMM FM 109",
+    "lat": 18.0836,
+    "lng": 110.4483,
+    "alt": 697,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40086"
+  },
+  {
+    "name": "ORBCOMM FM 118",
+    "lat": -32.4736,
+    "lng": -177.8166,
+    "alt": 706,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41183"
+  },
+  {
+    "name": "HAMMER",
+    "lat": 33.4605,
+    "lng": -12.7586,
+    "alt": 393,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59148"
+  },
+  {
+    "name": "ICEYE-X36",
+    "lat": -27.7252,
+    "lng": 151.2602,
+    "alt": 552,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59103"
+  },
+  {
+    "name": "TECHEDSAT-11",
+    "lat": -19.4464,
+    "lng": -125.6403,
+    "alt": 1346,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60208"
+  },
+  {
+    "name": "R5-S2",
+    "lat": 58.6386,
+    "lng": -153.5607,
+    "alt": 428,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60207"
+  },
+  {
+    "name": "R5-S4",
+    "lat": 63.9134,
+    "lng": -157.5843,
+    "alt": 435,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60206"
+  },
+  {
+    "name": "CATSAT",
+    "lat": 71.9594,
+    "lng": -160.3564,
+    "alt": 330,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60246"
+  },
+  {
+    "name": "NOSS 3-6 (A)",
+    "lat": 14.759,
+    "lng": 144.6572,
+    "alt": 1342,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38758"
+  },
+  {
+    "name": "GCOM-C",
+    "lat": 37.003,
+    "lng": -94.8606,
+    "alt": 805,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43065"
+  },
+  {
+    "name": "ISTSAT-1",
+    "lat": 37.0175,
+    "lng": -128.0857,
+    "alt": 536,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60238"
+  },
+  {
+    "name": "3CAT-4",
+    "lat": 60.7428,
+    "lng": -16.1711,
+    "alt": 562,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60236"
+  },
+  {
+    "name": "ROBUSTA-3A",
+    "lat": 10.1096,
+    "lng": -144.178,
+    "alt": 541,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60243"
+  },
+  {
+    "name": "OOV-CUBE",
+    "lat": -59.126,
+    "lng": 116.341,
+    "alt": 580,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60240"
+  },
+  {
+    "name": "ARIANE 6 R/B",
+    "lat": 62.0635,
+    "lng": -23.4578,
+    "alt": 569,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60239"
+  },
+  {
+    "name": "KINEIS-1D",
+    "lat": 9.9672,
+    "lng": 24.0529,
+    "alt": 644,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60082"
+  },
+  {
+    "name": "ALSAT 2A",
+    "lat": 65.4253,
+    "lng": -13.0402,
+    "alt": 657,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "36798"
+  },
+  {
+    "name": "KINEIS-1E",
+    "lat": 15.1025,
+    "lng": -149.7232,
+    "alt": 627,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60083"
+  },
+  {
+    "name": "KINEIS-1B",
+    "lat": 69.0014,
+    "lng": 8.9517,
+    "alt": 636,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60079"
+  },
+  {
+    "name": "PNEO4",
+    "lat": -37.3244,
+    "lng": 85.6992,
+    "alt": 639,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49070"
+  },
+  {
+    "name": "KINEIS-1C",
+    "lat": -69.3131,
+    "lng": -171.5467,
+    "alt": 654,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60081"
+  },
+  {
+    "name": "KINEIS-1A",
+    "lat": -22.2812,
+    "lng": 31.4416,
+    "alt": 637,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60084"
+  },
+  {
+    "name": "ICEYE-X4",
+    "lat": -15.7196,
+    "lng": 49.145,
+    "alt": 481,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44390"
+  },
+  {
+    "name": "Ofeq 16",
+    "lat": -34.7789,
+    "lng": -37.3346,
+    "alt": 589,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "45860"
+  },
+  {
+    "name": "EINSTEIN PROBE",
+    "lat": 12.4022,
+    "lng": 8.9378,
+    "alt": 557,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58753"
+  },
+  {
+    "name": "JASON 3",
+    "lat": -21.0119,
+    "lng": -65.6075,
+    "alt": 1316,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41240"
+  },
+  {
+    "name": "GOES 16",
+    "lat": 0.6229,
+    "lng": -104.7125,
+    "alt": 35781,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "41866"
+  },
+  {
+    "name": "ALPHASAT (I-4A F4)",
+    "lat": -2.341,
+    "lng": 24.9377,
+    "alt": 35789,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39215"
+  },
+  {
+    "name": "PNEO3",
+    "lat": 37.2016,
+    "lng": -94.3238,
+    "alt": 629,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48268"
+  },
+  {
+    "name": "UFO 11 (USA 174)",
+    "lat": -5.0263,
+    "lng": 75.6794,
+    "alt": 35801,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "28117"
+  },
+  {
+    "name": "OBJECT BQ",
+    "lat": -51.7398,
+    "lng": 88.7689,
+    "alt": 597,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60530"
+  },
+  {
+    "name": "CONNECTA IOT-3",
+    "lat": 74.9318,
+    "lng": 52.0896,
+    "alt": 505,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60475"
+  },
+  {
+    "name": "NIGHTJAR",
+    "lat": -39.8558,
+    "lng": 88.0689,
+    "alt": 583,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60535"
+  },
+  {
+    "name": "LEMU-NGE",
+    "lat": -36.6224,
+    "lng": 84.8189,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60532"
+  },
+  {
+    "name": "SATELIOT_4",
+    "lat": 62.2841,
+    "lng": 64.0208,
+    "alt": 585,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60537"
+  },
+  {
+    "name": "DEIMOS",
+    "lat": 3.0459,
+    "lng": 94.5539,
+    "alt": 427,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60526"
+  },
+  {
+    "name": "LEMUR 2 TOMATOKECHUP",
+    "lat": 2.52,
+    "lng": -90.5115,
+    "alt": 453,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60471"
+  },
+  {
+    "name": "WARATAH SEED-1",
+    "lat": -53.8148,
+    "lng": -102.5785,
+    "alt": 471,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60469"
+  },
+  {
+    "name": "TOMORROW-S2",
+    "lat": 51.8586,
+    "lng": 78,
+    "alt": 472,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60485"
+  },
+  {
+    "name": "LEMUR 2 STELLA",
+    "lat": 82.374,
+    "lng": 0.5897,
+    "alt": 536,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60533"
+  },
+  {
+    "name": "KANYINI",
+    "lat": 28.6982,
+    "lng": 93.703,
+    "alt": 382,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60556"
+  },
+  {
+    "name": "ARCTIC WEATHER SATELLITE",
+    "lat": -66.9341,
+    "lng": 91.8669,
+    "alt": 626,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60543"
+  },
+  {
+    "name": "HYPERFIELD-1",
+    "lat": 0.5763,
+    "lng": 83.4852,
+    "alt": 500,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98848"
+  },
+  {
+    "name": "TYCHE",
+    "lat": 68.3879,
+    "lng": 63.8132,
+    "alt": 500,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60496"
+  },
+  {
+    "name": "TANAGER-1 4001",
+    "lat": 50.5932,
+    "lng": 91.3774,
+    "alt": 441,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60507"
+  },
+  {
+    "name": "ORESAT0.5",
+    "lat": -75.4717,
+    "lng": -114.8526,
+    "alt": 445,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60525"
+  },
+  {
+    "name": "CONNECTA IOT-1",
+    "lat": -20.4303,
+    "lng": -101.856,
+    "alt": 499,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60472"
+  },
+  {
+    "name": "SATELIOT_3",
+    "lat": 24.3003,
+    "lng": -95.1454,
+    "alt": 576,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60552"
+  },
+  {
+    "name": "PTD-4",
+    "lat": 61.9286,
+    "lng": -66.6068,
+    "alt": 497,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60565"
+  },
+  {
+    "name": "CAKRA-1",
+    "lat": -50.102,
+    "lng": 87.3974,
+    "alt": 537,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98861"
+  },
+  {
+    "name": "YAM-7",
+    "lat": -40.3996,
+    "lng": -99.8078,
+    "alt": 480,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60504"
+  },
+  {
+    "name": "SATELIOT_2",
+    "lat": -10.3787,
+    "lng": 80.7436,
+    "alt": 582,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60534"
+  },
+  {
+    "name": "LEMUR 2 MARHISYAM",
+    "lat": -78.306,
+    "lng": -130.0313,
+    "alt": 556,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60536"
+  },
+  {
+    "name": "CONNECTA IOT-4",
+    "lat": -29.631,
+    "lng": 97.0499,
+    "alt": 438,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60524"
+  },
+  {
+    "name": "CUAVA-2",
+    "lat": 55.7025,
+    "lng": 77.6951,
+    "alt": 462,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60527"
+  },
+  {
+    "name": "TOMORROW-S1",
+    "lat": -19.9082,
+    "lng": -95.847,
+    "alt": 469,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60479"
+  },
+  {
+    "name": "BRO-15",
+    "lat": 40.862,
+    "lng": -93.674,
+    "alt": 584,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60553"
+  },
+  {
+    "name": "ERNST",
+    "lat": -79.5479,
+    "lng": 135.74,
+    "alt": 467,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60528"
+  },
+  {
+    "name": "GNA-3",
+    "lat": 39.6354,
+    "lng": -90.0466,
+    "alt": 505,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98828"
+  },
+  {
+    "name": "ION SCV-012",
+    "lat": -1.976,
+    "lng": 78.3047,
+    "alt": 583,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60573"
+  },
+  {
+    "name": "QUBE",
+    "lat": 69.3795,
+    "lng": -64.0536,
+    "alt": 417,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60476"
+  },
+  {
+    "name": "BRO-14",
+    "lat": 46.0904,
+    "lng": 72.1781,
+    "alt": 580,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60551"
+  },
+  {
+    "name": "HYPSO-2",
+    "lat": 31.4383,
+    "lng": -94.1963,
+    "alt": 572,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60531"
+  },
+  {
+    "name": "QPS-SAR-8 AMATERU-IV",
+    "lat": 40.7868,
+    "lng": -88.5656,
+    "alt": 556,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60542"
+  },
+  {
+    "name": "SATELIOT_1",
+    "lat": 26.2108,
+    "lng": 76.7021,
+    "alt": 570,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60550"
+  },
+  {
+    "name": "CONNECTA IOT-2",
+    "lat": -50.3317,
+    "lng": 91.8966,
+    "alt": 508,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60522"
+  },
+  {
+    "name": "IPERDRONE.0",
+    "lat": -18.0708,
+    "lng": 110.8079,
+    "alt": 251,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60520"
+  },
+  {
+    "name": "ICEYE-X35",
+    "lat": -60.2677,
+    "lng": 108.7349,
+    "alt": 394,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58302"
+  },
+  {
+    "name": "UM5-EOSAT",
+    "lat": 69.615,
+    "lng": -74.8707,
+    "alt": 565,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60555"
+  },
+  {
+    "name": "UM5-RIBAT",
+    "lat": 47.8655,
+    "lng": 74.1524,
+    "alt": 568,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60554"
+  },
+  {
+    "name": "JASON 2",
+    "lat": -18.3137,
+    "lng": -139.2832,
+    "alt": 1315,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33105"
+  },
+  {
+    "name": "PLEIADES 1B",
+    "lat": -59.304,
+    "lng": -113.9907,
+    "alt": 722,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39019"
+  },
+  {
+    "name": "LUR-1",
+    "lat": -38.607,
+    "lng": -101.2393,
+    "alt": 484,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60506"
+  },
+  {
+    "name": "SEDNA-1",
+    "lat": -29.9551,
+    "lng": 91.0808,
+    "alt": 548,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60580"
+  },
+  {
+    "name": "SPACEMOBILE-005",
+    "lat": 4.8637,
+    "lng": -174.2634,
+    "alt": 507,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61046"
+  },
+  {
+    "name": "SPACEMOBILE-004",
+    "lat": -11.9264,
+    "lng": 10.6991,
+    "alt": 504,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61049"
+  },
+  {
+    "name": "SPACEMOBILE-003",
+    "lat": -51.7268,
+    "lng": 110.1153,
+    "alt": 527,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61045"
+  },
+  {
+    "name": "SPACEMOBILE-002",
+    "lat": 52.2883,
+    "lng": -74.1397,
+    "alt": 506,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61048"
+  },
+  {
+    "name": "SPACEMOBILE-001",
+    "lat": 10.2227,
+    "lng": -170.4875,
+    "alt": 506,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61047"
+  },
+  {
+    "name": "CHAMRAN-1",
+    "lat": -55.0336,
+    "lng": -61.3692,
+    "alt": 525,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61072"
+  },
+  {
+    "name": "KINEIS-3A",
+    "lat": 77.1164,
+    "lng": 57.4292,
+    "alt": 664,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61223"
+  },
+  {
+    "name": "PROITERES",
+    "lat": 36.6346,
+    "lng": 118.1743,
+    "alt": 630,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38756"
+  },
+  {
+    "name": "COSMOS 2517 (GEO-IK)",
+    "lat": -57.5545,
+    "lng": 27.808,
+    "alt": 966,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "41579"
+  },
+  {
+    "name": "ALSAT 1B",
+    "lat": 49.2893,
+    "lng": 1.0805,
+    "alt": 666,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41785"
+  },
+  {
+    "name": "AEROCUBE 16B",
+    "lat": 43.8151,
+    "lng": -96.9716,
+    "alt": 428,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59291"
+  },
+  {
+    "name": "PICO-02A021",
+    "lat": -64.4269,
+    "lng": -111.7912,
+    "alt": 579,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60538"
+  },
+  {
+    "name": "ICEYE-X40",
+    "lat": -29.1838,
+    "lng": 85.4608,
+    "alt": 581,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60549"
+  },
+  {
+    "name": "SHIYAN 2 (SY-2)",
+    "lat": 30.5497,
+    "lng": 9.7852,
+    "alt": 681,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28479"
+  },
+  {
+    "name": "ALOS-4",
+    "lat": 36.9204,
+    "lng": 96.1035,
+    "alt": 636,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60182"
+  },
+  {
+    "name": "JILIN-01 GAOFEN 2D",
+    "lat": -11.1729,
+    "lng": -52.2524,
+    "alt": 543,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49256"
+  },
+  {
+    "name": "PREFIRE-1",
+    "lat": 63.935,
+    "lng": 146.5123,
+    "alt": 504,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59965"
+  },
+  {
+    "name": "PREFIRE-2",
+    "lat": -47.1787,
+    "lng": -131.2035,
+    "alt": 528,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59881"
+  },
+  {
+    "name": "POLYTECH UNIVERSE-5",
+    "lat": -21.9048,
+    "lng": 66.3746,
+    "alt": 336,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61745"
+  },
+  {
+    "name": "OBJECT BE",
+    "lat": -31.1058,
+    "lng": 50.3184,
+    "alt": 455,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61787"
+  },
+  {
+    "name": "SIT-2086",
+    "lat": 10.3017,
+    "lng": -115.6772,
+    "alt": 385,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61764"
+  },
+  {
+    "name": "OBJECT BB",
+    "lat": -54.769,
+    "lng": 56.0218,
+    "alt": 376,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61784"
+  },
+  {
+    "name": "RTU MIREA 1",
+    "lat": 81.1803,
+    "lng": -166.5352,
+    "alt": 337,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61785"
+  },
+  {
+    "name": "VIZARD-ION",
+    "lat": 44.3986,
+    "lng": 73.1658,
+    "alt": 377,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61749"
+  },
+  {
+    "name": "OBJECT AY",
+    "lat": -82.6697,
+    "lng": -26.6355,
+    "alt": 477,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61781"
+  },
+  {
+    "name": "SIT-HSE",
+    "lat": -74.7763,
+    "lng": 37.7575,
+    "alt": 410,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61763"
+  },
+  {
+    "name": "MSU ALTAIR",
+    "lat": 3.4374,
+    "lng": 55.6849,
+    "alt": 446,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61779"
+  },
+  {
+    "name": "COLIBRI-S",
+    "lat": 38.8198,
+    "lng": -123.9569,
+    "alt": 418,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61746"
+  },
+  {
+    "name": "POLYTECH UNIVERSE-4",
+    "lat": 56.8544,
+    "lng": -130.4772,
+    "alt": 429,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61747"
+  },
+  {
+    "name": "OBJECT BG",
+    "lat": -3.7991,
+    "lng": -160.7914,
+    "alt": 571,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61789"
+  },
+  {
+    "name": "OBJECT AA",
+    "lat": -79.3531,
+    "lng": -118.57,
+    "alt": 601,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61759"
+  },
+  {
+    "name": "OBJECT AX",
+    "lat": -50.5252,
+    "lng": -104.1673,
+    "alt": 368,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61780"
+  },
+  {
+    "name": "OBJECT BD",
+    "lat": -82.7642,
+    "lng": -25.0369,
+    "alt": 427,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61786"
+  },
+  {
+    "name": "OBJECT AT",
+    "lat": 8.0202,
+    "lng": -113.1327,
+    "alt": 336,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61776"
+  },
+  {
+    "name": "OBJECT AR",
+    "lat": 7.295,
+    "lng": -113.2158,
+    "alt": 339,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61774"
+  },
+  {
+    "name": "OBJECT BH",
+    "lat": -81.194,
+    "lng": -36.842,
+    "alt": 602,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61790"
+  },
+  {
+    "name": "LYNK TOWER 5",
+    "lat": -7.6972,
+    "lng": 147.7477,
+    "alt": 482,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59121"
+  },
+  {
+    "name": "SAOCOM 1-B",
+    "lat": 81.846,
+    "lng": 84.8423,
+    "alt": 635,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46265"
+  },
+  {
+    "name": "IONOSFERA-M 01",
+    "lat": 76.3298,
+    "lng": -160.2985,
+    "alt": 828,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61735"
+  },
+  {
+    "name": "IONOSFERA-M 02",
+    "lat": -80.1392,
+    "lng": -2.7413,
+    "alt": 845,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61736"
+  },
+  {
+    "name": "LEMUR 2 SIERRINI",
+    "lat": 40.9182,
+    "lng": 83.2751,
+    "alt": 531,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60579"
+  },
+  {
+    "name": "LEMUR 2 LLOYD",
+    "lat": -11.1106,
+    "lng": -93.5252,
+    "alt": 538,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60577"
+  },
+  {
+    "name": "PROTOSAT-1",
+    "lat": -36.1897,
+    "lng": -63.4578,
+    "alt": 432,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61793"
+  },
+  {
+    "name": "JILIN-01 GAOFEN 2F",
+    "lat": 12.6981,
+    "lng": 130.9999,
+    "alt": 555,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49338"
+  },
+  {
+    "name": "SUPERVIEW NEO-1 02",
+    "lat": -55.6257,
+    "lng": -115.2665,
+    "alt": 535,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "52322"
+  },
+  {
+    "name": "KINEIS-3B",
+    "lat": 9.4842,
+    "lng": -83.3213,
+    "alt": 656,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61224"
+  },
+  {
+    "name": "KINEIS-3C",
+    "lat": -44.8478,
+    "lng": -92.794,
+    "alt": 671,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61220"
+  },
+  {
+    "name": "KINEIS-3D",
+    "lat": -76.4062,
+    "lng": -120.2733,
+    "alt": 682,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61221"
+  },
+  {
+    "name": "KINEIS-3E",
+    "lat": -1.0046,
+    "lng": 95.3681,
+    "alt": 657,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61222"
+  },
+  {
+    "name": "HONGHU 2",
+    "lat": 55.1473,
+    "lng": -173.3368,
+    "alt": 476,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58555"
+  },
+  {
+    "name": "KINEIS-5E",
+    "lat": 45.2797,
+    "lng": 154.2412,
+    "alt": 664,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62083"
+  },
+  {
+    "name": "KINEIS-5C",
+    "lat": -69.9931,
+    "lng": -175.4458,
+    "alt": 678,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62081"
+  },
+  {
+    "name": "CROCUBE",
+    "lat": -4.7094,
+    "lng": -4.5144,
+    "alt": 391,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62394"
+  },
+  {
+    "name": "LASARSAT",
+    "lat": -43.3203,
+    "lng": -64.26,
+    "alt": 419,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62391"
+  },
+  {
+    "name": "DJIBOUTI-1B",
+    "lat": 18.7253,
+    "lng": -7.2633,
+    "alt": 344,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62402"
+  },
+  {
+    "name": "CTC-0",
+    "lat": -22.2141,
+    "lng": -133.5418,
+    "alt": 442,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62401"
+  },
+  {
+    "name": "LIZZIESAT-2",
+    "lat": -8.5469,
+    "lng": -116.0839,
+    "alt": 472,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62383"
+  },
+  {
+    "name": "GITAI-SC1",
+    "lat": -41.0473,
+    "lng": 24.5133,
+    "alt": 510,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62388"
+  },
+  {
+    "name": "XCUBE-1",
+    "lat": 20.1698,
+    "lng": 77.9689,
+    "alt": 473,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62400"
+  },
+  {
+    "name": "TANSTAAFL-2",
+    "lat": -24.1206,
+    "lng": 29.9794,
+    "alt": 476,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62378"
+  },
+  {
+    "name": "WREN-1",
+    "lat": 82.3835,
+    "lng": -13.4669,
+    "alt": 440,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60478"
+  },
+  {
+    "name": "KINEIS-5A",
+    "lat": 11.5482,
+    "lng": -15.9009,
+    "alt": 657,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62084"
+  },
+  {
+    "name": "NOVASAR 1",
+    "lat": 81.6057,
+    "lng": 171.5298,
+    "alt": 591,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43619"
+  },
+  {
+    "name": "HELIOS 2A",
+    "lat": -68.9573,
+    "lng": -133.7101,
+    "alt": 582,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "28492"
+  },
+  {
+    "name": "SCOT-1 (SCOT)",
+    "lat": 81.9627,
+    "lng": 34.2737,
+    "alt": 352,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62617"
+  },
+  {
+    "name": "SIGI",
+    "lat": 2.6027,
+    "lng": -94.2433,
+    "alt": 490,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62632"
+  },
+  {
+    "name": "AE1C",
+    "lat": 61.4498,
+    "lng": 56.669,
+    "alt": 581,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98698"
+  },
+  {
+    "name": "CENTAURI-8",
+    "lat": -21.659,
+    "lng": 88.2055,
+    "alt": 581,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62714"
+  },
+  {
+    "name": "TROLL",
+    "lat": 1.9706,
+    "lng": -91.752,
+    "alt": 473,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62658"
+  },
+  {
+    "name": "FIREFLY-1",
+    "lat": 63.5259,
+    "lng": -82.1604,
+    "alt": 602,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62701"
+  },
+  {
+    "name": "IRIS-F2",
+    "lat": -39.5273,
+    "lng": 91.4441,
+    "alt": 492,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62684"
+  },
+  {
+    "name": "CONNECTA IOT-6",
+    "lat": -81.7518,
+    "lng": 150.5962,
+    "alt": 614,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62709"
+  },
+  {
+    "name": "OBJECT AZ",
+    "lat": -29.1606,
+    "lng": -94.2032,
+    "alt": 469,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62656"
+  },
+  {
+    "name": "ANSER-LS",
+    "lat": 20.8366,
+    "lng": -79.8563,
+    "alt": 382,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62644"
+  },
+  {
+    "name": "EDISON-1",
+    "lat": 21.3471,
+    "lng": 86.2885,
+    "alt": 469,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62610"
+  },
+  {
+    "name": "ION SCV-016",
+    "lat": -3.6781,
+    "lng": 32.0749,
+    "alt": 628,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62628"
+  },
+  {
+    "name": "FIREFLY-3",
+    "lat": -12.1003,
+    "lng": 83.8489,
+    "alt": 596,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62710"
+  },
+  {
+    "name": "MBZ-SAT",
+    "lat": -19.1661,
+    "lng": 67.9527,
+    "alt": 581,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98674"
+  },
+  {
+    "name": "CONNECTA IOT-5",
+    "lat": 51.9429,
+    "lng": -87.2478,
+    "alt": 592,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62703"
+  },
+  {
+    "name": "PAUSAT-1",
+    "lat": 81.4453,
+    "lng": 25.5773,
+    "alt": 506,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "62653"
+  },
+  {
+    "name": "FOSSASAT2E19 (TAT-E)",
+    "lat": 64.544,
+    "lng": 67.0163,
+    "alt": 514,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62676"
+  },
+  {
+    "name": "GESAT GEN 1",
+    "lat": 34.2059,
+    "lng": -86.8694,
+    "alt": 478,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62612"
+  },
+  {
+    "name": "FGN-100-D1",
+    "lat": -12.2073,
+    "lng": 71.9737,
+    "alt": 575,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98687"
+  },
+  {
+    "name": "IRIDE-MS2-HEO-1",
+    "lat": -25.2974,
+    "lng": -100.9838,
+    "alt": 594,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62697"
+  },
+  {
+    "name": "CENTAURI-7",
+    "lat": 34.2392,
+    "lng": -89.3691,
+    "alt": 575,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62708"
+  },
+  {
+    "name": "CONNECTA IOT-8",
+    "lat": -55.2031,
+    "lng": 93.1786,
+    "alt": 608,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62695"
+  },
+  {
+    "name": "FOSSASAT2E18 (TAT-A)",
+    "lat": -75.7458,
+    "lng": -127.7101,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62686"
+  },
+  {
+    "name": "ION SCV-014",
+    "lat": -6.8009,
+    "lng": -104.8053,
+    "alt": 555,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62630"
+  },
+  {
+    "name": "FLOCK 4G 24",
+    "lat": 66.8747,
+    "lng": -73.802,
+    "alt": 481,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62637"
+  },
+  {
+    "name": "SKYBEE-A01",
+    "lat": 55.7159,
+    "lng": -86.0446,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62671"
+  },
+  {
+    "name": "TES-22",
+    "lat": 56.2825,
+    "lng": -91.8306,
+    "alt": 557,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98666"
+  },
+  {
+    "name": "FUSION-1",
+    "lat": -56.7812,
+    "lng": 82.0168,
+    "alt": 591,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98681"
+  },
+  {
+    "name": "INNOCUBE (TUBSAT-31)",
+    "lat": -57.1117,
+    "lng": -106.0583,
+    "alt": 501,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62616"
+  },
+  {
+    "name": "BRO-16",
+    "lat": 69.6848,
+    "lng": 65.2273,
+    "alt": 504,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62654"
+  },
+  {
+    "name": "IMPULSE-2 MIRA",
+    "lat": -79.5316,
+    "lng": 123.157,
+    "alt": 529,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62673"
+  },
+  {
+    "name": "FIREFLY-2",
+    "lat": -48.0822,
+    "lng": -106.71,
+    "alt": 613,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62704"
+  },
+  {
+    "name": "CONNECTA IOT-7",
+    "lat": 26.9837,
+    "lng": 79.201,
+    "alt": 587,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62715"
+  },
+  {
+    "name": "ELEVATION-1",
+    "lat": -35.0964,
+    "lng": 99.0113,
+    "alt": 436,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62677"
+  },
+  {
+    "name": "IRIS-F3",
+    "lat": -52.8385,
+    "lng": 96.4336,
+    "alt": 499,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62619"
+  },
+  {
+    "name": "AE1D",
+    "lat": 65.4576,
+    "lng": 59.688,
+    "alt": 562,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98699"
+  },
+  {
+    "name": "RAY 1.0",
+    "lat": 22.1604,
+    "lng": 79.7448,
+    "alt": 510,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62627"
+  },
+  {
+    "name": "LIME",
+    "lat": 48.6381,
+    "lng": -82.8891,
+    "alt": 474,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62648"
+  },
+  {
+    "name": "BALKAN-1",
+    "lat": -38.2344,
+    "lng": 90.2452,
+    "alt": 500,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62611"
+  },
+  {
+    "name": "WINNEBAGO-2",
+    "lat": 26.7712,
+    "lng": -104.6934,
+    "alt": 572,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98664"
+  },
+  {
+    "name": "ICEYE-X33",
+    "lat": 63.2705,
+    "lng": -79.0297,
+    "alt": 573,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60548"
+  },
+  {
+    "name": "SATGUS",
+    "lat": -11.5126,
+    "lng": 88.4815,
+    "alt": 564,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62713"
+  },
+  {
+    "name": "ORBASTRO-PC-1",
+    "lat": -79.8494,
+    "lng": -130.1126,
+    "alt": 436,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58258"
+  },
+  {
+    "name": "CENTISPACE-1 S12",
+    "lat": -16.3059,
+    "lng": 130.5519,
+    "alt": 978,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62581"
+  },
+  {
+    "name": "CENTISPACE-1 S7",
+    "lat": -42.3329,
+    "lng": 158.8208,
+    "alt": 975,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62576"
+  },
+  {
+    "name": "POQUITO",
+    "lat": 38.8724,
+    "lng": 59.5856,
+    "alt": 579,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98706"
+  },
+  {
+    "name": "PROMETHEUS-1",
+    "lat": 38.8724,
+    "lng": 59.5856,
+    "alt": 579,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98705"
+  },
+  {
+    "name": "Sedna-2",
+    "lat": 38.8724,
+    "lng": 59.5856,
+    "alt": 579,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98661"
+  },
+  {
+    "name": "SKYLINK-1",
+    "lat": 38.8724,
+    "lng": 59.5856,
+    "alt": 579,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98657"
+  },
+  {
+    "name": "SKYLINK-2",
+    "lat": 4.7311,
+    "lng": 82.6475,
+    "alt": 523,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98656"
+  },
+  {
+    "name": "CENTISPACE-1 S9",
+    "lat": 14.0904,
+    "lng": 109.682,
+    "alt": 969,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62578"
+  },
+  {
+    "name": "CENTISPACE-1 S10",
+    "lat": 42.9987,
+    "lng": -20.471,
+    "alt": 963,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62579"
+  },
+  {
+    "name": "CENTISPACE-1 S13",
+    "lat": -55.036,
+    "lng": -146.5264,
+    "alt": 978,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62582"
+  },
+  {
+    "name": "CENTISPACE-1 S16",
+    "lat": 52.9503,
+    "lng": 51.4629,
+    "alt": 974,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62585"
+  },
+  {
+    "name": "Unknown 99695",
+    "lat": 41.3239,
+    "lng": 110.7299,
+    "alt": 606,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99695"
+  },
+  {
+    "name": "CENTISPACE-1 S1",
+    "lat": 19.1277,
+    "lng": 21.5444,
+    "alt": 694,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43636"
+  },
+  {
+    "name": "HAIYANG 4A",
+    "lat": 18.6166,
+    "lng": 10.0601,
+    "alt": 653,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "61936"
+  },
+  {
+    "name": "OTTER",
+    "lat": 70.6065,
+    "lng": -70.01,
+    "alt": 483,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62623"
+  },
+  {
+    "name": "BLUEBON",
+    "lat": 7.0286,
+    "lng": -89.6088,
+    "alt": 471,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62688"
+  },
+  {
+    "name": "FOSSASAT2E20 (TAT-O)",
+    "lat": 59.5674,
+    "lng": -86.6594,
+    "alt": 479,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63003"
+  },
+  {
+    "name": "TOMORROW-S3",
+    "lat": -40.6474,
+    "lng": -63.4733,
+    "alt": 486,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62392"
+  },
+  {
+    "name": "ICEYE-X47",
+    "lat": 43.5749,
+    "lng": -113.0545,
+    "alt": 529,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62389"
+  },
+  {
+    "name": "TOMORROW-S4",
+    "lat": 45.1095,
+    "lng": 150.2679,
+    "alt": 478,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62386"
+  },
+  {
+    "name": "ICEYE-X49",
+    "lat": -35.4196,
+    "lng": 3.7601,
+    "alt": 535,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62384"
+  },
+  {
+    "name": "HAWK-11A",
+    "lat": 44.1865,
+    "lng": 127.0715,
+    "alt": 476,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62382"
+  },
+  {
+    "name": "HAWK-11C",
+    "lat": 44.2786,
+    "lng": 128.4708,
+    "alt": 476,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62381"
+  },
+  {
+    "name": "HAWK-11B",
+    "lat": 43.795,
+    "lng": 125.7695,
+    "alt": 476,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62379"
+  },
+  {
+    "name": "GLOBAL-31",
+    "lat": -56.0083,
+    "lng": 139.3193,
+    "alt": 475,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63027"
+  },
+  {
+    "name": "ICEYE-X43",
+    "lat": 14.4632,
+    "lng": 79.9397,
+    "alt": 563,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60539"
+  },
+  {
+    "name": "ICEYE-X7",
+    "lat": 11.3581,
+    "lng": 160.628,
+    "alt": 466,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "46496"
+  },
+  {
+    "name": "SJ-20",
+    "lat": -4.9278,
+    "lng": 40.3215,
+    "alt": 35787,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44910"
+  },
+  {
+    "name": "KORSAT-2",
+    "lat": 35.8588,
+    "lng": -86.3263,
+    "alt": 573,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62377"
+  },
+  {
+    "name": "EZIE-A",
+    "lat": 42.7838,
+    "lng": -110.3072,
+    "alt": 579,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63247"
+  },
+  {
+    "name": "EZIE-B",
+    "lat": 58.6238,
+    "lng": -115.8198,
+    "alt": 582,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63250"
+  },
+  {
+    "name": "EZIE-C",
+    "lat": 51.146,
+    "lng": -112.9043,
+    "alt": 581,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63249"
+  },
+  {
+    "name": "SOAP",
+    "lat": -38.0889,
+    "lng": 70.7566,
+    "alt": 590,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63263"
+  },
+  {
+    "name": "DROID.002",
+    "lat": 30.5457,
+    "lng": -106.8122,
+    "alt": 495,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63223"
+  },
+  {
+    "name": "FIRESAT0",
+    "lat": -19.8169,
+    "lng": -133.7114,
+    "alt": 456,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98629"
+  },
+  {
+    "name": "ARVAKER-1",
+    "lat": -17.9751,
+    "lng": -102.2567,
+    "alt": 591,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63252"
+  },
+  {
+    "name": "IOD1_STARTICAL",
+    "lat": 73.0178,
+    "lng": -110.941,
+    "alt": 312,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63212"
+  },
+  {
+    "name": "AEROCUBE 18B",
+    "lat": 76.6597,
+    "lng": 111.4083,
+    "alt": 499,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63222"
+  },
+  {
+    "name": "AEROCUBE 18A",
+    "lat": -47.1884,
+    "lng": -93.4729,
+    "alt": 509,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63220"
+  },
+  {
+    "name": "BUCCANEER MM",
+    "lat": -30.6572,
+    "lng": -100.3634,
+    "alt": 596,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63245"
+  },
+  {
+    "name": "OTP-2",
+    "lat": 30.6159,
+    "lng": 81.6277,
+    "alt": 491,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63235"
+  },
+  {
+    "name": "M-SEL",
+    "lat": -33.6591,
+    "lng": 73.9583,
+    "alt": 498,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63231"
+  },
+  {
+    "name": "ION SCV-017",
+    "lat": -44.2829,
+    "lng": 73.5243,
+    "alt": 503,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63230"
+  },
+  {
+    "name": "ALMUNTHER",
+    "lat": 68.6716,
+    "lng": -117.9043,
+    "alt": 466,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63240"
+  },
+  {
+    "name": "OBJECT BC",
+    "lat": -4.9791,
+    "lng": -103.9244,
+    "alt": 586,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63260"
+  },
+  {
+    "name": "ORBASTRO-TR5",
+    "lat": -55.14,
+    "lng": 65.4135,
+    "alt": 522,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63236"
+  },
+  {
+    "name": "JINJUSAT-1B",
+    "lat": -28.1715,
+    "lng": 79.8184,
+    "alt": 468,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "63210"
+  },
+  {
+    "name": "UVSQ-SAT NG",
+    "lat": 54.9425,
+    "lng": 86.6398,
+    "alt": 587,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63251"
+  },
+  {
+    "name": "BOTSAT-1",
+    "lat": -13.295,
+    "lng": 77.5939,
+    "alt": 486,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63216"
+  },
+  {
+    "name": "HERMES-1",
+    "lat": 80.0662,
+    "lng": -151.2512,
+    "alt": 506,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63242"
+  },
+  {
+    "name": "HERMES-2",
+    "lat": -31.1542,
+    "lng": 76.544,
+    "alt": 485,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63243"
+  },
+  {
+    "name": "GARAI-A",
+    "lat": -17.7477,
+    "lng": 86.0718,
+    "alt": 517,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62635"
+  },
+  {
+    "name": "ICEYE-X45",
+    "lat": -63.9319,
+    "lng": -101.7678,
+    "alt": 589,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62705"
+  },
+  {
+    "name": "KINEIS-4E",
+    "lat": 8.0286,
+    "lng": 126.1417,
+    "alt": 656,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63300"
+  },
+  {
+    "name": "KINEIS-4C",
+    "lat": -62.3789,
+    "lng": 142.9087,
+    "alt": 676,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63301"
+  },
+  {
+    "name": "KINEIS-4D",
+    "lat": -76.2913,
+    "lng": 161.9859,
+    "alt": 681,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63302"
+  },
+  {
+    "name": "KINEIS-4A",
+    "lat": 81.1638,
+    "lng": 10.4618,
+    "alt": 667,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63303"
+  },
+  {
+    "name": "KINEIS-4B",
+    "lat": -4.3399,
+    "lng": -53.0208,
+    "alt": 657,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63304"
+  },
+  {
+    "name": "HERMES-6",
+    "lat": 12.7819,
+    "lng": 79.0309,
+    "alt": 494,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63489"
+  },
+  {
+    "name": "HERMES-5",
+    "lat": 27.3584,
+    "lng": -103.462,
+    "alt": 475,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63834"
+  },
+  {
+    "name": "HERMES 4",
+    "lat": -82.2032,
+    "lng": -30.0807,
+    "alt": 499,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63833"
+  },
+  {
+    "name": "HERMES-3",
+    "lat": 45.0136,
+    "lng": 89.783,
+    "alt": 457,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63835"
+  },
+  {
+    "name": "YUNHAI 1-02",
+    "lat": 65.2104,
+    "lng": -5.0228,
+    "alt": 794,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44547"
+  },
+  {
+    "name": "LIZZIESAT-3 (LS-3)",
+    "lat": 30.9418,
+    "lng": 80.7169,
+    "alt": 499,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63233"
+  },
+  {
+    "name": "CSO 2",
+    "lat": -67.3744,
+    "lng": -36.5678,
+    "alt": 510,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47305"
+  },
+  {
+    "name": "LYRA-1",
+    "lat": -70.4672,
+    "lng": 100.0696,
+    "alt": 537,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62664"
+  },
+  {
+    "name": "LEMUR 2 STAR-FOX",
+    "lat": 55.2099,
+    "lng": 76.2919,
+    "alt": 562,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62696"
+  },
+  {
+    "name": "KINEIS-2E",
+    "lat": 75.9291,
+    "lng": -91.0596,
+    "alt": 650,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62931"
+  },
+  {
+    "name": "TIGER-7",
+    "lat": -59.977,
+    "lng": 176.713,
+    "alt": 440,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59141"
+  },
+  {
+    "name": "BIOMASS",
+    "lat": 81.8659,
+    "lng": 93.0864,
+    "alt": 682,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63772"
+  },
+  {
+    "name": "ASTEX 1",
+    "lat": 78.7101,
+    "lng": 133.0152,
+    "alt": 727,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "05560"
+  },
+  {
+    "name": "IGS Radar 7",
+    "lat": 12.4093,
+    "lng": -95.0879,
+    "alt": 489,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55329"
+  },
+  {
+    "name": "KINEIS-2C",
+    "lat": 29.7681,
+    "lng": -114.2264,
+    "alt": 653,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62929"
+  },
+  {
+    "name": "ICEYE-X41",
+    "lat": -13.9771,
+    "lng": 86.314,
+    "alt": 580,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62700"
+  },
+  {
+    "name": "ICEYE-X2",
+    "lat": 4.4749,
+    "lng": 57.7789,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43800"
+  },
+  {
+    "name": "HONGYAN 1",
+    "lat": -21.9681,
+    "lng": -157.3989,
+    "alt": 1099,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43914"
+  },
+  {
+    "name": "KINEIS-5B",
+    "lat": 6.0518,
+    "lng": -9.2392,
+    "alt": 636,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62085"
+  },
+  {
+    "name": "KINEIS-2A",
+    "lat": -81.8843,
+    "lng": 146.2935,
+    "alt": 681,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62932"
+  },
+  {
+    "name": "KINEIS-2B",
+    "lat": 29.6281,
+    "lng": 52.6988,
+    "alt": 653,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62934"
+  },
+  {
+    "name": "ICEYE-X42",
+    "lat": -0.6079,
+    "lng": -97.325,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62698"
+  },
+  {
+    "name": "YAM-8",
+    "lat": -63.9408,
+    "lng": 72.6776,
+    "alt": 567,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63254"
+  },
+  {
+    "name": "LYNK TOWER 6",
+    "lat": 81.2498,
+    "lng": 25.4997,
+    "alt": 480,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59123"
+  },
+  {
+    "name": "GCOM W1",
+    "lat": -81.7756,
+    "lng": 28.7042,
+    "alt": 732,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38337"
+  },
+  {
+    "name": "GOSAT (IBUKI)",
+    "lat": -71.2648,
+    "lng": 140.9322,
+    "alt": 696,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "33492"
+  },
+  {
+    "name": "DUBAISAT 1",
+    "lat": -30.1138,
+    "lng": 143.3802,
+    "alt": 653,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "35682"
+  },
+  {
+    "name": "ZHANGHENG 1-02",
+    "lat": -10.9149,
+    "lng": -50.6857,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64393"
+  },
+  {
+    "name": "IRIDE-MS2-HEO-9",
+    "lat": 51.3065,
+    "lng": -50.589,
+    "alt": 600,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64585"
+  },
+  {
+    "name": "TIME FLIES",
+    "lat": 7.7032,
+    "lng": 90.2197,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98572"
+  },
+  {
+    "name": "SATORO-T3",
+    "lat": -10.5803,
+    "lng": -61.4045,
+    "alt": 588,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64589"
+  },
+  {
+    "name": "SKYBEE-A02",
+    "lat": 3.3086,
+    "lng": -59.0922,
+    "alt": 507,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64544"
+  },
+  {
+    "name": "BRO-18",
+    "lat": 68.3715,
+    "lng": 101.6676,
+    "alt": 508,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64550"
+  },
+  {
+    "name": "PADRE",
+    "lat": 23.6741,
+    "lng": -57.7448,
+    "alt": 591,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64559"
+  },
+  {
+    "name": "IRIDE-MS2-HEO-8",
+    "lat": -66.3103,
+    "lng": -78.493,
+    "alt": 617,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64587"
+  },
+  {
+    "name": "IRIDE-MS2-HEO-6",
+    "lat": 69.8991,
+    "lng": 97.4465,
+    "alt": 603,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64576"
+  },
+  {
+    "name": "IRIDE-MS2-HEO-5",
+    "lat": -49.784,
+    "lng": 128.4818,
+    "alt": 611,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64571"
+  },
+  {
+    "name": "IRIDE-MS2-HEO-4",
+    "lat": 9.2784,
+    "lng": 118.1254,
+    "alt": 594,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64582"
+  },
+  {
+    "name": "IRIDE-MS2-HEO-3",
+    "lat": -5.4667,
+    "lng": -61.5397,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64568"
+  },
+  {
+    "name": "IRIDE-MS2-HEO-2",
+    "lat": 52.4077,
+    "lng": 109.5642,
+    "alt": 594,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64569"
+  },
+  {
+    "name": "YAM-10",
+    "lat": -38.4031,
+    "lng": -67.2789,
+    "alt": 607,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64580"
+  },
+  {
+    "name": "LEMUR 2 HUBBLE-5",
+    "lat": 82.1541,
+    "lng": 20.5492,
+    "alt": 600,
+    "mission": "Space Telescope",
+    "color": "#FFD700",
+    "category": "science",
+    "noradId": "64840"
+  },
+  {
+    "name": "LEMUR 2 HUBBLE-4",
+    "lat": -72.2352,
+    "lng": 144.3212,
+    "alt": 613,
+    "mission": "Space Telescope",
+    "color": "#FFD700",
+    "category": "science",
+    "noradId": "64565"
+  },
+  {
+    "name": "USPWSA-DRAGOON",
+    "lat": -76.588,
+    "lng": 156.1922,
+    "alt": 513,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64542"
+  },
+  {
+    "name": "FORGESTAR-1",
+    "lat": -79.1885,
+    "lng": 165.3786,
+    "alt": 517,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64546"
+  },
+  {
+    "name": "ION SCV-018",
+    "lat": -53.2086,
+    "lng": 131.2213,
+    "alt": 600,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64575"
+  },
+  {
+    "name": "ION SCV-020",
+    "lat": 4.655,
+    "lng": 119.6197,
+    "alt": 508,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64545"
+  },
+  {
+    "name": "ARCSTONE",
+    "lat": 46.0371,
+    "lng": -46.5816,
+    "alt": 461,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64540"
+  },
+  {
+    "name": "FOSSASAT2E21",
+    "lat": 63.1678,
+    "lng": 104.8513,
+    "alt": 513,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64536"
+  },
+  {
+    "name": "OTTER PUP 2",
+    "lat": -33.5559,
+    "lng": -63.2458,
+    "alt": 508,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64537"
+  },
+  {
+    "name": "SATMAR",
+    "lat": 56.4516,
+    "lng": -46.4425,
+    "alt": 495,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64551"
+  },
+  {
+    "name": "TPA-1",
+    "lat": -1.7311,
+    "lng": -59.4057,
+    "alt": 500,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64533"
+  },
+  {
+    "name": "HYPERFIELD-1B",
+    "lat": -10.6226,
+    "lng": -60.0836,
+    "alt": 501,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64552"
+  },
+  {
+    "name": "UND ROADS 2",
+    "lat": -66.028,
+    "lng": 139.7981,
+    "alt": 517,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64549"
+  },
+  {
+    "name": "UND ROADS 1",
+    "lat": -74.7534,
+    "lng": 149.7149,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64535"
+  },
+  {
+    "name": "DUTHSAT-2",
+    "lat": 82.4663,
+    "lng": 42.3351,
+    "alt": 487,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64530"
+  },
+  {
+    "name": "HUBBLE 6",
+    "lat": 16.5843,
+    "lng": 117.259,
+    "alt": 588,
+    "mission": "Space Telescope",
+    "color": "#FFD700",
+    "category": "science",
+    "noradId": "64562"
+  },
+  {
+    "name": "HUBBLE 7",
+    "lat": -15.9344,
+    "lng": -62.1179,
+    "alt": 593,
+    "mission": "Space Telescope",
+    "color": "#FFD700",
+    "category": "science",
+    "noradId": "64592"
+  },
+  {
+    "name": "CONNECTA IOT-9",
+    "lat": -77.9565,
+    "lng": 158.345,
+    "alt": 535,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64534"
+  },
+  {
+    "name": "CONNECTA IOT-10",
+    "lat": -70.1256,
+    "lng": -80.494,
+    "alt": 528,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64555"
+  },
+  {
+    "name": "CONNECTA IOT-11",
+    "lat": -36.9934,
+    "lng": -64.6242,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64557"
+  },
+  {
+    "name": "CONNECTA IOT-12",
+    "lat": -6.549,
+    "lng": 122.116,
+    "alt": 505,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64553"
+  },
+  {
+    "name": "OBJECT AJ",
+    "lat": -68.2831,
+    "lng": -79.4385,
+    "alt": 604,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64560"
+  },
+  {
+    "name": "MSAT M1",
+    "lat": 12.411,
+    "lng": -177.48,
+    "alt": 36309,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "23846"
+  },
+  {
+    "name": "SYRACUSE 3B",
+    "lat": -1.4357,
+    "lng": 128.1254,
+    "alt": 36255,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "29273"
+  },
+  {
+    "name": "WILDFIRE 9",
+    "lat": 42.7758,
+    "lng": 137.9316,
+    "alt": 950,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57765"
+  },
+  {
+    "name": "WILDFIRE 10",
+    "lat": -58.5548,
+    "lng": -49.1573,
+    "alt": 967,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57766"
+  },
+  {
+    "name": "WILDFIRE 1",
+    "lat": 49.8985,
+    "lng": -24.0016,
+    "alt": 946,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "57764"
+  },
+  {
+    "name": "EUCROPIS",
+    "lat": -82.6148,
+    "lng": 154.6524,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43807"
+  },
+  {
+    "name": "COSMOS 2588",
+    "lat": 34.2193,
+    "lng": 175.4095,
+    "alt": 479,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "64095"
+  },
+  {
+    "name": "GOES 19",
+    "lat": 0.0019,
+    "lng": -75.1893,
+    "alt": 35785,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "60133"
+  },
+  {
+    "name": "TIANQI 26",
+    "lat": -6.4185,
+    "lng": -21.3623,
+    "alt": 896,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59910"
+  },
+  {
+    "name": "TIANQI 25",
+    "lat": 44.6771,
+    "lng": -107.2239,
+    "alt": 892,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59909"
+  },
+  {
+    "name": "LANDSAT 8",
+    "lat": -65.9946,
+    "lng": -123.5592,
+    "alt": 728,
+    "mission": "Earth Observation",
+    "color": "#90EE90",
+    "category": "earth_obs",
+    "noradId": "39084"
+  },
+  {
+    "name": "LANDSAT 9",
+    "lat": 65.5529,
+    "lng": 56.8582,
+    "alt": 713,
+    "mission": "Earth Observation",
+    "color": "#90EE90",
+    "category": "earth_obs",
+    "noradId": "49260"
+  },
+  {
+    "name": "BIFROST-DNK",
+    "lat": 81.7485,
+    "lng": 50.6588,
+    "alt": 597,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64588"
+  },
+  {
+    "name": "GLOBAL-32",
+    "lat": 18.0416,
+    "lng": -118.0377,
+    "alt": 447,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64231"
+  },
+  {
+    "name": "SLS DEB",
+    "lat": 22.2644,
+    "lng": -7.197,
+    "alt": 720,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55904"
+  },
+  {
+    "name": "AAC-AIS-SAT-1",
+    "lat": -24.1131,
+    "lng": 87.6306,
+    "alt": 600,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55107"
+  },
+  {
+    "name": "REAL",
+    "lat": 77.2326,
+    "lng": -69.8801,
+    "alt": 465,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64875"
+  },
+  {
+    "name": "UNIFORM 1",
+    "lat": -41.3415,
+    "lng": -83.2267,
+    "alt": 592,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39767"
+  },
+  {
+    "name": "IONOSFERA-M 03",
+    "lat": -26.5354,
+    "lng": -30.1091,
+    "alt": 831,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64876"
+  },
+  {
+    "name": "IONOSFERA-M 04",
+    "lat": 23.4353,
+    "lng": 149.2367,
+    "alt": 823,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64877"
+  },
+  {
+    "name": "ICEYE-X57",
+    "lat": -52.257,
+    "lng": -66.4441,
+    "alt": 586,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64578"
+  },
+  {
+    "name": "ICEYE-X53",
+    "lat": 59.4427,
+    "lng": -43.9515,
+    "alt": 573,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64584"
+  },
+  {
+    "name": "YUBELEINY 2",
+    "lat": -78.2668,
+    "lng": 34.9984,
+    "alt": 1531,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38735"
+  },
+  {
+    "name": "COSMOS 2491",
+    "lat": 5.4249,
+    "lng": 168.4584,
+    "alt": 1504,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "39497"
+  },
+  {
+    "name": "COSMOS 2581",
+    "lat": 67.2429,
+    "lng": -174.0829,
+    "alt": 594,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "62902"
+  },
+  {
+    "name": "NISAR",
+    "lat": -76.3189,
+    "lng": -130.3009,
+    "alt": 779,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "65053"
+  },
+  {
+    "name": "ICEYE-X50",
+    "lat": -55.7081,
+    "lng": 64.7734,
+    "alt": 603,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63255"
+  },
+  {
+    "name": "KAZSTSAT",
+    "lat": 41.3906,
+    "lng": 26.4477,
+    "alt": 566,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43783"
+  },
+  {
+    "name": "NOSS 3-6 (P)",
+    "lat": 14.4681,
+    "lng": 144.5582,
+    "alt": 1343,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "38773"
+  },
+  {
+    "name": "QUICK3",
+    "lat": -27.0109,
+    "lng": 127.5164,
+    "alt": 488,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64558"
+  },
+  {
+    "name": "GAOFEN 8",
+    "lat": 34.5992,
+    "lng": -157.5595,
+    "alt": 419,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40701"
+  },
+  {
+    "name": "COSMOS 2572",
+    "lat": -29.0965,
+    "lng": -73.9156,
+    "alt": 187,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "58435"
+  },
+  {
+    "name": "COSMOS 2583",
+    "lat": 68.3382,
+    "lng": -175.2252,
+    "alt": 594,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "62904"
+  },
+  {
+    "name": "ICEYE-X46",
+    "lat": -76.1067,
+    "lng": 43.3151,
+    "alt": 609,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63258"
+  },
+  {
+    "name": "STRIX 2",
+    "lat": 39.6852,
+    "lng": -44.5835,
+    "alt": 547,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62406"
+  },
+  {
+    "name": "ALSAT 2B",
+    "lat": -38.8385,
+    "lng": 72.935,
+    "alt": 674,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "41786"
+  },
+  {
+    "name": "ICEYE-X51",
+    "lat": -68.971,
+    "lng": -77.6389,
+    "alt": 591,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63257"
+  },
+  {
+    "name": "ICEYE-X56",
+    "lat": 44.0003,
+    "lng": 113.2385,
+    "alt": 585,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64574"
+  },
+  {
+    "name": "GRUS-3ALPHA",
+    "lat": -3.3441,
+    "lng": 120.0772,
+    "alt": 590,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64579"
+  },
+  {
+    "name": "ICEYE-X44",
+    "lat": -74.0221,
+    "lng": 111.8332,
+    "alt": 606,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62707"
+  },
+  {
+    "name": "ICEYE-X55",
+    "lat": -48.3722,
+    "lng": -68.2527,
+    "alt": 599,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64581"
+  },
+  {
+    "name": "COSMOS 2576",
+    "lat": -9.171,
+    "lng": -60.1876,
+    "alt": 513,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "59773"
+  },
+  {
+    "name": "PACE",
+    "lat": -25.4871,
+    "lng": 112.3149,
+    "alt": 684,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58928"
+  },
+  {
+    "name": "HXMT",
+    "lat": 23.5278,
+    "lng": -36.1097,
+    "alt": 529,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42758"
+  },
+  {
+    "name": "PUNCH-NFI00",
+    "lat": -41.7911,
+    "lng": 2.886,
+    "alt": 663,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63178"
+  },
+  {
+    "name": "PRSC-S1",
+    "lat": -7.4865,
+    "lng": -138.1662,
+    "alt": 545,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "65055"
+  },
+  {
+    "name": "FIA Radar 3",
+    "lat": -5.9202,
+    "lng": -62.5007,
+    "alt": 1103,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39462"
+  },
+  {
+    "name": "TOMORROW-S8",
+    "lat": -42.7543,
+    "lng": -165.4218,
+    "alt": 514,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66308"
+  },
+  {
+    "name": "HAVEN-DEMO",
+    "lat": -45.3381,
+    "lng": -176.5326,
+    "alt": 529,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98525"
+  },
+  {
+    "name": "TAURUS 1",
+    "lat": 37.2917,
+    "lng": -78.3004,
+    "alt": 425,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98524"
+  },
+  {
+    "name": "TAURUS 2",
+    "lat": 37.2917,
+    "lng": -78.3004,
+    "alt": 425,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98523"
+  },
+  {
+    "name": "TAURUS 3",
+    "lat": 37.2917,
+    "lng": -78.3004,
+    "alt": 425,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98522"
+  },
+  {
+    "name": "TAURUS 4",
+    "lat": 37.2917,
+    "lng": -78.3004,
+    "alt": 425,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98521"
+  },
+  {
+    "name": "STARCLOUD-1",
+    "lat": 4.8153,
+    "lng": -97.3164,
+    "alt": 495,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66303"
+  },
+  {
+    "name": "OBJECT-B",
+    "lat": -77.3002,
+    "lng": -134.2144,
+    "alt": 525,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "65489"
+  },
+  {
+    "name": "LYRA-3",
+    "lat": 46.1539,
+    "lng": 98.6522,
+    "alt": 655,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64577"
+  },
+  {
+    "name": "BUZZZER-1",
+    "lat": -69.5496,
+    "lng": 102.9737,
+    "alt": 521,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62609"
+  },
+  {
+    "name": "LYRA-4",
+    "lat": -64.7234,
+    "lng": 108.0828,
+    "alt": 685,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64691"
+  },
+  {
+    "name": "MONOLITH",
+    "lat": 16.6179,
+    "lng": -12.3699,
+    "alt": 536,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "49052"
+  },
+  {
+    "name": "TIANYAN 23",
+    "lat": 82.5855,
+    "lng": 5.8876,
+    "alt": 409,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63209"
+  },
+  {
+    "name": "COSMIC",
+    "lat": 46.0672,
+    "lng": -73.5405,
+    "alt": 587,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66658"
+  },
+  {
+    "name": "E3TESTER",
+    "lat": 80.6197,
+    "lng": 169.6373,
+    "alt": 602,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66662"
+  },
+  {
+    "name": "INHA-ROSAT",
+    "lat": -73.482,
+    "lng": -38.9443,
+    "alt": 608,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66653"
+  },
+  {
+    "name": "CAS500-3",
+    "lat": 38.7588,
+    "lng": -74.3234,
+    "alt": 610,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66655"
+  },
+  {
+    "name": "BEE-1000",
+    "lat": -15.6582,
+    "lng": -63.9128,
+    "alt": 587,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66650"
+  },
+  {
+    "name": "HYDROGNSS-1",
+    "lat": -19.7028,
+    "lng": 78.2033,
+    "alt": 531,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66762"
+  },
+  {
+    "name": "LILIUM-3",
+    "lat": 35.3777,
+    "lng": -96.375,
+    "alt": 509,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66770"
+  },
+  {
+    "name": "MERCURY ONE (M1)",
+    "lat": 59.6107,
+    "lng": 65.3714,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66742"
+  },
+  {
+    "name": "TRYAD-1",
+    "lat": 81.2845,
+    "lng": 18.2134,
+    "alt": 549,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98514"
+  },
+  {
+    "name": "TRYAD-2",
+    "lat": -31.484,
+    "lng": 79.7408,
+    "alt": 551,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98472"
+  },
+  {
+    "name": "IHI-SAT2",
+    "lat": 30.1046,
+    "lng": -96.6329,
+    "alt": 500,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66772"
+  },
+  {
+    "name": "ION SCV-021",
+    "lat": -12.762,
+    "lng": 73.9727,
+    "alt": 572,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98507"
+  },
+  {
+    "name": "HYDROGNSS-2",
+    "lat": 27.8827,
+    "lng": -100.5978,
+    "alt": 539,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66763"
+  },
+  {
+    "name": "PIAST-S1",
+    "lat": -40.4773,
+    "lng": 84.6956,
+    "alt": 517,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66749"
+  },
+  {
+    "name": "ION-SCV-022",
+    "lat": 44.0768,
+    "lng": -99.7879,
+    "alt": 575,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66682"
+  },
+  {
+    "name": "OBJECT DD",
+    "lat": 53.3409,
+    "lng": -90.1058,
+    "alt": 495,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66765"
+  },
+  {
+    "name": "LILIUM-2",
+    "lat": 72.5878,
+    "lng": -78.4591,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66679"
+  },
+  {
+    "name": "AC1-002",
+    "lat": -69.1318,
+    "lng": -128.1907,
+    "alt": 596,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98502"
+  },
+  {
+    "name": "OBJECT DP",
+    "lat": 5.1932,
+    "lng": 77.9063,
+    "alt": 500,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66775"
+  },
+  {
+    "name": "MICE-1",
+    "lat": -58.2846,
+    "lng": 90.3216,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66684"
+  },
+  {
+    "name": "BRO-20",
+    "lat": -75.34,
+    "lng": 106.9522,
+    "alt": 534,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66674"
+  },
+  {
+    "name": "PIAST-M",
+    "lat": 3.7751,
+    "lng": 77.8633,
+    "alt": 505,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66758"
+  },
+  {
+    "name": "CTC-1A",
+    "lat": -82.3528,
+    "lng": -177.1075,
+    "alt": 532,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98482"
+  },
+  {
+    "name": "T-MICROSAT-1",
+    "lat": -46.6994,
+    "lng": -109.3959,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66766"
+  },
+  {
+    "name": "HUNITY-1",
+    "lat": 46.0817,
+    "lng": -91.9293,
+    "alt": 477,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66670"
+  },
+  {
+    "name": "PIAST-S2",
+    "lat": -42.175,
+    "lng": -108.1587,
+    "alt": 517,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66757"
+  },
+  {
+    "name": "AC1-001",
+    "lat": -8.7563,
+    "lng": -109.1538,
+    "alt": 573,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98501"
+  },
+  {
+    "name": "6GSTARLAB",
+    "lat": -31.7142,
+    "lng": 79.3143,
+    "alt": 559,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98500"
+  },
+  {
+    "name": "GYEONGGISAT-1",
+    "lat": 1.9717,
+    "lng": -100.9599,
+    "alt": 502,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66771"
+  },
+  {
+    "name": "BRO-17",
+    "lat": 81.787,
+    "lng": -39.0278,
+    "alt": 527,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66672"
+  },
+  {
+    "name": "PW-6U",
+    "lat": -26.245,
+    "lng": -105.3447,
+    "alt": 524,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98513"
+  },
+  {
+    "name": "3UCUBED-A",
+    "lat": -18.8554,
+    "lng": 80.9258,
+    "alt": 516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98517"
+  },
+  {
+    "name": "ANISCSAT-1",
+    "lat": -27.8112,
+    "lng": -105.065,
+    "alt": 505,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66671"
+  },
+  {
+    "name": "CTC-1C",
+    "lat": -16.9039,
+    "lng": 77.158,
+    "alt": 556,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98480"
+  },
+  {
+    "name": "LUNA-1",
+    "lat": -70.2199,
+    "lng": 100.7771,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66777"
+  },
+  {
+    "name": "VEERY-0G SPIN-2",
+    "lat": -46.6179,
+    "lng": -112.9388,
+    "alt": 564,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98471"
+  },
+  {
+    "name": "NAHLA",
+    "lat": 51.618,
+    "lng": -92.7431,
+    "alt": 517,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66764"
+  },
+  {
+    "name": "CTC-1B",
+    "lat": -12.4471,
+    "lng": 80.5945,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98481"
+  },
+  {
+    "name": "BLACK KITE-1",
+    "lat": 36.5721,
+    "lng": 73.1119,
+    "alt": 505,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66741"
+  },
+  {
+    "name": "AC1-003",
+    "lat": -5.7042,
+    "lng": 72.882,
+    "alt": 572,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98503"
+  },
+  {
+    "name": "OTTER SDM",
+    "lat": -70.0204,
+    "lng": 98.974,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66678"
+  },
+  {
+    "name": "GRUS-1C",
+    "lat": 79.6081,
+    "lng": 111.2494,
+    "alt": 590,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47933"
+  },
+  {
+    "name": "GRUS-1E",
+    "lat": 80.3531,
+    "lng": 117.5261,
+    "alt": 588,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47935"
+  },
+  {
+    "name": "GRUS-1D",
+    "lat": 48.2463,
+    "lng": -122.5852,
+    "alt": 584,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "47936"
+  },
+  {
+    "name": "DUPLEX",
+    "lat": -34.8603,
+    "lng": 68.9405,
+    "alt": 357,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66906"
+  },
+  {
+    "name": "FORESAIL-1 PRIME",
+    "lat": 39.3176,
+    "lng": 71.6008,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66778"
+  },
+  {
+    "name": "KINEIS-5D",
+    "lat": -48.643,
+    "lng": -26.5956,
+    "alt": 669,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62082"
+  },
+  {
+    "name": "USA 570",
+    "lat": -61.0637,
+    "lng": -149.2065,
+    "alt": 1140,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "66992"
+  },
+  {
+    "name": "FORMOSAT-8A",
+    "lat": -32.6616,
+    "lng": -105.8511,
+    "alt": 573,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66666"
+  },
+  {
+    "name": "COSMOS 2582",
+    "lat": 67.506,
+    "lng": -174.3466,
+    "alt": 594,
+    "mission": "Russian Military",
+    "color": "#FF6B6B",
+    "category": "military",
+    "noradId": "62903"
+  },
+  {
+    "name": "ALOS 2",
+    "lat": 39.4451,
+    "lng": -71.391,
+    "alt": 636,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39766"
+  },
+  {
+    "name": "THE ARAB SATELLITE 813",
+    "lat": -58.9455,
+    "lng": -111.4494,
+    "alt": 563,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66994"
+  },
+  {
+    "name": "SPACEMOBILE-006",
+    "lat": 48.92,
+    "lng": -94.5609,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67232"
+  },
+  {
+    "name": "CO3D1",
+    "lat": -2.2281,
+    "lng": 83.7812,
+    "alt": 509,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64903"
+  },
+  {
+    "name": "OBJECT BA",
+    "lat": -62.6402,
+    "lng": -113.9977,
+    "alt": 505,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67296"
+  },
+  {
+    "name": "OBJECT AH",
+    "lat": 80.2458,
+    "lng": -52.0785,
+    "alt": 514,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67279"
+  },
+  {
+    "name": "ICEYE-X52",
+    "lat": -34.1065,
+    "lng": 124.9492,
+    "alt": 598,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64572"
+  },
+  {
+    "name": "IGS Opt 6",
+    "lat": 15.3375,
+    "lng": 123.033,
+    "alt": 487,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "43223"
+  },
+  {
+    "name": "Unknown Satellite",
+    "lat": 56.5412,
+    "lng": -83.8879,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98424"
+  },
+  {
+    "name": "MAUVE",
+    "lat": -65.4825,
+    "lng": 95.0334,
+    "alt": 525,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66756"
+  },
+  {
+    "name": "PANDORA",
+    "lat": -80.3389,
+    "lng": 131.3278,
+    "alt": 553,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98415"
+  },
+  {
+    "name": "CONNECTA IOT-16",
+    "lat": 81.2718,
+    "lng": -117.926,
+    "alt": 524,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67390"
+  },
+  {
+    "name": "CONNECTA IOT-15",
+    "lat": -77.5059,
+    "lng": 39.8528,
+    "alt": 536,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67402"
+  },
+  {
+    "name": "CONNECTA IOT-14",
+    "lat": -74.1716,
+    "lng": 156.7208,
+    "alt": 529,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67401"
+  },
+  {
+    "name": "CONNECTA IOT-13",
+    "lat": 5.7426,
+    "lng": 3.2538,
+    "alt": 510,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67400"
+  },
+  {
+    "name": "DCUBED-1",
+    "lat": -80.3389,
+    "lng": 131.3278,
+    "alt": 553,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98416"
+  },
+  {
+    "name": "CARSBSAR",
+    "lat": -80.3389,
+    "lng": 131.3278,
+    "alt": 553,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98417"
+  },
+  {
+    "name": "SPARCS",
+    "lat": -80.3389,
+    "lng": 131.3278,
+    "alt": 553,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98418"
+  },
+  {
+    "name": "FLAMINGO-1",
+    "lat": 23.8477,
+    "lng": 0.4934,
+    "alt": 516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67391"
+  },
+  {
+    "name": "Hydra-2",
+    "lat": -18.5937,
+    "lng": 8.2196,
+    "alt": 482,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98414"
+  },
+  {
+    "name": "TANDEM X",
+    "lat": 51.3082,
+    "lng": 3.2912,
+    "alt": 516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "36605"
+  },
+  {
+    "name": "TERRA SAR X",
+    "lat": 51.3126,
+    "lng": 3.2897,
+    "alt": 516,
+    "mission": "Earth Science",
+    "color": "#90EE90",
+    "category": "earth_obs",
+    "noradId": "31698"
+  },
+  {
+    "name": "NORSAT 3",
+    "lat": 16.5893,
+    "lng": -116.7943,
+    "alt": 549,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48272"
+  },
+  {
+    "name": "CHEOPS",
+    "lat": -68.6893,
+    "lng": -145.3434,
+    "alt": 719,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "44874"
+  },
+  {
+    "name": "ZY 3 04",
+    "lat": 61.5205,
+    "lng": 69.6832,
+    "alt": 516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67131"
+  },
+  {
+    "name": "NOSS 3-7 (A)",
+    "lat": 5.554,
+    "lng": 14.8376,
+    "alt": 1286,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "40964"
+  },
+  {
+    "name": "LIDE",
+    "lat": 75.0168,
+    "lng": 37.7074,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64869"
+  },
+  {
+    "name": "RADARSAT 2",
+    "lat": 76.8652,
+    "lng": -128.0925,
+    "alt": 804,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "32382"
+  },
+  {
+    "name": "TIGER-8",
+    "lat": 67.0914,
+    "lng": 142.2067,
+    "alt": 434,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "59120"
+  },
+  {
+    "name": "HJS-6B",
+    "lat": 38.6372,
+    "lng": -38.0384,
+    "alt": 513,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63429"
+  },
+  {
+    "name": "LEOPARD",
+    "lat": 38.6664,
+    "lng": 143.3083,
+    "alt": 304,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67687"
+  },
+  {
+    "name": "HMU-SAT2",
+    "lat": 5.4576,
+    "lng": -84.1204,
+    "alt": 307,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67688"
+  },
+  {
+    "name": "UITMSAT",
+    "lat": -8.5821,
+    "lng": -78.4136,
+    "alt": 247,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67686"
+  },
+  {
+    "name": "KNACKSAT-2",
+    "lat": -5.3794,
+    "lng": -67.2423,
+    "alt": 354,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67683"
+  },
+  {
+    "name": "GXIBA-1",
+    "lat": 34.3945,
+    "lng": -107.8233,
+    "alt": 340,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67685"
+  },
+  {
+    "name": "ICEYE-X62",
+    "lat": 81.1392,
+    "lng": -48.9677,
+    "alt": 548,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66755"
+  },
+  {
+    "name": "LEMUR-2 GRAM-E-SUE",
+    "lat": 62.3488,
+    "lng": -161.5254,
+    "alt": 606,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67370"
+  },
+  {
+    "name": "SJ-30A",
+    "lat": 34.6263,
+    "lng": -171.3805,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66545"
+  },
+  {
+    "name": "IRIDE-MS1-EAG2-4",
+    "lat": 57.4396,
+    "lng": 66.3878,
+    "alt": 513,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66698"
+  },
+  {
+    "name": "HErO",
+    "lat": -64.3067,
+    "lng": -107.5841,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98388"
+  },
+  {
+    "name": "TATARA-1R",
+    "lat": -64.3067,
+    "lng": -107.5841,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98390"
+  },
+  {
+    "name": "SC-Sat1a",
+    "lat": -64.3067,
+    "lng": -107.5841,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98389"
+  },
+  {
+    "name": "AETS-1",
+    "lat": -64.3067,
+    "lng": -107.5841,
+    "alt": 526,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98387"
+  },
+  {
+    "name": "IOD2_STARTICAL",
+    "lat": 77.3258,
+    "lng": -24.2358,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64538"
+  },
+  {
+    "name": "TEN-KOH 2",
+    "lat": -40.9849,
+    "lng": 128.686,
+    "alt": 504,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68261"
+  },
+  {
+    "name": "ICEYE-X61",
+    "lat": 76.9202,
+    "lng": 44.0222,
+    "alt": 523,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66754"
+  },
+  {
+    "name": "PHASMA-DIRAC",
+    "lat": -54.2173,
+    "lng": 89.7355,
+    "alt": 502,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66681"
+  },
+  {
+    "name": "PHASMA-LAMARR",
+    "lat": -17.4078,
+    "lng": 81.466,
+    "alt": 492,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66673"
+  },
+  {
+    "name": "LEMUR 2 AFFIE-WAUWIE",
+    "lat": -45.4089,
+    "lng": 160.5829,
+    "alt": 489,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66295"
+  },
+  {
+    "name": "LEMUR 2 AMANDA-SVANTE",
+    "lat": -38.2951,
+    "lng": -97.2033,
+    "alt": 454,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "48269"
+  },
+  {
+    "name": "GLOBAL-5",
+    "lat": -22.9807,
+    "lng": -105.2413,
+    "alt": 462,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55983"
+  },
+  {
+    "name": "GLOBAL-33",
+    "lat": -12.8078,
+    "lng": 123.5513,
+    "alt": 447,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66554"
+  },
+  {
+    "name": "LEMUR 2 LANGER2SPACE",
+    "lat": 60.3424,
+    "lng": 175.1983,
+    "alt": 527,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "63358"
+  },
+  {
+    "name": "TAIJING-2 04",
+    "lat": -69.4211,
+    "lng": -92.5427,
+    "alt": 403,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58820"
+  },
+  {
+    "name": "RASSVET-3 14",
+    "lat": -57.3176,
+    "lng": 144.8498,
+    "alt": 377,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68373"
+  },
+  {
+    "name": "WINNEBAGO 06",
+    "lat": -77.753,
+    "lng": -1.83,
+    "alt": 566,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98357"
+  },
+  {
+    "name": "VIREON-2",
+    "lat": 75.117,
+    "lng": 171.4841,
+    "alt": 540,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98349"
+  },
+  {
+    "name": "CYCLOPS-1",
+    "lat": -58.4154,
+    "lng": 129.7352,
+    "alt": 557,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98350"
+  },
+  {
+    "name": "VIGORIDE",
+    "lat": 45.0337,
+    "lng": 149.9635,
+    "alt": 527,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98359"
+  },
+  {
+    "name": "AIGLONSAT-1",
+    "lat": -67.2984,
+    "lng": -17.9063,
+    "alt": 523,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68437"
+  },
+  {
+    "name": "UNICORN-2S",
+    "lat": -12.5274,
+    "lng": -35.2121,
+    "alt": 589,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68475"
+  },
+  {
+    "name": "UNICORN-2R",
+    "lat": -20.1699,
+    "lng": -39.3379,
+    "alt": 669,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98353"
+  },
+  {
+    "name": "TORO-3",
+    "lat": -26.9916,
+    "lng": 139.444,
+    "alt": 601,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68481"
+  },
+  {
+    "name": "T.MICROSAT-2",
+    "lat": -37.3919,
+    "lng": 137.6127,
+    "alt": 529,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68433"
+  },
+  {
+    "name": "SPACEVAN 2",
+    "lat": -35.5315,
+    "lng": 136.6677,
+    "alt": 542,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98358"
+  },
+  {
+    "name": "SHARJAH-SAT 2",
+    "lat": 16.199,
+    "lng": 144.5773,
+    "alt": 529,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98363"
+  },
+  {
+    "name": "SAL-E",
+    "lat": -5.2446,
+    "lng": 142.5499,
+    "alt": 516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68458"
+  },
+  {
+    "name": "PHOBUS",
+    "lat": -79.399,
+    "lng": 7.5953,
+    "alt": 528,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68467"
+  },
+  {
+    "name": "PEAKSAT",
+    "lat": -37.2581,
+    "lng": -30.3797,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68416"
+  },
+  {
+    "name": "PARUS-6U1",
+    "lat": -41.0688,
+    "lng": -30.1358,
+    "alt": 524,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68456"
+  },
+  {
+    "name": "OPTISAT",
+    "lat": -81.3962,
+    "lng": 23.4442,
+    "alt": 535,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68418"
+  },
+  {
+    "name": "LUNA-2",
+    "lat": -81.8654,
+    "lng": 77.3865,
+    "alt": 540,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68470"
+  },
+  {
+    "name": "LILIUM-4",
+    "lat": -56.1715,
+    "lng": 130.7479,
+    "alt": 556,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98391"
+  },
+  {
+    "name": "JACK-002",
+    "lat": -75.8506,
+    "lng": 112.7895,
+    "alt": 532,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68417"
+  },
+  {
+    "name": "ION SCV-019",
+    "lat": 69.5368,
+    "lng": -56.6297,
+    "alt": 516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68435"
+  },
+  {
+    "name": "IO-1",
+    "lat": 54.9422,
+    "lng": 148.4193,
+    "alt": 673,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98348"
+  },
+  {
+    "name": "HADES-SA (SPINNYONE)",
+    "lat": -26.3718,
+    "lng": -32.7506,
+    "alt": 504,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68446"
+  },
+  {
+    "name": "GRAVITAS",
+    "lat": 8.0848,
+    "lng": 139.7072,
+    "alt": 657,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98355"
+  },
+  {
+    "name": "GEMS2 AMETHYST",
+    "lat": 54.308,
+    "lng": 148.4962,
+    "alt": 672,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98354"
+  },
+  {
+    "name": "GARAI B",
+    "lat": 77.8294,
+    "lng": 179.7215,
+    "alt": 531,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98361"
+  },
+  {
+    "name": "FOSSASAT-2E",
+    "lat": 80.8486,
+    "lng": -164.5351,
+    "alt": 671,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98351"
+  },
+  {
+    "name": "FGN 100 D3",
+    "lat": 4.3561,
+    "lng": 141.9926,
+    "alt": 542,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98360"
+  },
+  {
+    "name": "ERMIS3",
+    "lat": -4.0496,
+    "lng": 143.2939,
+    "alt": 510,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68425"
+  },
+  {
+    "name": "ERMIS2",
+    "lat": -59.1247,
+    "lng": 131.2725,
+    "alt": 525,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68420"
+  },
+  {
+    "name": "DB-BECON-2-VU",
+    "lat": 16.0261,
+    "lng": 145.5539,
+    "alt": 514,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68468"
+  },
+  {
+    "name": "EMISAR",
+    "lat": -67.156,
+    "lng": -18.0508,
+    "alt": 528,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68427"
+  },
+  {
+    "name": "DISCO-2",
+    "lat": 68.5388,
+    "lng": -55.4251,
+    "alt": 515,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68431"
+  },
+  {
+    "name": "FEMTO-1",
+    "lat": -10.22,
+    "lng": 142.3577,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68419"
+  },
+  {
+    "name": "COSMO",
+    "lat": 22.1834,
+    "lng": -39.6956,
+    "alt": 504,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68460"
+  },
+  {
+    "name": "BRO 19",
+    "lat": 53.5135,
+    "lng": 153.5343,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98364"
+  },
+  {
+    "name": "BLACK KITE-2",
+    "lat": -33.787,
+    "lng": 138.054,
+    "alt": 601,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68474"
+  },
+  {
+    "name": "Unknown 2 - T16",
+    "lat": -24.2219,
+    "lng": -33.8982,
+    "alt": 525,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98345"
+  },
+  {
+    "name": "Unknown 5 - T16",
+    "lat": 32.236,
+    "lng": 146.5549,
+    "alt": 533,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98342"
+  },
+  {
+    "name": "OUT OF THE BOX",
+    "lat": -68.1005,
+    "lng": 124.7266,
+    "alt": 534,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68428"
+  },
+  {
+    "name": "FFLY-1",
+    "lat": 66.5339,
+    "lng": 61.6505,
+    "alt": 596,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "65320"
+  },
+  {
+    "name": "ELEKTRO-L 5",
+    "lat": -0.0609,
+    "lng": 76.0271,
+    "alt": 35793,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67756"
+  },
+  {
+    "name": "CANVAS",
+    "lat": 49.2545,
+    "lng": -175.8303,
+    "alt": 473,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68635"
+  },
+  {
+    "name": "RAWHIDE-1",
+    "lat": -3.8091,
+    "lng": 141.4766,
+    "alt": 502,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68629"
+  },
+  {
+    "name": "LPNTSAT-002",
+    "lat": 30.8094,
+    "lng": -119.7062,
+    "alt": 509,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68409"
+  },
+  {
+    "name": "PRAETORIAN SDA_610",
+    "lat": 61.663,
+    "lng": -10.2783,
+    "alt": 966,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "65573"
+  },
+  {
+    "name": "MR-1",
+    "lat": 63.3953,
+    "lng": -25.9671,
+    "alt": 1070,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67557"
+  },
+  {
+    "name": "CENTISPACE-2 S8",
+    "lat": -38.5179,
+    "lng": -145.1393,
+    "alt": 886,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68357"
+  },
+  {
+    "name": "MR-2",
+    "lat": 87.6361,
+    "lng": -3.024,
+    "alt": 1072,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67556"
+  },
+  {
+    "name": "RAWHIDE-2",
+    "lat": 53.602,
+    "lng": -87.9512,
+    "alt": 472,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68632"
+  },
+  {
+    "name": "ICEYE-X59",
+    "lat": -58.1853,
+    "lng": -119.2379,
+    "alt": 587,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66752"
+  },
+  {
+    "name": "ICEYE-X60",
+    "lat": -72.9573,
+    "lng": -129.4423,
+    "alt": 563,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66753"
+  },
+  {
+    "name": "MAGNARO-II",
+    "lat": -31.4617,
+    "lng": -31.0377,
+    "alt": 563,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68798"
+  },
+  {
+    "name": "ORIGAMISAT-2",
+    "lat": 51.0118,
+    "lng": -16.9816,
+    "alt": 544,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68795"
+  },
+  {
+    "name": "LPNTSAT-001",
+    "lat": 15.4953,
+    "lng": 66.5252,
+    "alt": 518,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68408"
+  },
+  {
+    "name": "BLACKCAT",
+    "lat": 47.1548,
+    "lng": -168.4358,
+    "alt": 607,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67369"
+  },
+  {
+    "name": "FFLY-2",
+    "lat": -0.7726,
+    "lng": -100.353,
+    "alt": 594,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "65322"
+  },
+  {
+    "name": "BALKAN-2",
+    "lat": 72.5156,
+    "lng": 106.4034,
+    "alt": 516,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69024"
+  },
+  {
+    "name": "PEARL-1A",
+    "lat": 81.9378,
+    "lng": 153.4491,
+    "alt": 603,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68990"
+  },
+  {
+    "name": "SNAPPY",
+    "lat": 42.3481,
+    "lng": 87.8398,
+    "alt": 500,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98309"
+  },
+  {
+    "name": "BRO-21",
+    "lat": 52.5189,
+    "lng": 92.1655,
+    "alt": 512,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69007"
+  },
+  {
+    "name": "BUSANSAT",
+    "lat": 43.6351,
+    "lng": -105.8078,
+    "alt": 597,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "68989"
+  },
+  {
+    "name": "DRISHTI",
+    "lat": -39.5422,
+    "lng": 76.0983,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69010"
+  },
+  {
+    "name": "EYCORE-1",
+    "lat": 47.0247,
+    "lng": -105.6446,
+    "alt": 507,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69011"
+  },
+  {
+    "name": "SELENE",
+    "lat": -14.5752,
+    "lng": -95.9632,
+    "alt": 508,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69020"
+  },
+  {
+    "name": "HELIOS",
+    "lat": 56.6026,
+    "lng": 93.4106,
+    "alt": 513,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69021"
+  },
+  {
+    "name": "FRONTIERSAT",
+    "lat": 70.7007,
+    "lng": 104.1148,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69015"
+  },
+  {
+    "name": "GEMINI-POLLUX",
+    "lat": 32.5307,
+    "lng": 86.7277,
+    "alt": 593,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69000"
+  },
+  {
+    "name": "NULINK-2",
+    "lat": -49.6788,
+    "lng": -88.9759,
+    "alt": 609,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68994"
+  },
+  {
+    "name": "PEARL-1B",
+    "lat": -48.9034,
+    "lng": 72.5587,
+    "alt": 618,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68980"
+  },
+  {
+    "name": "HYDRA-3",
+    "lat": 46.4551,
+    "lng": 89.6702,
+    "alt": 501,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98308"
+  },
+  {
+    "name": "CRYOSAT 2",
+    "lat": 44.7038,
+    "lng": -155.0401,
+    "alt": 725,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "36508"
+  },
+  {
+    "name": "PEXT",
+    "lat": 35.3913,
+    "lng": -105.423,
+    "alt": 506,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64874"
+  },
+  {
+    "name": "CENTISPACE-1 S11",
+    "lat": -13.5312,
+    "lng": -71.1416,
+    "alt": 958,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "62580"
+  },
+  {
+    "name": "SDA_1667",
+    "lat": -23.6681,
+    "lng": 171.2057,
+    "alt": 967,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "65977"
+  },
+  {
+    "name": "IRIS",
+    "lat": -4.7368,
+    "lng": -153.8053,
+    "alt": 610,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "39197"
+  },
+  {
+    "name": "ICEYE-X54",
+    "lat": -44.0284,
+    "lng": 127.5535,
+    "alt": 599,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64570"
+  },
+  {
+    "name": "ICEYE-X75",
+    "lat": -22.2544,
+    "lng": 140.0261,
+    "alt": 599,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68497"
+  },
+  {
+    "name": "VEGA",
+    "lat": 47.9282,
+    "lng": -44.6267,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68430"
+  },
+  {
+    "name": "SDA_1684",
+    "lat": 4.6675,
+    "lng": -4.7636,
+    "alt": 973,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "65994"
+  },
+  {
+    "name": "AEPEX",
+    "lat": -20.4866,
+    "lng": -33.5087,
+    "alt": 511,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68506"
+  },
+  {
+    "name": "ORBASTRO-JEN1",
+    "lat": 62.0334,
+    "lng": 96.2598,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69006"
+  },
+  {
+    "name": "MENUT",
+    "lat": -34.3372,
+    "lng": -104.7378,
+    "alt": 317,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "55010"
+  },
+  {
+    "name": "PLATERO",
+    "lat": 27.125,
+    "lng": -64.9414,
+    "alt": 355,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58262"
+  },
+  {
+    "name": "EWS-G3",
+    "lat": -1.9762,
+    "lng": 61.6924,
+    "alt": 35786,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "35491"
+  },
+  {
+    "name": "IGS Radar 5",
+    "lat": 78.2341,
+    "lng": -65.9682,
+    "alt": 502,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "42072"
+  },
+  {
+    "name": "DEIMOS 1",
+    "lat": -25.7865,
+    "lng": -25.0388,
+    "alt": 654,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "35681"
+  },
+  {
+    "name": "NOAA 6",
+    "lat": 57.2712,
+    "lng": -131.3224,
+    "alt": 787,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "11416"
+  },
+  {
+    "name": "ICEYE-X78",
+    "lat": 2.1153,
+    "lng": 82.0286,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68995"
+  },
+  {
+    "name": "BRO-22",
+    "lat": 56.6387,
+    "lng": 56.9929,
+    "alt": 588,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69504"
+  },
+  {
+    "name": "DAQI-2",
+    "lat": 48.7509,
+    "lng": 70.7365,
+    "alt": 707,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68760"
+  },
+  {
+    "name": "PRAETORIAN SDA_613",
+    "lat": 31.1257,
+    "lng": -21.0978,
+    "alt": 962,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "65576"
+  },
+  {
+    "name": "SDA_1664",
+    "lat": -75.5959,
+    "lng": 139.4639,
+    "alt": 998,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "65974"
+  },
+  {
+    "name": "NULINK-1",
+    "lat": 24.5738,
+    "lng": -101.5762,
+    "alt": 591,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69002"
+  },
+  {
+    "name": "SPACEMOBILE-008",
+    "lat": 4.4762,
+    "lng": -41.24,
+    "alt": 529,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69589"
+  },
+  {
+    "name": "FENGYUNG-4C",
+    "lat": -0.0008,
+    "lng": 133.0082,
+    "alt": 35787,
+    "mission": "Weather",
+    "color": "#87CEEB",
+    "category": "earth_obs",
+    "noradId": "67246"
+  },
+  {
+    "name": "SPACEMOBILE-010",
+    "lat": 44.0778,
+    "lng": -171.1224,
+    "alt": 532,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69591"
+  },
+  {
+    "name": "SPACEMOBILE-009",
+    "lat": 39.0801,
+    "lng": -75.2967,
+    "alt": 532,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69590"
+  },
+  {
+    "name": "HOKUSHIN1",
+    "lat": -11.2222,
+    "lng": -44.4395,
+    "alt": 405,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69648"
+  },
+  {
+    "name": "TERRA",
+    "lat": -35.5202,
+    "lng": 56.9396,
+    "alt": 704,
+    "mission": "Earth Science",
+    "color": "#90EE90",
+    "category": "earth_obs",
+    "noradId": "25994"
+  },
+  {
+    "name": "COCONUT",
+    "lat": 1.2978,
+    "lng": -51.5056,
+    "alt": 411,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98292"
+  },
+  {
+    "name": "PROVES - Electra",
+    "lat": -24.7581,
+    "lng": 109.5542,
+    "alt": 435,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98290"
+  },
+  {
+    "name": "PROVES - Alcyone",
+    "lat": -41.2123,
+    "lng": 84.5885,
+    "alt": 431,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98289"
+  },
+  {
+    "name": "PROVES - Atlas",
+    "lat": -41.2123,
+    "lng": 84.5885,
+    "alt": 431,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98288"
+  },
+  {
+    "name": "HUCSAT",
+    "lat": -7.582,
+    "lng": 120.9742,
+    "alt": 398,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69794"
+  },
+  {
+    "name": "LEMUR 2 MJR092620",
+    "lat": -61.8639,
+    "lng": -94.6687,
+    "alt": 447,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "58340"
+  },
+  {
+    "name": "ICEYE-X71",
+    "lat": -64.2446,
+    "lng": -19.9405,
+    "alt": 589,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68494"
+  },
+  {
+    "name": "ICEYE-X64",
+    "lat": 34.1537,
+    "lng": -1.9747,
+    "alt": 606,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67373"
+  },
+  {
+    "name": "ICEYE-X63",
+    "lat": 57.8688,
+    "lng": -9.0887,
+    "alt": 609,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67372"
+  },
+  {
+    "name": "ICEYE-X39",
+    "lat": -11.6261,
+    "lng": -99.5459,
+    "alt": 573,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "60546"
+  },
+  {
+    "name": "CUBY-2",
+    "lat": -8.1268,
+    "lng": 84.1012,
+    "alt": 597,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69881"
+  },
+  {
+    "name": "KOSTKA",
+    "lat": 49.377,
+    "lng": -103.6189,
+    "alt": 600,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69935"
+  },
+  {
+    "name": "MARINA",
+    "lat": -30.2253,
+    "lng": 80.8975,
+    "alt": 599,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69920"
+  },
+  {
+    "name": "IPOS-TDSM",
+    "lat": 20.8562,
+    "lng": 88.2664,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69913"
+  },
+  {
+    "name": "BRO-31",
+    "lat": -29.6104,
+    "lng": 81.0154,
+    "alt": 598,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69896"
+  },
+  {
+    "name": "FOSSASAT2E26",
+    "lat": -79.7838,
+    "lng": 36.6708,
+    "alt": 624,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69899"
+  },
+  {
+    "name": "CUBY-1",
+    "lat": -26.0383,
+    "lng": 81.4341,
+    "alt": 603,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69902"
+  },
+  {
+    "name": "CUBY-3",
+    "lat": 11.9779,
+    "lng": 86.8654,
+    "alt": 594,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69875"
+  },
+  {
+    "name": "CUBY-4",
+    "lat": 37.2001,
+    "lng": 91.1182,
+    "alt": 597,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69874"
+  },
+  {
+    "name": "CUBY-5",
+    "lat": 15.7305,
+    "lng": 87.3924,
+    "alt": 594,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69907"
+  },
+  {
+    "name": "CENTAURI-9",
+    "lat": -60.1502,
+    "lng": 71.7977,
+    "alt": 613,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69924"
+  },
+  {
+    "name": "CLOUDCT-PRECURSOR",
+    "lat": 28.5278,
+    "lng": -98.664,
+    "alt": 599,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69939"
+  },
+  {
+    "name": "CYBERCUBE",
+    "lat": 59.0325,
+    "lng": -107.5456,
+    "alt": 600,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69938"
+  },
+  {
+    "name": "ION SCV-023",
+    "lat": 51.9482,
+    "lng": 93.6317,
+    "alt": 596,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69876"
+  },
+  {
+    "name": "KITA-36",
+    "lat": -17.1765,
+    "lng": -92.268,
+    "alt": 603,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69909"
+  },
+  {
+    "name": "KITA-53",
+    "lat": 48.7929,
+    "lng": -103.5525,
+    "alt": 601,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69904"
+  },
+  {
+    "name": "KOYO",
+    "lat": 4.6791,
+    "lng": 85.8738,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69916"
+  },
+  {
+    "name": "MAVERIC",
+    "lat": -44.593,
+    "lng": 77.3814,
+    "alt": 623,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98271"
+  },
+  {
+    "name": "Navigator",
+    "lat": -2.5595,
+    "lng": -94.0801,
+    "alt": 600,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98270"
+  },
+  {
+    "name": "OASIS ALPHA",
+    "lat": 23.6942,
+    "lng": -97.9667,
+    "alt": 598,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69936"
+  },
+  {
+    "name": "RAFS",
+    "lat": -19.5944,
+    "lng": 82.6389,
+    "alt": 594,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69923"
+  },
+  {
+    "name": "REPLICATOR-2",
+    "lat": -82.1004,
+    "lng": -17.4716,
+    "alt": 620,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69927"
+  },
+  {
+    "name": "SCION-X",
+    "lat": -38.9176,
+    "lng": 78.9129,
+    "alt": 609,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69880"
+  },
+  {
+    "name": "TOM-1",
+    "lat": 80.9,
+    "lng": -152.376,
+    "alt": 606,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69872"
+  },
+  {
+    "name": "TOM-2",
+    "lat": 79.9612,
+    "lng": 135.0896,
+    "alt": 606,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69914"
+  },
+  {
+    "name": "TOM-3",
+    "lat": 19.7789,
+    "lng": 87.9623,
+    "alt": 594,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69906"
+  },
+  {
+    "name": "SPEAR-1C",
+    "lat": 75.8501,
+    "lng": 117.7274,
+    "alt": 606,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69897"
+  },
+  {
+    "name": "MARMOTSAT",
+    "lat": 50.247,
+    "lng": 94.6254,
+    "alt": 601,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69912"
+  },
+  {
+    "name": "Unknown 1 T17",
+    "lat": -40.43,
+    "lng": 78.7575,
+    "alt": 608,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98259"
+  },
+  {
+    "name": "ANDURIL-216",
+    "lat": 20.1796,
+    "lng": -97.4823,
+    "alt": 598,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69879"
+  },
+  {
+    "name": "OBJECT YN",
+    "lat": 11.3467,
+    "lng": 136.0296,
+    "alt": 399,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69798"
+  },
+  {
+    "name": "Unknown 3 T17",
+    "lat": -2.5595,
+    "lng": -94.0801,
+    "alt": 600,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98255"
+  },
+  {
+    "name": "SOLARAS",
+    "lat": -59.5687,
+    "lng": -57.4074,
+    "alt": 467,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98254"
+  },
+  {
+    "name": "STARS-X",
+    "lat": 78.1029,
+    "lng": -71.8338,
+    "alt": 586,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69502"
+  },
+  {
+    "name": "BLUEBIRD-11",
+    "lat": 36.2478,
+    "lng": 103.9118,
+    "alt": 533,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98251"
+  },
+  {
+    "name": "BLUEBIRD-12",
+    "lat": 53.0705,
+    "lng": 164.8075,
+    "alt": 535,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98250"
+  },
+  {
+    "name": "BLUEBIRD-13",
+    "lat": 44.6687,
+    "lng": -157.3471,
+    "alt": 531,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98249"
+  },
+  {
+    "name": "JAMX01",
+    "lat": -79.8684,
+    "lng": 127.0708,
+    "alt": 573,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98248"
+  },
+  {
+    "name": "BY70-4",
+    "lat": -75.7686,
+    "lng": -131.6737,
+    "alt": 573,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98247"
+  },
+  {
+    "name": "TRISAT-S",
+    "lat": -12.6038,
+    "lng": 81.8489,
+    "alt": 598,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98406"
+  },
+  {
+    "name": "SpaceTeamSat1",
+    "lat": -17.9787,
+    "lng": 82.5982,
+    "alt": 601,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99416"
+  },
+  {
+    "name": "FRAMSAT-1",
+    "lat": -19.4913,
+    "lng": 82.8161,
+    "alt": 602,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98914"
+  },
+  {
+    "name": "PLATFORM-6",
+    "lat": -14.7685,
+    "lng": 82.1437,
+    "alt": 599,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98405"
+  },
+  {
+    "name": "YAM-17",
+    "lat": 70.1501,
+    "lng": -118.0136,
+    "alt": 608,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69884"
+  },
+  {
+    "name": "YAM-12",
+    "lat": 40.4282,
+    "lng": 88.6394,
+    "alt": 602,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69003"
+  },
+  {
+    "name": "YAM-14",
+    "lat": -6.3075,
+    "lng": 81.1595,
+    "alt": 601,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69008"
+  },
+  {
+    "name": "YAM-16",
+    "lat": 13.5795,
+    "lng": -100.1895,
+    "alt": 594,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68992"
+  },
+  {
+    "name": "ICEYE-X72",
+    "lat": -49.4157,
+    "lng": -26.6121,
+    "alt": 589,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68504"
+  },
+  {
+    "name": "ICEYE-X58",
+    "lat": 55.1639,
+    "lng": 66.8463,
+    "alt": 523,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "66751"
+  },
+  {
+    "name": "OT-FOREST-17 TELPERION",
+    "lat": 12.301,
+    "lng": 83.3734,
+    "alt": 590,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "68988"
+  },
+  {
+    "name": "UASATNANO",
+    "lat": -4.1357,
+    "lng": 76.4174,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98240"
+  },
+  {
+    "name": "TITANIA",
+    "lat": 30.1309,
+    "lng": 71.5661,
+    "alt": 517,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98220"
+  },
+  {
+    "name": "TERRA NOVA",
+    "lat": 78.3108,
+    "lng": 36.9902,
+    "alt": 522,
+    "mission": "Earth Science",
+    "color": "#90EE90",
+    "category": "earth_obs",
+    "noradId": "98230"
+  },
+  {
+    "name": "SPRITE",
+    "lat": 77.9719,
+    "lng": -66.5314,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "99299"
+  },
+  {
+    "name": "REASON-1",
+    "lat": 38.8475,
+    "lng": 69.8923,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98217"
+  },
+  {
+    "name": "RADIX-M",
+    "lat": 68.491,
+    "lng": 56.6589,
+    "alt": 522,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98223"
+  },
+  {
+    "name": "RADIX-A",
+    "lat": 68.659,
+    "lng": 56.4919,
+    "alt": 521,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98224"
+  },
+  {
+    "name": "STAR CATCHER-1",
+    "lat": 26.3891,
+    "lng": 72.192,
+    "alt": 518,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98216"
+  },
+  {
+    "name": "OSSIED",
+    "lat": 54.6271,
+    "lng": 65.36,
+    "alt": 521,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98221"
+  },
+  {
+    "name": "KENSAT",
+    "lat": -12.8311,
+    "lng": 77.5925,
+    "alt": 523,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98372"
+  },
+  {
+    "name": "ION SCV-026",
+    "lat": 45.7955,
+    "lng": 68.2206,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98227"
+  },
+  {
+    "name": "ION SCV-024",
+    "lat": 48.5344,
+    "lng": 67.4432,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98226"
+  },
+  {
+    "name": "ION SCV-025",
+    "lat": 58.3449,
+    "lng": 63.7403,
+    "alt": 521,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98228"
+  },
+  {
+    "name": "HRM-01",
+    "lat": 1.2835,
+    "lng": 75.7136,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98231"
+  },
+  {
+    "name": "GUARANISAT-2",
+    "lat": 53.0659,
+    "lng": 65.9491,
+    "alt": 518,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98236"
+  },
+  {
+    "name": "GPDM",
+    "lat": -3.6999,
+    "lng": 76.3514,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98237"
+  },
+  {
+    "name": "GOMX-5",
+    "lat": 69.3633,
+    "lng": 55.7311,
+    "alt": 522,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98239"
+  },
+  {
+    "name": "ELEAF-01",
+    "lat": 3.5492,
+    "lng": 75.4264,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98233"
+  },
+  {
+    "name": "CRIMSON-1",
+    "lat": 13.7524,
+    "lng": 74.052,
+    "alt": 517,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98238"
+  },
+  {
+    "name": "BRO-32",
+    "lat": 41.4698,
+    "lng": 69.3045,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98229"
+  },
+  {
+    "name": "BRO-23",
+    "lat": -28.8019,
+    "lng": 79.962,
+    "alt": 528,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98234"
+  },
+  {
+    "name": "BABY BIRD",
+    "lat": 24.5949,
+    "lng": 72.4845,
+    "alt": 518,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98232"
+  },
+  {
+    "name": "ATHENE-1",
+    "lat": 14.8208,
+    "lng": 73.9155,
+    "alt": 518,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98222"
+  },
+  {
+    "name": "ALTAIR-1",
+    "lat": 37.7669,
+    "lng": 70.1188,
+    "alt": 518,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98219"
+  },
+  {
+    "name": "AE4LA",
+    "lat": 70.1257,
+    "lng": 54.8426,
+    "alt": 523,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98235"
+  },
+  {
+    "name": "NIS-PQ",
+    "lat": 37.7842,
+    "lng": 70.2755,
+    "alt": 518,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98225"
+  },
+  {
+    "name": "SANOSAT-2",
+    "lat": 53.0937,
+    "lng": 65.9379,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98385"
+  },
+  {
+    "name": "HADES-L",
+    "lat": 80.0291,
+    "lng": 28.2363,
+    "alt": 522,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98206"
+  },
+  {
+    "name": "UNNE-1B",
+    "lat": 76.386,
+    "lng": 43.4927,
+    "alt": 521,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98205"
+  },
+  {
+    "name": "UTNH-SAT",
+    "lat": 53.0937,
+    "lng": 65.9379,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98211"
+  },
+  {
+    "name": "ETNS",
+    "lat": 53.0937,
+    "lng": 65.9379,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98210"
+  },
+  {
+    "name": "USAT-I",
+    "lat": 53.0937,
+    "lng": 65.9379,
+    "alt": 520,
+    "mission": "Military Recon",
+    "color": "#FF3D3D",
+    "category": "military",
+    "noradId": "98212"
+  },
+  {
+    "name": "ERMINAZ-2U",
+    "lat": 25.6869,
+    "lng": 72.2869,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98207"
+  },
+  {
+    "name": "ERMINAZ-2V",
+    "lat": 35.1831,
+    "lng": 70.6263,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98208"
+  },
+  {
+    "name": "ERMINAZ-2X",
+    "lat": -11.8955,
+    "lng": 77.2937,
+    "alt": 524,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98209"
+  },
+  {
+    "name": "SIDLOC PQ-03",
+    "lat": 43.9168,
+    "lng": 66.5217,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98204"
+  },
+  {
+    "name": "SIDLOC PQ-04",
+    "lat": 43.9168,
+    "lng": 66.5217,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98203"
+  },
+  {
+    "name": "SIDLOC PQ-05",
+    "lat": 40.1056,
+    "lng": 69.6186,
+    "alt": 518,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98202"
+  },
+  {
+    "name": "SIDLOC PQ-06",
+    "lat": 39.9741,
+    "lng": 70.1135,
+    "alt": 518,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98201"
+  },
+  {
+    "name": "BEECON-A",
+    "lat": 53.0937,
+    "lng": 65.9379,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98200"
+  },
+  {
+    "name": "PRISM-A",
+    "lat": 53.0937,
+    "lng": 65.9379,
+    "alt": 520,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98199"
+  },
+  {
+    "name": "CPSAT",
+    "lat": -26.4719,
+    "lng": -81.1762,
+    "alt": 591,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98194"
+  },
+  {
+    "name": "SD-1_SAT",
+    "lat": -57.5843,
+    "lng": -86.1336,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98196"
+  },
+  {
+    "name": "DAEJEONSAT-1",
+    "lat": -57.5843,
+    "lng": -86.1336,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98195"
+  },
+  {
+    "name": "SLEDGE",
+    "lat": -57.7656,
+    "lng": -89.5996,
+    "alt": 603,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98241"
+  },
+  {
+    "name": "JACK-007",
+    "lat": -57.5843,
+    "lng": -86.1336,
+    "alt": 595,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98193"
+  },
+  {
+    "name": "GRITSS",
+    "lat": -29.7998,
+    "lng": -90.098,
+    "alt": 608,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "69931"
+  },
+  {
+    "name": "ALSAT 3A",
+    "lat": 73.4519,
+    "lng": -74.4443,
+    "alt": 504,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "67474"
+  },
+  {
+    "name": "ARVAKER-2",
+    "lat": 16.2634,
+    "lng": -58.1657,
+    "alt": 588,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "64567"
+  },
+  {
+    "name": "OSIRIS-E",
+    "lat": 39.8827,
+    "lng": 69.651,
+    "alt": 522,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98190"
+  },
+  {
+    "name": "MOI-1",
+    "lat": 48.5567,
+    "lng": 67.4363,
+    "alt": 519,
+    "mission": "Unknown",
+    "color": "#00E5FF",
+    "category": "other",
+    "noradId": "98189"
+  }
+];
+
+
+/**
+ * Normalized 1,389 satellites with both (lon/lng), altitude in km & meters,
+ * category badges, and hex color codes.
+ */
+export const USER_SATELLITES = Object.freeze(
+  USER_SATELLITES_RAW.map((sat) => {
+    const noradNum = Number(sat.noradId);
+    const lat = Number(sat.lat);
+    const lon = Number(sat.lng !== undefined ? sat.lng : sat.lon);
+    const altKm = Number(sat.alt);
+    const altM = altKm * 1000;
+    const cat = sat.category || 'other';
+    const mission = sat.mission || 'Unknown';
+    const color = sat.color || '#00E5FF';
+
+    let badge = '🛰️';
+    if (cat === 'science') badge = '🔬';
+    else if (cat === 'military') badge = '🛡️';
+    else if (cat === 'earth_obs') badge = mission.includes('Weather') ? '⛅' : '🌍';
+    else if (cat === 'comms') badge = '📡';
+    else if (cat === 'navigation') badge = '🧭';
+
+    const categoryLabels = {
+      science: 'SCIENCE & SPACE STATION',
+      military: 'DEFENSE & RECONNAISSANCE',
+      earth_obs: 'EARTH OBSERVATION & WEATHER',
+      comms: 'COMMUNICATIONS',
+      navigation: 'NAVIGATION & GNSS',
+      other: 'GENERAL ORBIT & CUBESATS',
+    };
+
+    return Object.freeze({
+      id: 'sat-' + noradNum,
+      noradId: noradNum,
+      noradIdStr: String(sat.noradId),
+      name: sat.name,
+      lat,
+      lon,
+      lng: lon,
+      alt: altKm,
+      altM,
+      mission,
+      color,
+      category: cat,
+      categoryLabel: categoryLabels[cat] || cat.toUpperCase(),
+      badge,
+    });
+  })
+);
+
+const NORAD_MAP = new Map(USER_SATELLITES.map((s) => [s.noradId, s]));
+
+/**
+ * Return all decoded user satellites.
+ * @returns {readonly object[]}
+ */
+export function getUserSatellites() {
+  return USER_SATELLITES;
+}
+
+/**
+ * Get a satellite by its NORAD ID.
+ * @param {number|string} noradId
+ * @returns {object|undefined}
+ */
+export function getSatelliteByNorad(noradId) {
+  return NORAD_MAP.get(Number(noradId));
+}
+
+/**
+ * Filter satellites by category.
+ * @param {string} category
+ * @returns {object[]}
+ */
+export function getSatellitesByCategory(category) {
+  if (!category || category === 'all') return USER_SATELLITES;
+  return USER_SATELLITES.filter((s) => s.category === category);
+}
+
+/**
+ * Search satellites by query string across name, NORAD ID, or mission.
+ * @param {string} query
+ * @returns {object[]}
+ */
+export function searchSatellites(query) {
+  if (!query || !query.trim()) return USER_SATELLITES;
+  const q = query.trim().toLowerCase();
+  return USER_SATELLITES.filter(
+    (s) =>
+      s.name.toLowerCase().includes(q) ||
+      s.noradIdStr.includes(q) ||
+      s.mission.toLowerCase().includes(q) ||
+      s.category.toLowerCase().includes(q)
+  );
+}
+
+/**
+ * Calculate dynamic telemetry for a satellite drifting along its orbital track.
+ * @param {object} sat
+ * @param {Date} [referenceDate]
+ * @returns {object}
+ */
+export function calculateSatelliteTelemetry(sat, referenceDate = new Date()) {
+  if (!sat) return null;
+  const epoch = new Date(USER_SATELLITES_METADATA.timestamp || '2026-10-17T17:11:20Z').getTime();
+  const elapsedSec = (referenceDate.getTime() - epoch) / 1000;
+
+  // Orbital speed approximation for LEO/MEO: v = sqrt(GM / (R_earth + alt))
+  const R_earth = 6371; // km
+  const r = R_earth + (sat.alt || 500);
+  const orbitalPeriodSec = 2 * Math.PI * Math.sqrt(Math.pow(r, 3) / 398600.4418); // seconds (~5400-5800s for LEO)
+  const speedKmH = Math.round((2 * Math.PI * r / orbitalPeriodSec) * 3600);
+  const speedKmS = (speedKmH / 3600).toFixed(2);
+
+  // Dynamic sub-satellite ground drift (longitude advances as orbit progresses minus Earth rotation)
+  const driftRateDegPerSec = 360 / orbitalPeriodSec - 360 / 86164; // orbital motion minus Earth rotation
+  let currentLon = sat.lon + (elapsedSec * driftRateDegPerSec * 0.1);
+  currentLon = ((currentLon + 180) % 360 + 360) % 360 - 180;
+
+  // Approximate sinusoidal latitude oscillation within orbital inclination
+  const inclination = Math.min(89, Math.max(10, Math.abs(sat.lat) + 5));
+  const phase = (elapsedSec / orbitalPeriodSec) * 2 * Math.PI;
+  const currentLat = Math.round(Math.sin(phase) * inclination * 10) / 10;
+
+  let regionName = 'Over Continental Landmass';
+  if (currentLat >= 5 && currentLat <= 38 && currentLon >= 65 && currentLon <= 98) {
+    regionName = '🇮🇳 Sub-satellite: Indian Subcontinent Sector';
+  } else if (currentLat >= -40 && currentLat <= 20 && currentLon >= 40 && currentLon <= 110) {
+    regionName = '🌊 Sub-satellite: Indian Ocean Basin';
+  } else if (currentLat >= 30 && currentLat <= 70 && currentLon >= -10 && currentLon <= 45) {
+    regionName = '🌍 Sub-satellite: European Airspace';
+  } else if (currentLat >= 20 && currentLat <= 55 && currentLon >= -130 && currentLon <= -65) {
+    regionName = '🌎 Sub-satellite: North American Sector';
+  } else if (currentLat >= -50 && currentLat <= 20 && currentLon >= -180 && currentLon <= -70) {
+    regionName = '🌊 Sub-satellite: Pacific Ocean Basin';
+  } else if (currentLat >= -35 && currentLat <= 5 && currentLon >= -80 && currentLon <= -35) {
+    regionName = '🌎 Sub-satellite: South American Sector';
+  } else if (currentLat >= -35 && currentLat <= 35 && currentLon >= -20 && currentLon <= 50) {
+    regionName = '🌍 Sub-satellite: African Continental Sector';
+  } else if (currentLat >= -45 && currentLat <= -10 && currentLon >= 110 && currentLon <= 160) {
+    regionName = '🦘 Sub-satellite: Australian Sector';
+  } else {
+    regionName = '🌐 Sub-satellite: Global Low Earth Orbit';
+  }
+
+  return {
+    ...sat,
+    currentLat,
+    currentLon,
+    speedKmH,
+    speedKmS,
+    orbitalPeriodMin: Math.round(orbitalPeriodSec / 60),
+    regionName,
+  };
+}

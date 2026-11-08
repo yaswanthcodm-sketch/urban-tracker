@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Complaint Portal — RoadGuard AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Leaflet CSS & JS for location pin selector -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/static/index.html" class="brand">
+      <div class="brand-logo">🛡️</div>
+      <div class="brand-text">
+        <h1>RoadGuard AI</h1>
+        <p>Citizen Grievance Portal</p>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/static/index.html">Home</a></li>
+      <li><a href="/static/dashboard.html">Live Dashboard</a></li>
+      <li><a href="/static/detect.html">AI Detection</a></li>
+      <li><a href="/static/cameras.html">CCTV Feeds</a></li>
+      <li><a href="/static/satellite.html">Satellite Screening</a></li>
+      <li><a href="/static/map.html">Damage Map</a></li>
+      <li><a href="/static/report.html" class="active">Report Damage</a></li>
+      <li><a href="/static/track.html">Track Complaint</a></li>
+      <li><a href="/static/admin.html">Officer Portal</a></li>
+    </ul>
+
+    <div class="demo-mode-pill">Direct Citizen Intake</div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <div style="max-width: 900px; margin: 0 auto;">
+      
+      <div style="margin-bottom: 1.5rem; text-align: center;">
+        <span class="hero-badge">Public Grievance Redressal</span>
+        <h2 style="font-size: 2rem; font-weight: 800; color: white;">Report Road Damage in Your Area</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0.35rem auto 0;">
+          Submit verified photographic evidence and GPS coordinates. We'll automatically route your complaint to the responsible highway or municipal department.
+        </p>
+      </div>
+
+      <div class="card">
+        
+        <form id="citizen-report-form">
+          
+          <!-- Defect Details -->
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: white; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+              1. Distress Information
+            </h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label">Defect Category *</label>
+                <select id="report-defect-type" class="form-select" required>
+                  <option value="Pothole">Pothole (Depression / Crater)</option>
+                  <option value="Alligator cracking">Alligator Cracking (Interconnected fatigue)</option>
+                  <option value="Road crack">Road Crack (Longitudinal / Transverse)</option>
+                  <option value="Damaged road edge">Damaged Road Edge / Shoulder Erosion</option>
+                  <option value="Other visible road damage">Other Visible Road Damage</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Estimated Severity</label>
+                <select id="report-severity" class="form-select">
+                  <option value="Medium">Medium (Caution required)</option>
+                  <option value="High">High (Impacting traffic / Rim hazard)</option>
+                  <option value="Critical">Critical (Severe danger / Accident risk)</option>
+                  <option value="Low">Low (Surface weathering)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Description & Observations</label>
+              <textarea id="report-desc" class="form-control" rows="3" placeholder="Describe the hazard (e.g. depth, width, water accumulation, whether traffic is swerving to avoid it)..."></textarea>
+            </div>
+          </div>
+
+          <!-- Photo Evidence -->
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: white; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+              2. Photographic Evidence
+            </h3>
+
+            <div id="report-dropzone" class="upload-dropzone">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" style="color: var(--accent-cyan);">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              <div style="font-weight: 600; color: white; margin-bottom: 0.25rem;">Upload Road Photo Evidence</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Clear images with asphalt context help inspectors evaluate quicker.</div>
+              <input type="file" id="report-file" accept="image/*" style="display: none;">
+            </div>
+            <div id="report-file-info" style="margin-top: 0.5rem; font-size: 0.825rem; color: var(--accent-cyan); display: none;"></div>
+          </div>
+
+          <!-- Location & Pin Selection -->
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: white; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+              3. Road Location & Coordinates
+            </h3>
+
+            <div class="form-group">
+              <label class="form-label">Road Name, Highway Number, or Nearby Landmark *</label>
+              <input type="text" id="report-road-name" class="form-control" placeholder="e.g. NH-65 Toll Plaza Bypass / MG Road Crossroad" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.75rem;">
+              <div class="form-group">
+                <label class="form-label">Latitude</label>
+                <input type="number" step="0.000001" id="report-lat" class="form-control" value="16.519500" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Longitude</label>
+                <input type="number" step="0.000001" id="report-lon" class="form-control" value="80.630800" required>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <button type="button" id="btn-citizen-gps" class="btn btn-secondary btn-sm" style="flex: 1;">
+                <span>📍</span> Acquire GPS from Mobile / Browser
+              </button>
+            </div>
+
+            <!-- Mini Interactive Pin Picker -->
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+              Drag the red pin on the map to pinpoint the exact defect location:
+            </div>
+            <div id="pin-map" style="height: 240px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"></div>
+          </div>
+
+          <!-- Reporter Contact -->
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: white; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+              4. Reporter Information (Optional)
+            </h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label">Your Name</label>
+                <input type="text" id="report-user-name" class="form-control" placeholder="Optional (Anonymous submission permitted)">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email / Phone for SMS Tracking</label>
+                <input type="text" id="report-user-contact" class="form-control" placeholder="e.g. mobile or email">
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 0.5rem; margin-top: 0.5rem;">
+              <input type="checkbox" id="report-consent" required style="accent-color: var(--primary); margin-top: 3px; cursor: pointer;">
+              <label for="report-consent" style="font-size: 0.8rem; color: var(--text-muted); cursor: pointer;">
+                I declare that the reported road hazard is accurate to the best of my knowledge, and I consent to the public coordinates being recorded for municipal repair dispatch.
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-submit-report" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1.05rem;">
+            <span>🚀</span> Submit Complaint & Generate Tracking ID
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+    <!-- Duplicate Detection Warning Modal -->
+    <div id="duplicate-modal" class="modal-backdrop">
+      <div class="modal-dialog">
+        <div class="card-header">
+          <h3 class="card-title" style="color: #fbbf24;">⚠️ Possible Duplicate Complaint Detected</h3>
+          <button id="btn-close-dup-modal" class="btn btn-secondary btn-sm" style="padding: 0.2rem 0.5rem;">✕</button>
+        </div>
+
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Our GIS database found an active or recently reported road defect within <strong>50 meters</strong> of this location:
+        </p>
+
+        <div id="dup-details-box" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); padding: 1rem; border-radius: 6px; margin-bottom: 1.25rem;">
+          <!-- Dynamically filled -->
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button id="btn-view-existing-dup" class="btn btn-secondary btn-sm" style="flex: 1;">
+            <span>🔍</span> Track Existing Complaint
+          </button>
+          <button id="btn-submit-anyway" class="btn btn-primary btn-sm" style="flex: 1;">
+            <span>📤</span> Submit as New Report Anyway
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>RoadGuard AI — Public Grievance Portal &bull; Verified Road Damage Registration</p>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/report.js"></script>
+</body>
+</html>

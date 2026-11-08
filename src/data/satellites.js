@@ -32,6 +32,7 @@ import {
 } from './contextStore.js';
 import { holdContinuousRender, releaseContinuousRender } from '../renderGovernor.js';
 import { isExplicitLayerStateOrigin } from './layerState.js';
+import { USER_SATELLITES, calculateSatelliteTelemetry } from './userSatellites.js';
 
 /**
  * Satellite Orbits — Real-time positions via CelesTrak TLE + SGP4 propagation.
@@ -277,6 +278,7 @@ function _classTally() {
   // ISS is ingested as `visual`, and the legend must file it exactly where its
   // card does (STATION) rather than letting STATION vanish from the legend.
   for (const [noradId, sat] of _catalog) {
+    if (sat.isUserSat) continue;
     entries.push({ group: sat.group, isIss: noradId === ISS_NORAD });
   }
   const counts = tallySatelliteClasses(entries);
@@ -509,6 +511,7 @@ function orbitalPeriodSeconds(satrec) {
  * Steps around one full orbit based on the satellite's mean motion.
  */
 function computeOrbitPath(satrec, referenceDate) {
+  if (!satrec) return [];
   const periodSec = orbitalPeriodSeconds(satrec);
   const stepSec = periodSec / ORBIT_PATH_STEPS;
 
@@ -537,6 +540,25 @@ function computeOrbitPath(satrec, referenceDate) {
 }
 
 /**
+ * Compute circular orbit path for satellites without SGP4 TLEs.
+ */
+function computeCircularOrbitPath(lat, lon, altM) {
+  const positions = [];
+  const R_earth = 6371000;
+  const radius = R_earth + (altM || 500000);
+  const inclination = Math.min(88, Math.max(15, Math.abs(lat) + 5)) * (Math.PI / 180);
+  const raan = (lon * Math.PI) / 180;
+  for (let i = 0; i <= ORBIT_PATH_STEPS; i++) {
+    const u = (i / ORBIT_PATH_STEPS) * 2 * Math.PI;
+    const x = radius * (Math.cos(raan) * Math.cos(u) - Math.sin(raan) * Math.sin(u) * Math.cos(inclination));
+    const y = radius * (Math.sin(raan) * Math.cos(u) + Math.cos(raan) * Math.sin(u) * Math.cos(inclination));
+    const z = radius * (Math.sin(u) * Math.sin(inclination));
+    positions.push(new Cesium.Cartesian3(x, y, z));
+  }
+  return positions;
+}
+
+/**
  * Show orbital path for a satellite.
  *
  * RING FLICKER FIX: this is a one-instance Cesium.Primitive built
@@ -561,7 +583,9 @@ function _showOrbitPath(noradId, color) {
   if (!sat || !_viewer) return;
 
   const bakeDate = new Date();
-  const basePositions = computeOrbitPath(sat.satrec, bakeDate);
+  const basePositions = sat.satrec
+    ? computeOrbitPath(sat.satrec, bakeDate)
+    : computeCircularOrbitPath(sat.lat || sat.userSat?.lat || 0, sat.lon || sat.userSat?.lon || 0, sat.altM || sat.userSat?.altM || 500000);
   if (basePositions.length < 2) return;
 
   const pathColor = color || Cesium.Color.CYAN;
@@ -739,10 +763,24 @@ function _getTrackedFramePosition() {
 
   const frameNumber = _viewer?.scene?.frameState?.frameNumber ?? -1;
   if (frameNumber === -1 || frameNumber !== _trackedFrameNumber || _trackedFrameGeo === null) {
-    const pos = propagatePosition(
-      sat.satrec,
-      _trackedFrameNowForTest ? new Date(_trackedFrameNowForTest()) : new Date(),
-    );
+    let pos = sat.satrec
+      ? propagatePosition(
+          sat.satrec,
+          _trackedFrameNowForTest ? new Date(_trackedFrameNowForTest()) : new Date(),
+        )
+      : null;
+    if (!pos && sat.userSat) {
+      const now = _trackedFrameNowForTest ? new Date(_trackedFrameNowForTest()) : new Date();
+      const telemetry = calculateSatelliteTelemetry(sat.userSat, now);
+      if (telemetry) {
+        pos = {
+          longitude: telemetry.currentLon,
+          latitude: telemetry.currentLat,
+          altitude: sat.altM || 500000,
+          speedMps: (telemetry.speedKmH * 1000) / 3600,
+        };
+      }
+    }
     if (!pos) return _trackedFrameGeo; // propagation hiccup — keep last good sample
     _trackedFrameGeo = pos;
     Cesium.Cartesian3.fromDegrees(pos.longitude, pos.latitude, pos.altitude, undefined, _trackedFrameCartesian);
@@ -985,7 +1023,9 @@ function _trackSatellite(noradId, { origin = 'programmatic' } = {}) {
   // Comfortable tracking landing: ~726 km back for LEO (user-validated
   // "slightly zoomed out" framing — no stutter, label reads cleanly), scaled
   // up for MEO/GEO so the camera doesn't land on top of a high-orbit dot.
-  const initialPos = propagatePosition(sat.satrec, new Date());
+  const initialPos = sat.satrec
+    ? propagatePosition(sat.satrec, new Date())
+    : (sat.userSat ? { altitude: sat.altM || 500000, latitude: sat.lat, longitude: sat.lon } : null);
   const viewScale = initialPos && initialPos.altitude > HIGH_ORBIT_ALTITUDE_M
     ? TRACK_VIEW_FROM_HIGH_SCALE
     : 1;
@@ -1034,10 +1074,20 @@ function _propagateAll() {
 
   for (const [noradId, sat] of _catalog) {
     if (sat.group === 'dense') continue;
-    const pos = propagatePosition(sat.satrec, now);
-    if (!pos) continue;
+    let cartesian = null;
+    if (sat.satrec) {
+      const pos = propagatePosition(sat.satrec, now);
+      if (pos) {
+        cartesian = Cesium.Cartesian3.fromDegrees(pos.longitude, pos.latitude, pos.altitude);
+      }
+    } else if (sat.userSat) {
+      const telemetry = calculateSatelliteTelemetry(sat.userSat, now);
+      if (telemetry) {
+        cartesian = Cesium.Cartesian3.fromDegrees(telemetry.currentLon, telemetry.currentLat, sat.altM || 500000);
+      }
+    }
+    if (!cartesian) continue;
 
-    const cartesian = Cesium.Cartesian3.fromDegrees(pos.longitude, pos.latitude, pos.altitude);
     const point = _points.get(noradId);
     if (point) {
       point.position = cartesian;
@@ -1726,6 +1776,51 @@ const satellitesLayer = {
           color: style.color,
           outlineColor: style.outlineColor,
           outlineWidth: style.outlineWidth,
+          scaleByDistance: new Cesium.NearFarScalar(1e6, 1.5, 2e7, 0.6),
+          id: noradId,
+        });
+
+        _points.set(noradId, point);
+      }
+
+      // Ingest decoded user satellites (1,389 telemetry nodes)
+      for (const userSat of USER_SATELLITES) {
+        const noradId = userSat.noradId;
+        if (seen.has(noradId)) {
+          const existing = _catalog.get(noradId);
+          if (existing) {
+            existing.userSat = userSat;
+            existing.mission = userSat.mission;
+            existing.category = userSat.category;
+            existing.badge = userSat.badge;
+          }
+          continue;
+        }
+        seen.add(noradId);
+
+        _catalog.set(noradId, {
+          name: userSat.name,
+          satrec: null,
+          group: userSat.category === 'navigation' ? 'gps-ops' : (userSat.category === 'comms' ? 'geo' : (userSat.category === 'science' ? 'stations' : 'visual')),
+          userSat,
+          isUserSat: true,
+          color: userSat.color,
+          mission: userSat.mission,
+          category: userSat.category,
+          lat: userSat.lat,
+          lon: userSat.lon,
+          alt: userSat.alt,
+          altM: userSat.altM,
+        });
+
+        const cartesian = Cesium.Cartesian3.fromDegrees(userSat.lon, userSat.lat, userSat.altM);
+        const customColor = Cesium.Color.fromCssColorString(userSat.color);
+        const point = _pointCollection.add({
+          position: cartesian,
+          pixelSize: userSat.category === 'science' ? 8 : (userSat.category === 'military' ? 7 : 6),
+          color: customColor,
+          outlineColor: POINT_OUTLINE,
+          outlineWidth: userSat.category === 'military' || userSat.category === 'science' ? 1 : 0,
           scaleByDistance: new Cesium.NearFarScalar(1e6, 1.5, 2e7, 0.6),
           id: noradId,
         });

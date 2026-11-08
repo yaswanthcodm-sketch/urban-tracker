@@ -3,14 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>God's Eye View</title>
-  <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-  <link rel="stylesheet" href="/style.css" />
+  <title>Urban Tracker</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=3" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=3" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3" />
+  <link rel="shortcut icon" href="/favicon.ico?v=3" />
+  <link rel="stylesheet" href="/style.css?v=12" />
+  <link rel="stylesheet" href="/css/complaint-tracking.css?v=12" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+  <script>
+    // Auth Gate: Every visitor must login first before entering RoadGuard AI
+    (function() {
+      try {
+        const sessionActive = sessionStorage.getItem('urban_tracker_session_active') === 'true';
+        // If not authenticated in this session, start at login page first
+        if (!sessionActive) {
+          window.location.replace('/login.html');
+        }
+      } catch (e) {
+        window.location.replace('/login.html');
+      }
+    })();
+  </script>
 </head>
 <body>
   <div id="cesiumContainer"></div>
@@ -22,11 +41,193 @@
     <div id="world-overlay-status" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
 
+  <!-- Top Right Dedicated Account Profile & Sign Out Widget -->
+  <div id="top-right-account" class="top-right-account-wrap">
+    <button id="account-dropdown-trigger" class="account-btn" type="button" aria-haspopup="true" aria-expanded="false" title="My Account Profile & Sign Out">
+      <span class="account-icon-pill">👤</span>
+      <span id="account-display-name" class="account-name">yaswanthcodm</span>
+      <span class="account-arrow">▾</span>
+    </button>
+    <div id="account-menu-popover" class="account-popover hidden" role="menu">
+      <div class="account-popover-header">
+        <div class="user-avatar-glow">👤</div>
+        <div class="user-details">
+          <span class="user-label">SIGNED IN ACCOUNT</span>
+          <strong id="account-full-email" class="user-email">yaswanthcodm@gmail.com</strong>
+          <span class="user-status-pill">🟢 Verified Citizen · Urban Tracker</span>
+        </div>
+      </div>
+      <div class="account-popover-divider"></div>
+      <div class="account-popover-body">
+        <button type="button" id="account-btn-track-complaints" class="account-menu-row">
+          <span class="menu-row-icon">📋</span>
+          <div class="menu-row-text">
+            <strong>Track Complaints</strong>
+            <small>View live road repair progress</small>
+          </div>
+        </button>
+        <button type="button" id="account-btn-signout" class="account-menu-row signout-row">
+          <span class="menu-row-icon">🚪</span>
+          <div class="menu-row-text">
+            <strong>Sign Out</strong>
+            <small>End session & return to Login</small>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Title -->
   <div id="title-bar">
     <div class="title-glow"></div>
-    <h1><span class="title-logo brand-logo" data-logo-gaze data-logo-src="/logo.svg" aria-hidden="true"><img src="/logo.svg" alt="" /></span> <span>GOD'S EYE <span class="title-accent">VIEW</span></span></h1>
-    <p class="subtitle">NO PLACE LEFT BEHIND</p>
+    <h1><span class="title-logo brand-logo" data-logo-gaze data-logo-src="/logo.svg" aria-hidden="true"><img src="/logo.svg" alt="" /></span> <span>URBAN <span class="title-accent">TRACKER</span></span></h1>
+    <p class="subtitle">REAL-TIME GLOBAL & URBAN INTELLIGENCE</p>
+    <div class="header-controls-row">
+      <!-- Clean & Spacious Location Search -->
+      <div class="header-search-wrap">
+        <span class="header-search-icon" aria-hidden="true">&#x1F50E;</span>
+        <input type="text" id="header-search-input" placeholder="Search any location, road, or area..." autocomplete="off" spellcheck="false" />
+        <button id="header-search-btn" type="button" title="Search and zoom close to roads">FIND</button>
+      </div>
+      <!-- 22 Official Indian Languages Selector -->
+      <div class="header-lang-wrap" title="Select Indian Language (22 Official Scheduled Languages)">
+        <span class="lang-globe">🌐</span>
+        <select id="header-lang-select" class="header-country-select header-lang-select" aria-label="Select from 22 official Indian languages">
+          <option value="en">🌐 English</option>
+          <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+          <option value="te">🇮🇳 తెలుగు (Telugu)</option>
+          <option value="ta">🇮🇳 தமிழ் (Tamil)</option>
+          <option value="kn">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+          <option value="ml">🇮🇳 മലയാളം (Malayalam)</option>
+          <option value="mr">🇮🇳 मराठी (Marathi)</option>
+          <option value="bn">🇮🇳 বাংলা (Bengali)</option>
+          <option value="gu">🇮🇳 ગુજરાતી (Gujarati)</option>
+          <option value="pa">🇮🇳 ਪੰਜਾਬੀ (Punjabi)</option>
+          <option value="or">🇮🇳 ଓଡ଼ିଆ (Odia)</option>
+          <option value="as">🇮🇳 অসমীয়া (Assamese)</option>
+          <option value="ur">🇮🇳 اردو (Urdu)</option>
+          <option value="sa">🇮🇳 संस्कृतम् (Sanskrit)</option>
+          <option value="ne">🇮🇳 नेपाली (Nepali)</option>
+          <option value="kok">🇮🇳 कोंकणी (Konkani)</option>
+          <option value="mai">🇮🇳 मैथिली (Maithili)</option>
+          <option value="mni">🇮🇳 মৈতৈলোন্ (Manipuri)</option>
+          <option value="brx">🇮🇳 बड़ो (Bodo)</option>
+          <option value="doi">🇮🇳 डोगरी (Dogri)</option>
+          <option value="ks">🇮🇳 कॉशुर (Kashmiri)</option>
+          <option value="sd">🇮🇳 सिन्धी (Sindhi)</option>
+          <option value="sat">🇮🇳 ᱥᱟᱱᱛᱟᱲᱤ (Santali)</option>
+        </select>
+      </div>
+      <!-- Track Road Complaint Button -->
+      <button id="header-track-complaint-btn" class="header-action-pill track-complaint-pill" type="button" title="📋 Track live road repair progress from registration to approval">
+        <span>🔍</span> <span data-i18n="track_complaint">TRACK COMPLAINT</span>
+      </button>
+      <script>
+        (function() {
+          function initAccountHeader() {
+            const trigger = document.getElementById('account-dropdown-trigger');
+            const popover = document.getElementById('account-menu-popover');
+            const nameEl = document.getElementById('account-display-name');
+            const emailEl = document.getElementById('account-full-email');
+            const signoutBtn = document.getElementById('account-btn-signout');
+            const trackComplaintsBtn = document.getElementById('account-btn-track-complaints');
+
+            let userEmail = 'yaswanthcodm@gmail.com';
+            try {
+              const raw = localStorage.getItem('urban_tracker_auth');
+              if (raw) {
+                const data = JSON.parse(raw);
+                if (data?.email) {
+                  userEmail = data.email;
+                }
+              }
+            } catch(e) {}
+
+            if (nameEl) nameEl.textContent = userEmail.split('@')[0];
+            if (emailEl) emailEl.textContent = userEmail;
+
+            if (trigger && popover) {
+              trigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isHidden = popover.classList.toggle('hidden');
+                trigger.classList.toggle('active', !isHidden);
+                trigger.setAttribute('aria-expanded', String(!isHidden));
+              });
+
+              document.addEventListener('click', function(e) {
+                if (!popover.contains(e.target) && !trigger.contains(e.target)) {
+                  popover.classList.add('hidden');
+                  trigger.classList.remove('active');
+                  trigger.setAttribute('aria-expanded', 'false');
+                }
+              });
+            }
+
+            if (signoutBtn) {
+              signoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                try {
+                  sessionStorage.removeItem('urban_tracker_session_active');
+                  localStorage.removeItem('urban_tracker_auth');
+                  localStorage.removeItem('urban_tracker_user');
+                } catch(err) {}
+                window.location.replace('/login');
+              });
+            }
+
+            if (trackComplaintsBtn) {
+              trackComplaintsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                popover?.classList.add('hidden');
+                trigger?.classList.remove('active');
+                const modal = document.getElementById('complaint-tracking-modal');
+                if (modal) modal.classList.remove('hidden');
+              });
+            }
+          }
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAccountHeader);
+          } else {
+            initAccountHeader();
+          }
+        })();
+      </script>
+    </div>
+    <!-- Live Global Intelligence Packs & Action Tools (Shown cleanly) -->
+    <div id="header-intel-stats" class="header-intel-stats slide-drawer" aria-label="Live global intelligence stats">
+      <div class="intel-stat-item" title="Live Commercial & Military Flights">
+        <span class="stat-dot live"></span>
+        <span class="stat-label">FLIGHTS</span>
+        <span class="stat-value" id="stats-flights-count">777</span>
+      </div>
+      <div class="intel-stat-item clickable-stat" id="stats-sats-pill" role="button" tabindex="0" title="Click to open Live Earth View from Satellite & Orbit Tracking">
+        <span class="stat-label">SATS</span>
+        <span class="stat-value" id="stats-sats-count">128</span>
+      </div>
+      <div class="intel-stat-item clickable-stat" id="stats-cctv-pill" role="button" tabindex="0" title="Click to open Live City Cameras & Surveillance feeds">
+        <span class="stat-label">CCTV</span>
+        <span class="stat-value" id="stats-cctv-count">48</span>
+      </div>
+      <div class="intel-stat-item" title="Meteorological & Weather Stations">
+        <span class="stat-label">WEATHER</span>
+        <span class="stat-value" id="stats-weather-count">32</span>
+      </div>
+      <div class="intel-stat-item" title="Nuclear Energy & Research Facilities">
+        <span class="stat-label">NUCLEAR</span>
+        <span class="stat-value" id="stats-nuclear-count">64</span>
+      </div>
+      <div class="intel-stat-item" title="Active Incidents, Earthquakes & Fire Alerts">
+        <span class="stat-label">INCIDENTS</span>
+        <span class="stat-value" id="stats-incidents-count">15</span>
+      </div>
+      <div class="header-intel-actions">
+        <button id="header-roads-catalog-btn" class="header-action-pill roads-btn" type="button" title="📋 Inspect each and every road in the selected village or city">📋 ALL ROADS</button>
+        <button id="header-live-sat-btn" class="header-action-pill sat" type="button" title="🛰️ Live Earth Video & Satellite Tracking from Space">🛰️ LIVE SATELLITE</button>
+        <button id="header-live-cctv-btn" class="header-action-pill cam" type="button" title="📹 Live Street & City Cameras">📹 LIVE CAMS</button>
+        <button id="header-theme-toggle-btn" class="header-action-pill theme-toggle" type="button" title="Switch between Dark Mode and Light Mode">☀️ LIGHT</button>
+      </div>
+    </div>
   </div>
 
   <!-- Style indicator -->
@@ -36,7 +237,7 @@
   </div>
 
   <!-- Top-center camera and share actions -->
-  <nav id="top-center-actions" aria-label="Globe actions">
+  <nav id="top-center-actions" aria-label="Globe actions" style="display:none !important;">
     <button id="clear-selected-layers" type="button" aria-label="Clear selected data layers" title="Turn off all selected data layers">
       <span class="material-symbols-outlined" aria-hidden="true">layers_clear</span>
     </button>
@@ -47,15 +248,15 @@
       <span class="material-symbols-outlined" aria-hidden="true">public</span>
     </button>
   </nav>
-  <div id="global-loading-status" role="status" aria-live="polite" aria-atomic="true" hidden>
+  <div id="global-loading-status" role="status" aria-live="polite" aria-atomic="true" hidden style="display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important;">
     <span id="global-loading-label">LOADING LIVE DATA</span>
     <span id="global-loading-detail"></span>
   </div>
-  <div id="traffic-sync-chip" aria-live="polite">
+  <div id="traffic-sync-chip" aria-live="polite" style="display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important;">
     <span id="traffic-sync-label">syncing road network</span>
     <span id="traffic-sync-progress">0%</span>
   </div>
-  <div id="cctv-sync-chip" aria-live="polite">
+  <div id="cctv-sync-chip" aria-live="polite" style="display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important;">
     <span id="cctv-sync-label">loading frames</span>
     <span id="cctv-sync-progress">0/0</span>
   </div>
@@ -429,7 +630,7 @@
       </div>
     </div>
     <div class="pp-toggle-group">
-      <button class="pp-toggle-btn active" id="scope-toggle" title="Scope — the circular viewport mask" aria-pressed="true">
+      <button class="pp-toggle-btn" id="scope-toggle" title="Scope — the circular viewport mask" aria-pressed="false">
         <span class="pp-icon material-symbols-outlined" aria-hidden="true">adjust</span>
         <span class="pp-label">Scope</span>
       </button>
@@ -478,7 +679,7 @@
   <button id="clean-view-exit" title="Return UI controls">EXIT CLEAN VIEW</button>
 
   <!-- Unified bottom command dock: locations, voice (injected at runtime), visual presets -->
-  <div id="command-dock" aria-label="Navigation, voice, and visual preset controls">
+  <div id="command-dock" class="dock-hidden" style="display:none !important;" aria-label="Navigation, voice, and visual preset controls">
   <!-- Control panel -->
   <div id="control-panel" class="panel-collapsible collapsed">
     <div class="panel-glow"></div>
@@ -534,6 +735,18 @@
           <span id="map-stack-status" class="pp-stack-status" aria-live="polite">3D</span>
         </div>
         <div id="map-stack-chips" class="map-stack-chip-row" role="group" aria-label="Map source"></div>
+        <div class="map-overlay-row">
+          <button id="toggle-boundaries-overlay" type="button" class="boundaries-toggle-btn" title="Toggle country/state borders, city, town & village labels on satellite imagery" aria-pressed="false">
+            <span class="boundaries-icon">🏷️</span>
+            <span class="boundaries-label">Borders & Labels</span>
+            <span class="boundaries-status" id="boundaries-status-text">OFF</span>
+          </button>
+          <button id="toggle-roads-overlay" type="button" class="boundaries-toggle-btn" title="Toggle highways, expressways, arterial & local road network" aria-pressed="false">
+            <span class="boundaries-icon">🛣️</span>
+            <span class="boundaries-label">Roads</span>
+            <span class="boundaries-status" id="roads-status-text">OFF</span>
+          </button>
+        </div>
       </section>
       </div>
       <div id="style-mini-status" class="panel-mini-status" aria-live="polite">
@@ -549,6 +762,12 @@
     <div class="location-inner">
       <div class="location-toolbar">
         <span class="location-toolbar-label"><span class="dock-label-icon dock-label-icon-location" aria-hidden="true"></span>LOCATION</span>
+        <button id="quick-india-live-btn" class="quick-india-live-btn" type="button" title="🔴 Go Live across India: Flights, Military Radar, Satellites, Traffic & Roads">
+          🔴 LIVE (INDIA)
+        </button>
+        <button id="india-explorer-toggle-btn" class="india-explorer-nav-btn" type="button" title="Explore India (All 28 States, 8 UTs, Cities & Villages)">
+          <span>🇮🇳</span> INDIA EXPLORER
+        </button>
         <button class="panel-collapse-btn" data-collapse-target="location-bar" title="Collapse panel">+</button>
       </div>
       <div id="location-mini-status" class="location-mini-status" aria-live="polite">
@@ -557,15 +776,54 @@
       </div>
       <div class="dock-popover-content">
         <button class="dock-pin-btn" data-pin-target="location-bar" type="button" aria-label="Pin location tray" aria-pressed="false" title="Keep location tray open"><img src="/pin.svg" alt="" /></button>
+        <div class="dock-quick-actions-bar" style="display:flex;gap:8px;margin-bottom:10px;">
+          <button id="dock-live-sat-btn" class="dock-quick-pill sat" type="button" title="🛰️ Live Earth Video & Orbit from Space">
+            🛰️ LIVE SATELLITE
+          </button>
+          <button id="dock-live-cams-btn" class="dock-quick-pill cam" type="button" title="📹 Live City & Street Cameras">
+            📹 LIVE CAMS
+          </button>
+        </div>
         <div id="poi-row" class="poi-row-container"></div>
         <div class="location-bar-divider" id="location-bar-divider"></div>
-        <div class="location-city-row">
-          <div id="location-pills" class="location-pills"></div>
-          <div class="location-search-wrap">
-            <button id="search-toggle" class="search-toggle-btn" title="Search any location">
-              <span>&#x1F50E;</span>
-            </button>
-            <input type="text" id="location-search" placeholder="Search any location..." autocomplete="off" spellcheck="false" />
+
+        <div class="location-nav-hierarchy">
+          <!-- Step 1: Select Country -->
+          <div class="location-step-group">
+            <div class="location-step-badge">
+              <span class="step-num">STEP 1</span>
+              <span class="step-title">SELECT COUNTRY</span>
+            </div>
+            <div id="country-pills-row" class="country-pills-row" role="radiogroup" aria-label="Country selection"></div>
+          </div>
+
+          <!-- Step 2: Which town, city or village? -->
+          <div class="location-step-group" id="location-step-towns">
+            <div class="location-step-badge">
+              <span class="step-num">STEP 2</span>
+              <span class="step-title" id="location-prompt-label">WHICH TOWN, CITY OR VILLAGE IN <span id="current-selected-country-text">INDIA</span>?</span>
+            </div>
+
+            <div class="location-search-row">
+              <div class="location-search-wrap">
+                <button id="search-toggle" class="search-toggle-btn" title="Search any location">
+                  <span>&#x1F50E;</span>
+                </button>
+                <input type="text" id="location-search" placeholder="Type town, city or village in India..." autocomplete="off" spellcheck="false" />
+                <button id="location-search-btn" type="button" class="location-search-btn" title="Find in this country">FIND</button>
+              </div>
+            </div>
+
+            <div class="location-places-sections">
+              <div class="location-places-category">
+                <span class="category-tag">CITIES & TOWNS:</span>
+                <div id="location-pills" class="location-pills"></div>
+              </div>
+              <div class="location-places-category" id="location-villages-category">
+                <span class="category-tag">NOTABLE VILLAGES & HERITAGE:</span>
+                <div id="location-village-pills" class="location-pills location-village-pills"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -598,6 +856,7 @@
       </div>
       <div id="cctv-frame-wrap" class="cctv-frame-wrap">
         <img id="cctv-frame" alt="CCTV feed frame" />
+        <video id="cctv-video-frame" class="cctv-video-frame" autoplay muted loop playsinline style="display:none;"></video>
       </div>
       <div id="cctv-source-badge" role="status" aria-live="polite">SOURCE · UNKNOWN</div>
       <div id="cctv-meta">Enable CCTV to load camera intersections</div>
@@ -882,13 +1141,11 @@
     <p class="first-run-note" data-first-run-status role="status" aria-live="polite">Tip: the GEV MIC button in the dock lets you talk to the map.</p>
   </aside>
 
-  <!-- POWER UP — in-app key setup. Dev-server only: src/keySetup.js removes
-       both the chip and this dialog outright when /api/setup/status is not
-       there to answer (prod builds, LAN visitors). Rows are rendered from
-       that payload, so the key registry lives in src/keySetupCore.mjs alone. -->
-  <button id="key-setup-chip" type="button" hidden aria-haspopup="dialog" aria-controls="key-setup">
+  <!-- POWER UP — in-app key setup. Dev-server only: src/keySetup.js manages
+       rendering rows from /api/setup/status or default registry. -->
+  <button id="key-setup-chip" type="button" aria-haspopup="dialog" aria-controls="key-setup" style="display: none !important;" hidden>
     <span class="material-symbols-outlined" aria-hidden="true">bolt</span>
-    <span data-key-setup-chip-label>POWER UP</span>
+    <span data-key-setup-chip-label>POWER UP · API KEYS</span>
   </button>
   <aside id="key-setup" role="dialog" aria-labelledby="key-setup-title" aria-describedby="key-setup-description" hidden>
     <div class="key-setup-scanline" aria-hidden="true"></div>
@@ -908,14 +1165,738 @@
     <p class="key-setup-note" data-key-setup-status role="status" aria-live="polite">The Google Maps key buys the photorealistic planet — everything else stacks on top.</p>
   </aside>
 
-  <!-- Intelligence HUD Overlay -->
-  <div id="intel-hud"></div>
+  <!-- India Explorer Modal / Drawer -->
+  <aside id="india-explorer-drawer" class="india-explorer-drawer" role="dialog" aria-labelledby="india-explorer-title" hidden>
+    <div class="india-explorer-header">
+      <div class="india-explorer-title" id="india-explorer-title">
+        <span class="india-flag-badge">🇮🇳</span>
+        <strong>INDIA EXPLORER</strong>
+        <small>28 States · 8 UTs · Cities · Towns · Villages</small>
+      </div>
+      <div class="india-explorer-actions">
+        <button id="india-go-live-btn" class="india-action-chip india-action-live" type="button" title="Activate live flights, military radar, satellites, roads and traffic across India">🔴 GO LIVE</button>
+        <button id="india-roads-btn" class="india-action-chip" type="button" title="Toggle detailed road, highway & street network overlay">🛣️ Roads</button>
+        <button id="india-sat-btn" class="india-action-chip" type="button" title="View 1h or 3h satellite pass and animated radar">🛰️ Satellite Pass</button>
+        <button id="india-fly-country-btn" class="india-action-chip" type="button" title="Fly to whole India overview">🌐 Pan-India</button>
+        <button id="india-explorer-close-btn" class="india-close-btn" type="button" title="Close India Explorer" aria-label="Close">✕</button>
+      </div>
+    </div>
+    <div class="india-explorer-search-row">
+      <div class="india-search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="india-filter-input" placeholder="Search state, city, town, or village in India..." autocomplete="off" spellcheck="false" />
+        <button id="india-village-search-btn" type="button" class="india-search-submit-btn" title="Search village/town on globe">Go</button>
+      </div>
+      <div class="india-type-tabs" role="tablist">
+        <button class="india-tab active" data-tab="all" type="button">All (36)</button>
+        <button class="india-tab" data-tab="state" type="button">States (28)</button>
+        <button class="india-tab" data-tab="ut" type="button">UTs (8)</button>
+      </div>
+    </div>
+    <div id="india-regions-grid" class="india-regions-grid"></div>
+    <div id="india-selected-detail" class="india-selected-detail" hidden></div>
+  </aside>
+
+  <!-- Live Satellite Mission Control HUD Window -->
+  <aside id="live-satellite-modal" class="live-mission-modal sat-modal hidden" aria-label="Live Earth View from Satellite">
+    <div class="mission-modal-header">
+      <div class="mission-modal-title">
+        <span class="mission-live-dot"></span>
+        <span class="mission-title-text" id="sat-modal-title-text">🛰️ LIVE FROM SATELLITE · EARTH ORBIT FEED</span>
+      </div>
+      <div class="mission-modal-controls">
+        <button id="sat-modal-minimize-btn" class="modal-control-btn" type="button" title="Minimize / Restore">—</button>
+        <button id="sat-modal-close-btn" class="modal-control-btn close" type="button" title="Close Live Satellite View">✕</button>
+      </div>
+    </div>
+    <div class="sat-modal-body">
+      <div class="sat-main-viewport">
+        <div class="sat-source-tabs" role="tablist" aria-label="Satellite Imagery and Footage Feeds">
+          <button class="sat-source-tab active" data-source="iss" type="button" title="NASA ISS 24/7 Live Space Video">🔴 ISS Live Stream</button>
+          <button class="sat-source-tab" data-source="insat-3d-asia-ir1" type="button" title="ISRO INSAT-3D Asia Thermal Infrared (15-30m)">🇮🇳 INSAT-3D (15m)</button>
+          <button class="sat-source-tab" data-source="nasa-viirs-snpp" type="button" title="NASA VIIRS NRT True Color (1-3h Overpass)">🌎 NASA VIIRS (1-3h)</button>
+          <button class="sat-source-tab" data-source="noaa-goes19-geocolor" type="button" title="NOAA GOES-19 Americas Full Disk (10m)">🌐 GOES-19 (10m)</button>
+          <button class="sat-source-tab" data-source="noaa-goes18-geocolor" type="button" title="NOAA GOES-18 Pacific Full Disk (10m)">🌊 GOES-18 (10m)</button>
+          <button class="sat-source-tab" data-source="insat-loop-ir1" type="button" title="3-Hour Animated Storm & Cloud Motion Loop">🌀 3h Storm Loop</button>
+          <button class="sat-source-tab" data-source="telemetry" type="button" title="Sensor Lock & Orbital Telemetry">📊 Radar Lock</button>
+        </div>
+        <div class="mission-video-container">
+          <iframe id="sat-live-video-iframe" class="sat-video-frame" src="" title="NASA ISS Live Earth Viewing Feed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <div id="sat-footage-screen" class="sat-footage-screen" style="display:none;">
+            <div class="sat-footage-img-wrap">
+              <img id="sat-footage-image" class="sat-footage-image" src="" alt="Live Earth Satellite Imagery" />
+              <div id="sat-footage-spinner" class="sat-footage-spinner" style="display:none;">
+                <div class="spinner-circle"></div>
+                <span>ACQUIRING FRESH SATELLITE PASS...</span>
+              </div>
+            </div>
+            <div class="sat-footage-controls-bar">
+              <button id="sat-footage-play-btn" class="sat-ctrl-btn" type="button" title="Play / Pause Timelapse Loop">▶ PLAY</button>
+              <div class="sat-footage-timeline-wrap">
+                <input type="range" id="sat-footage-timeline" min="0" max="11" value="11" step="1" title="Timelapse Frame Scrubber (10m intervals)" />
+                <span id="sat-footage-frame-label" class="sat-timeline-label">LATEST FRAME (10m NRT)</span>
+              </div>
+              <button id="sat-footage-refresh-btn" class="sat-ctrl-btn" type="button" title="Refresh Live Pass">🔄 REFRESH</button>
+              <button id="sat-footage-copy-api-btn" class="sat-ctrl-btn api-btn" type="button" title="Copy Direct API Endpoint for your project">📋 COPY API</button>
+            </div>
+          </div>
+          <div id="sat-telemetry-screen" class="sat-telemetry-canvas-screen" style="display:none;">
+            <div class="sat-radar-grid">
+              <div class="sat-radar-sweep"></div>
+              <div class="sat-radar-reticle"></div>
+              <div class="sat-radar-details">
+                <span id="sat-screen-name" class="sat-screen-satname">CARTOSAT 2F</span>
+                <span id="sat-screen-mission" class="sat-screen-satmission">EARTH OBSERVATION · ISRO</span>
+                <span id="sat-screen-status" class="sat-screen-satstatus">● SENSOR ACTIVE · TELEMETRY LOCK</span>
+              </div>
+            </div>
+          </div>
+          <div class="mission-video-overlay-hud">
+            <div class="sat-hud-badge-wrap">
+              <div class="sat-hud-badge" id="sat-hud-badge-el">NASA ISS HD · LIVE FROM SPACE</div>
+              <span id="sat-cadence-badge" class="sat-cadence-badge">LIVE 24/7</span>
+            </div>
+            <div class="sat-hud-time" id="sat-telemetry-region">🌐 Sub-satellite: Global Low Earth Orbit</div>
+          </div>
+        </div>
+        <div class="mission-telemetry-panel">
+          <div class="telemetry-row">
+            <div class="telemetry-item">
+              <span class="telemetry-label">SPACECRAFT</span>
+              <span class="telemetry-value" id="sat-telemetry-craft">ISS (ZARYA) #25544</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-label">ALTITUDE</span>
+              <span class="telemetry-value" id="sat-telemetry-alt">418 km</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-label">ORBITAL SPEED</span>
+              <span class="telemetry-value" id="sat-telemetry-spd">27,600 km/h</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-label">COORDINATES</span>
+              <span class="telemetry-value" id="sat-telemetry-coords">51.6° N, 74.2° E</span>
+            </div>
+          </div>
+          <div class="mission-action-bar">
+            <button id="sat-action-track-3d" class="hud-action-btn primary" type="button">🛰️ TRACK IN 3D GLOBE</button>
+            <button id="sat-action-globe-overlay" class="hud-action-btn secondary" type="button" title="Overlay Live Satellite Clouds on 3D Globe">⛅ OVERLAY CLOUDS ON GLOBE</button>
+            <button id="sat-action-reset-india" class="hud-action-btn secondary" type="button">🇮🇳 RETURN TO INDIA</button>
+          </div>
+        </div>
+      </div>
+      <div class="sat-sidebar-list">
+        <div class="sat-filter-bar">
+          <button class="sat-filter-btn active" data-filter="all" type="button">All (1,389)</button>
+          <button class="sat-filter-btn" data-filter="science" type="button">🔬 Science (8)</button>
+          <button class="sat-filter-btn" data-filter="military" type="button">🛡️ Military (56)</button>
+          <button class="sat-filter-btn" data-filter="earth_obs" type="button">⛅ Earth Obs (28)</button>
+          <button class="sat-filter-btn" data-filter="comms_nav" type="button">📡 Comms/Nav (9)</button>
+        </div>
+        <div class="sat-search-box">
+          <span class="sat-search-icon">🔍</span>
+          <input type="text" id="sat-search-input" placeholder="Search 1,389 satellites..." autocomplete="off" spellcheck="false" />
+        </div>
+        <div id="sat-modal-list" class="sat-quick-items-container"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Live Cameras & Street CCTV Viewer Modal -->
+  <aside id="live-cctv-modal" class="live-mission-modal cctv-modal hidden" aria-label="Live City Cameras & Surveillance">
+    <div class="mission-modal-header">
+      <div class="mission-modal-title">
+        <span class="mission-live-dot red"></span>
+        <span class="mission-title-text">📹 LIVE CAMERAS & URBAN SURVEILLANCE</span>
+      </div>
+      <div class="mission-modal-controls">
+        <button id="cctv-modal-close-btn" class="modal-control-btn close" type="button" title="Close Live Cameras">✕</button>
+      </div>
+    </div>
+    <div class="cctv-modal-body">
+      <div class="cctv-main-viewport">
+        <div class="cctv-feed-screen">
+          <img id="cctv-modal-feed-img" class="cctv-modal-image" src="" alt="Live Camera Feed" />
+          <video id="cctv-modal-video-stream" class="cctv-modal-video-player" autoplay muted loop playsinline webkit-playsinline style="display:none;"></video>
+          <iframe id="cctv-modal-video-iframe" class="cctv-modal-video" src="" style="display:none;" title="Live Webcam Stream" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          <button id="cctv-feed-play-trigger" class="cctv-play-overlay hidden" type="button" aria-label="Play Live Stream"><span class="cctv-play-icon">▶</span><span class="cctv-play-text">LIVE CCTV FEED · CLICK TO PLAY</span></button>
+          <div class="cctv-feed-hud-top">
+            <span id="cctv-modal-cam-title" class="hud-cam-name">Select Camera</span>
+            <span id="cctv-modal-cam-status" class="hud-cam-status">ACTIVE</span>
+          </div>
+          <div class="cctv-feed-hud-bottom">
+            <span id="cctv-modal-cam-city" class="hud-cam-location">Location</span>
+            <span class="hud-cam-rec">● REC</span>
+          </div>
+        </div>
+        <div class="cctv-feed-details">
+          <p id="cctv-modal-cam-desc" class="cctv-desc">Live optical feed from traffic and landmark surveillance node.</p>
+          <div class="cctv-viewport-actions">
+            <button id="cctv-action-fly-3d" class="hud-action-btn primary" type="button">📍 FLY TO STREET VIEW IN 3D</button>
+            <button id="cctv-action-sat-pass" class="hud-action-btn sat-btn" type="button" title="View 1h or 3h satellite photo of this location">🛰️ VIEW 1H / 3H SATELLITE PASS</button>
+            <button id="cctv-action-patrol" class="hud-action-btn secondary" type="button">🔄 AUTO-PATROL</button>
+          </div>
+        </div>
+      </div>
+      <div class="cctv-sidebar-list">
+        <div class="cctv-filter-bar">
+          <button class="cctv-filter-btn active" data-filter="india" type="button">🇮🇳 India All States (36)</button>
+          <button class="cctv-filter-btn" data-filter="mideast" type="button">🔴 Middle East (4)</button>
+          <button class="cctv-filter-btn" data-filter="london" type="button">🇬🇧 London (847)</button>
+          <button class="cctv-filter-btn" data-filter="global" type="button">🌍 Global (5)</button>
+          <button class="cctv-filter-btn" data-filter="all" type="button">All (892)</button>
+        </div>
+        <div class="cctv-state-filter-wrap">
+          <select id="cctv-state-filter" class="cctv-state-filter" aria-label="Filter Indian State">
+            <option value="">🇮🇳 Select State / UT (All 28 States &amp; 8 UTs)</option>
+            <option value="Andhra Pradesh">Andhra Pradesh (Visakhapatnam)</option>
+            <option value="Arunachal Pradesh">Arunachal Pradesh (Itanagar)</option>
+            <option value="Assam">Assam (Guwahati)</option>
+            <option value="Bihar">Bihar (Patna)</option>
+            <option value="Chhattisgarh">Chhattisgarh (Raipur)</option>
+            <option value="Goa">Goa (Panaji)</option>
+            <option value="Gujarat">Gujarat (Ahmedabad)</option>
+            <option value="Haryana">Haryana (Gurugram)</option>
+            <option value="Himachal Pradesh">Himachal Pradesh (Shimla)</option>
+            <option value="Jharkhand">Jharkhand (Ranchi)</option>
+            <option value="Karnataka">Karnataka (Bengaluru)</option>
+            <option value="Kerala">Kerala (Kochi)</option>
+            <option value="Madhya Pradesh">Madhya Pradesh (Bhopal)</option>
+            <option value="Maharashtra">Maharashtra (Mumbai)</option>
+            <option value="Manipur">Manipur (Imphal)</option>
+            <option value="Meghalaya">Meghalaya (Shillong)</option>
+            <option value="Mizoram">Mizoram (Aizawl)</option>
+            <option value="Nagaland">Nagaland (Kohima)</option>
+            <option value="Odisha">Odisha (Bhubaneswar)</option>
+            <option value="Punjab">Punjab (Amritsar)</option>
+            <option value="Rajasthan">Rajasthan (Jaipur)</option>
+            <option value="Sikkim">Sikkim (Gangtok)</option>
+            <option value="Tamil Nadu">Tamil Nadu (Chennai)</option>
+            <option value="Telangana">Telangana (Hyderabad)</option>
+            <option value="Tripura">Tripura (Agartala)</option>
+            <option value="Uttar Pradesh">Uttar Pradesh (Lucknow)</option>
+            <option value="Uttarakhand">Uttarakhand (Dehradun)</option>
+            <option value="West Bengal">West Bengal (Kolkata)</option>
+            <option value="Andaman and Nicobar Islands">Andaman &amp; Nicobar (Port Blair)</option>
+            <option value="Chandigarh">Chandigarh (Sector 17)</option>
+            <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra &amp; Nagar Haveli and Daman &amp; Diu (Daman)</option>
+            <option value="Delhi">Delhi (Kartavya Path)</option>
+            <option value="Jammu and Kashmir">Jammu &amp; Kashmir (Srinagar)</option>
+            <option value="Ladakh">Ladakh (Leh)</option>
+            <option value="Lakshadweep">Lakshadweep (Kavaratti)</option>
+            <option value="Puducherry">Puducherry (White Town)</option>
+          </select>
+        </div>
+        <div class="cctv-search-bar">
+          <input id="cctv-search-input" class="cctv-search-input" type="text" placeholder="🔍 Search camera, state, city, street..." autocomplete="off" spellcheck="false" />
+        </div>
+        <div id="cctv-modal-list" class="cctv-quick-scroll"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Village & City Road Explorer / Catalog Drawer -->
+  <aside id="village-roads-panel" class="village-roads-drawer hidden" aria-label="Village and City Road Network">
+    <div class="village-roads-header">
+      <div class="village-roads-title-wrap">
+        <span class="mission-live-dot orange"></span>
+        <div class="village-roads-title-group">
+          <span class="village-roads-title" data-i18n="village_roads_title">📋 VILLAGE & CITY ROAD NETWORK</span>
+          <span id="village-roads-locality-name" class="village-roads-locality">📍 CURRENT LOCALITY — READING ROADS...</span>
+        </div>
+      </div>
+      <button id="village-roads-close-btn" class="modal-control-btn close" type="button" title="Close Road Catalog">✕</button>
+    </div>
+    <div class="village-roads-body">
+      <!-- City / Town / Village Selector -->
+      <div class="village-city-selector-bar">
+        <span class="selector-label" data-i18n="switch_locality">🌐 SWITCH CITY / TOWN / VILLAGE:</span>
+        <div class="village-city-chips" id="village-city-quick-chips">
+          <button class="city-chip active" data-city="nuzvid" type="button">Nuzvid</button>
+          <button class="city-chip" data-city="vijayawada" type="button">Vijayawada</button>
+          <button class="city-chip" data-city="guntur" type="button">Guntur</button>
+          <button class="city-chip" data-city="visakhapatnam" type="button">Visakhapatnam</button>
+          <button class="city-chip" data-city="tirupati" type="button">Tirupati</button>
+          <button class="city-chip" data-city="hyderabad" type="button">Hyderabad</button>
+          <button class="city-chip" data-city="delhi" type="button">New Delhi</button>
+          <button class="city-chip" data-city="mumbai" type="button">Mumbai</button>
+          <button class="city-chip" data-city="bengaluru" type="button">Bengaluru</button>
+          <button class="city-chip" data-city="chennai" type="button">Chennai</button>
+          <button class="city-chip" data-city="kolkata" type="button">Kolkata</button>
+        </div>
+        <div class="village-city-input-wrap">
+          <input id="village-city-search-input" type="text" data-i18n-placeholder="type_any_locality" placeholder="Or type ANY town, city, or village... (e.g. Eluru, Warangal, Jaipur)" autocomplete="off" />
+          <button id="village-city-search-btn" type="button" data-i18n="scan_btn">SCAN</button>
+        </div>
+      </div>
+
+      <div class="village-roads-search-wrap">
+        <input id="village-roads-filter-input" type="text" data-i18n-placeholder="filter_roads_placeholder" placeholder="Filter streets & roads of selected town by name..." autocomplete="off" />
+        <span class="village-roads-search-icon">🔍</span>
+      </div>
+      <div class="village-roads-filter-pills">
+        <button class="village-filter-pill active" data-filter="all" type="button">ALL ROADS (<span id="count-roads-all">0</span>)</button>
+        <button class="village-filter-pill" data-filter="cement" type="button">🧱 CEMENT (CC) ROADS (<span id="count-roads-cement">0</span>)</button>
+        <button class="village-filter-pill" data-filter="village" type="button">🏡 VILLAGE STREETS (<span id="count-roads-village">0</span>)</button>
+        <button class="village-filter-pill" data-filter="city" type="button">🏙️ CITY ROADS (<span id="count-roads-city">0</span>)</button>
+        <button class="village-filter-pill" data-filter="main" type="button">🛣️ MAIN ROADS (<span id="count-roads-main">0</span>)</button>
+        <button class="village-filter-pill" data-filter="highway" type="button">⚡ HIGHWAYS (<span id="count-roads-highway">0</span>)</button>
+      </div>
+      <div id="village-roads-list" class="village-roads-list">
+        <div class="village-roads-loading">
+          <div class="road-spinner"></div>
+          <p>Scanning all roads in selected village / city from satellite & GIS network...</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Floating On-Globe Road Condition Inspector Card ("Say this road is damaged") -->
+  <aside id="road-condition-floating-card" class="road-condition-floating-card hidden" aria-label="Road Pavement Condition Inspector">
+    <div class="road-condition-card-header">
+      <div id="road-condition-status-pill" class="road-condition-status-pill damaged" data-i18n="floating_damaged_title">🔴 THIS ROAD IS DAMAGED</div>
+      <button id="road-condition-close-btn" class="road-condition-close-btn" type="button" title="Close Road Inspector">✕</button>
+    </div>
+    <div class="road-condition-card-body">
+      <!-- Visible Native Voice Speech Subtitle HUD Banner -->
+      <div id="road-condition-voice-banner" class="road-voice-banner hidden" aria-live="polite">
+        <span class="voice-wave-icon">🔊</span>
+        <span id="road-condition-voice-text" class="voice-text"></span>
+      </div>
+      <div id="road-condition-name" class="road-condition-name">Mylavaram - Nuzvid Road (SH 32)</div>
+      <div id="road-condition-defect-desc" class="road-condition-defect-desc damaged">🕳️ Severe Potholes Detected (2 Cavities · Depth ~16cm)</div>
+      <div class="road-condition-grid">
+        <div class="road-condition-stat">
+          <span class="road-condition-stat-lbl" data-i18n="defect_score_lbl">Defect Score</span>
+          <span id="road-condition-stat-score" class="road-condition-stat-val danger">78 / 100 (Critical)</span>
+        </div>
+        <div class="road-condition-stat">
+          <span class="road-condition-stat-lbl" data-i18n="responsible_dept_lbl">Responsible Dept</span>
+          <span id="road-condition-stat-authority" class="road-condition-stat-val">AP Roads & Buildings (R&B)</span>
+        </div>
+        <div class="road-condition-stat">
+          <span class="road-condition-stat-lbl" data-i18n="road_hierarchy_lbl">Road Hierarchy</span>
+          <span id="road-condition-stat-type" class="road-condition-stat-val">State Highway (SH 32)</span>
+        </div>
+        <div class="road-condition-stat">
+          <span class="road-condition-stat-lbl" data-i18n="pavement_surface_lbl">Pavement Surface</span>
+          <span id="road-condition-stat-surface" class="road-condition-stat-val">Asphalt (2 Lanes)</span>
+        </div>
+      </div>
+      <div class="road-condition-actions">
+        <button id="road-condition-lodge-btn" class="road-btn-grievance" type="button" data-i18n="btn_raise_problem">🚨 RAISE THE PROBLEM</button>
+        <button id="road-condition-recon-btn" class="road-btn-recon" type="button" data-i18n="btn_satellite_recon">🛰️ SATELLITE 1-HR RECON</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Interactive Road Reconnaissance, 1-Hour Satellite & Optical View Modal -->
+  <aside id="road-recon-modal" class="live-mission-modal road-modal hidden" aria-label="Road Reconnaissance & Satellite Photo">
+    <div class="mission-modal-header">
+      <div class="mission-modal-title">
+        <span class="mission-live-dot cyan"></span>
+        <span id="road-recon-title-text" class="mission-title-text">🛣️ ROAD RECONNAISSANCE & AI DAMAGE DETECTION</span>
+      </div>
+      <div class="mission-modal-controls">
+        <button id="road-recon-close-btn" class="modal-control-btn close" type="button" title="Close Road Recon">✕</button>
+      </div>
+    </div>
+    <div id="road-recon-damage-banner" class="road-recon-condition-banner damaged">
+      🔴 STATUS: THIS ROAD IS DAMAGED &bull; 🕳️ SEVERE POTHOLES &amp; CRACKS DETECTED
+    </div>
+    <div class="road-modal-body">
+      <div class="road-main-viewport">
+        <div class="road-feed-screen">
+          <div id="road-recon-spinner" class="road-spinner hidden"></div>
+          <img id="road-recon-img" class="road-modal-image" src="" alt="Road Surveillance Imagery" />
+          <canvas id="road-ai-canvas" class="road-ai-canvas"></canvas>
+          <div class="road-feed-hud-top">
+            <span id="road-recon-name-el" class="hud-road-name">Road Name</span>
+            <span id="road-recon-badge-el" class="hud-road-badge">ROAD</span>
+          </div>
+          <div class="road-feed-hud-bottom">
+            <span id="road-recon-coords-el" class="hud-road-coords">📍 00.0000° N, 00.0000° E</span>
+            <span id="road-recon-time-tag" class="hud-road-time sat-1h">● ~1 HOUR AGO</span>
+          </div>
+        </div>
+
+        <!-- AI Special Damage Detection Mode Selector -->
+        <div class="road-ai-mode-bar">
+          <div class="road-ai-mode-header">
+            <span class="ai-mode-title">⚡ AI DETECTION MODE:</span>
+          </div>
+          <div class="road-ai-mode-tabs">
+            <button id="road-ai-tab-pothole" class="road-ai-mode-btn active" data-aimode="pothole" type="button">
+              🕳️ POTHOLE DETECTION
+            </button>
+            <button id="road-ai-tab-garbage" class="road-ai-mode-btn" data-aimode="garbage" type="button">
+              🗑️ GARBAGE TRACK ON ROAD
+            </button>
+            <button id="road-ai-tab-clean" class="road-ai-mode-btn" data-aimode="clean" type="button">
+              🛰️ RAW SATELLITE PASS
+            </button>
+          </div>
+        </div>
+
+        <!-- Satellite Pass & Imagery Source Selector -->
+        <div class="road-mode-tabs">
+          <button id="road-tab-optical" class="road-tab-btn active" data-tab="optical" type="button">🛰️ LIVE OPTICAL (SUB-METER)</button>
+          <button id="road-tab-sat-1h" class="road-tab-btn" data-tab="sat1h" type="button">🕒 1-HOUR SATELLITE PASS</button>
+          <button id="road-tab-loop" class="road-tab-btn" data-tab="loop" type="button">🌀 3-HOUR TIMELAPSE LOOP</button>
+        </div>
+
+        <!-- 3-Hour Interactive Timeline Slider (Visible for sat1h) -->
+        <div id="road-timeline-row" class="road-timeline-container" style="display: none;">
+          <button id="road-timeline-play-btn" class="road-play-btn" type="button">▶ PLAY</button>
+          <div class="road-slider-wrapper">
+            <div class="road-slider-labels">
+              <span>-3h 00m</span>
+              <span class="active-1h">● -1h 00m (Selected)</span>
+              <span>LIVE</span>
+            </div>
+            <input id="road-timeline-slider" class="road-timeline-slider" type="range" min="0" max="11" step="1" value="8" />
+          </div>
+          <div id="road-timeline-time-display" class="road-time-display">-1h 00m</div>
+        </div>
+
+        <!-- AI Damage & Surface Telemetry Card -->
+        <div id="road-ai-telemetry-card" class="road-ai-telemetry-card">
+          <div class="road-ai-telemetry-header">
+            <span id="road-ai-status-title" class="road-ai-status-title">🕳️ POTHOLE & DAMAGE SCAN ACTIVE</span>
+            <span id="road-ai-confidence-badge" class="road-ai-confidence-badge">94.2% AI CONFIDENCE</span>
+          </div>
+          <div class="road-ai-telemetry-grid">
+            <div class="road-ai-stat">
+              <span class="stat-title">DEFECTS / HAZARDS</span>
+              <span id="road-ai-defect-count" class="stat-value danger">3 Cavities Detected</span>
+            </div>
+            <div class="road-ai-stat">
+              <span class="stat-title">ESTIMATED SEVERITY</span>
+              <span id="road-ai-severity-tag" class="stat-value high">HIGH (Grade 3)</span>
+            </div>
+            <div class="road-ai-stat">
+              <span class="stat-title">RECOMMENDED REPAIR</span>
+              <span id="road-ai-action-text" class="stat-value warning">Milling & Patching</span>
+            </div>
+            <div class="road-ai-stat">
+              <span class="stat-title">RESPONSIBLE AUTHORITY</span>
+              <span id="road-ai-authority-tag" class="stat-value cyan">State PWD / NHAI</span>
+            </div>
+          </div>
+          <div class="road-ai-grievance-row">
+            <button id="road-ai-lodge-complaint-btn" class="road-ai-lodge-btn" type="button">
+              🚨 RAISE THE PROBLEM &bull; DISPATCH CREW
+            </button>
+            <div id="road-ai-ticket-alert" class="road-ai-ticket-alert hidden">
+              <span class="ticket-icon">✅</span>
+              <span id="road-ai-ticket-text" class="ticket-text">Registered! Tracking Ticket: RG-2026-IN-8821</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Road Metadata and Actions -->
+        <div class="road-info-card">
+          <div class="road-meta-row">
+            <span id="road-meta-class" class="road-meta-chip">🛣️ Class: Primary</span>
+            <span id="road-meta-speed" class="road-meta-chip">⚡ Speed: 50 km/h</span>
+            <span id="road-meta-surface" class="road-meta-chip">🧱 Surface: Paved</span>
+          </div>
+          <div class="road-action-buttons">
+            <button id="road-action-fly-3d" class="hud-action-btn primary" type="button">📍 FLY TO STREET (3D)</button>
+            <button id="road-action-browse-all" class="hud-action-btn catalog-btn" type="button">📋 ALL ROADS IN LOCALITY</button>
+            <button id="road-action-sat-hud" class="hud-action-btn sat-btn" type="button">🛰️ FULL SATELLITE HUD</button>
+            <button id="road-action-cctv" class="hud-action-btn secondary" type="button">📹 LIVE CAMS</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Intelligence HUD Overlay (Suppressed for clean RoadGuard municipal view) -->
+  <div id="intel-hud" style="display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important;"></div>
+
+  <!-- Complete Complaint Tracking Modal (Requirement 4) -->
+  <div id="tracking-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-track-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-badge">
+            <span class="pulse-dot"></span>
+            <span>Public Pavement Redressal Audit</span>
+          </div>
+          <h2 id="modal-track-title" class="modal-title" data-i18n="track_modal_title">Road Complaint Tracking System</h2>
+          <p class="modal-subtitle" data-i18n="track_modal_subtitle">Real-time verifiable progress from grievance registration to road repair approval.</p>
+        </div>
+        <button type="button" id="btn-close-modal" class="modal-close" aria-label="Close tracking modal">✕</button>
+      </div>
+
+      <!-- Search & Demo Quick Switch Bar -->
+      <div class="modal-search-row">
+        <div class="modal-search-box">
+          <input type="text" id="modal-track-input" class="modal-input" placeholder="Enter Token ID (e.g. RG-2026-CC-8492)...">
+          <button type="button" id="btn-modal-search" class="modal-search-btn">🔍 Search</button>
+        </div>
+        <div class="modal-quick-chips">
+          <span class="quick-lbl">Road Types:</span>
+          <button type="button" class="quick-chip active" data-id="RG-2026-CC-8492">🧱 CC Road</button>
+          <button type="button" class="quick-chip" data-id="RG-2026-VG-5120">🏡 Village Street</button>
+          <button type="button" class="quick-chip" data-id="RG-2026-CT-3391">🏙️ City Road</button>
+          <button type="button" class="quick-chip" data-id="RG-2026-MR-7744">🛣️ Main Road</button>
+          <button type="button" class="quick-chip" data-id="RG-2026-HW-1092">⚡ Highway</button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Dynamic Tracking Telemetry) -->
+      <div id="modal-track-body" class="modal-body">
+        
+        <!-- Summary Box -->
+        <div class="tracker-summary-card">
+          <div class="summary-top">
+            <div>
+              <span class="summary-token-lbl">Official Tracking Token:</span>
+              <h3 id="track-token-id" class="summary-token">RG-2026-CC-8492</h3>
+            </div>
+            <div id="track-status-pill" class="status-pill resolved">
+              ● RESOLVED & APPROVED
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span class="sum-lbl" data-i18n="road_type_label">Road Classification:</span>
+              <strong id="track-road-type" class="sum-val highlight">Cement Road (CC Road)</strong>
+            </div>
+            <div class="summary-item">
+              <span class="sum-lbl" data-i18n="location">Location:</span>
+              <strong id="track-location" class="sum-val">Ward 14 Gandhi Nagar 2nd Cross CC Road, Nuzvid</strong>
+            </div>
+            <div class="summary-item">
+              <span class="sum-lbl">GPS Coordinates:</span>
+              <strong id="track-coords" class="sum-val mono">16.7865° N, 80.8465° E</strong>
+            </div>
+            <div class="summary-item">
+              <span class="sum-lbl">Damage Category:</span>
+              <strong id="track-defect" class="sum-val danger">Concrete Spalling & Deep Pothole (14cm)</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6-Stage Visual Stepper -->
+        <div class="stepper-wrap">
+          <div class="stepper-title">Complaint Lifecycle Audit Trail (6 Stages)</div>
+          <div class="stepper-track" id="lifecycle-stepper">
+            
+            <div class="step-node active completed" data-step="1">
+              <div class="node-circle">1</div>
+              <div class="node-text">
+                <strong data-i18n="stage_registered">Complaint Registered</strong>
+                <small id="step1-time">27 Oct 08:30</small>
+              </div>
+            </div>
+
+            <div class="step-connector completed"></div>
+
+            <div class="step-node active completed" data-step="2">
+              <div class="node-circle">2</div>
+              <div class="node-text">
+                <strong data-i18n="stage_authority">Authority Assigned</strong>
+                <small id="step2-dept">Municipal Corp</small>
+              </div>
+            </div>
+
+            <div class="step-connector completed"></div>
+
+            <div class="step-node active completed" data-step="3">
+              <div class="node-circle">3</div>
+              <div class="node-text">
+                <strong data-i18n="stage_worker">Worker Appointed</strong>
+                <small id="step3-worker">Crew Gamma</small>
+              </div>
+            </div>
+
+            <div class="step-connector completed"></div>
+
+            <div class="step-node active completed" data-step="4">
+              <div class="node-circle">4</div>
+              <div class="node-text">
+                <strong data-i18n="stage_repair">Repair In Progress</strong>
+                <small id="step4-status">M30 Concrete</small>
+              </div>
+            </div>
+
+            <div class="step-connector completed"></div>
+
+            <div class="step-node active completed" data-step="5">
+              <div class="node-circle">5</div>
+              <div class="node-text">
+                <strong data-i18n="stage_review">Condition Review</strong>
+                <small id="step5-review">Before/After</small>
+              </div>
+            </div>
+
+            <div class="step-connector completed"></div>
+
+            <div class="step-node active completed" data-step="6">
+              <div class="node-circle">6</div>
+              <div class="node-text">
+                <strong data-i18n="stage_approved">Final Approval</strong>
+                <small id="step6-approval">Approved</small>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Detailed Stage Cards Grid -->
+        <div class="stage-details-grid">
+          
+          <!-- Card A: Authority & Worker Appointment -->
+          <div class="stage-card">
+            <div class="stage-card-header">
+              <span class="card-icon">🏛️</span>
+              <h4 data-i18n="authority_worker_card_title">Authority & Worker Appointment</h4>
+            </div>
+            <div class="stage-card-body">
+              <div class="meta-row">
+                <span class="meta-k">Responsible Department:</span>
+                <span id="card-dept-name" class="meta-v">Greater Municipal Corporation (Nuzvid Engineering Wing)</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Jurisdiction & SLA:</span>
+                <span id="card-sla" class="meta-v">Urban Ward 14 · Target: 48 Hours Resolution</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Executive Engineer:</span>
+                <span id="card-engineer" class="meta-v">Er. P. Satyanarayana, M.Tech (Badge #EE-MNC-4402)</span>
+              </div>
+              <div class="divider-sub"></div>
+              <div class="meta-row">
+                <span class="meta-k">Appointed Contractor / Firm:</span>
+                <span id="card-contractor" class="meta-v highlight">Sri Sai Civil Infrastructure & Concrete Works Ltd.</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Lead Site Supervisor:</span>
+                <span id="card-supervisor" class="meta-v">Rajesh Kumar (Junior Site Engineer) · Badge: #SE-CIVIL-8841</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Assigned Repair Team:</span>
+                <span id="card-crew" class="meta-v">Rapid Pavement Patch Unit Gamma (4 Masons + 2 Compactors)</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Work Order ID:</span>
+                <span id="card-work-order" class="meta-v mono">WO-2026-CC-8492-NUV</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card B: Repair Execution & Log -->
+          <div class="stage-card">
+            <div class="stage-card-header">
+              <span class="card-icon">🛠️</span>
+              <h4 data-i18n="repair_log_card_title">Repair Status & Work Execution Log</h4>
+            </div>
+            <div class="stage-card-body">
+              <div class="meta-row">
+                <span class="meta-k">Repair Methodology:</span>
+                <span id="card-repair-method" class="meta-v">M30 Rapid-Hardening Cement Concrete with Polymer Bonding Agent</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Timeline:</span>
+                <span id="card-repair-timeline" class="meta-v">Started: 28 Oct 07:00 IST · Completed: 28 Oct 15:30 IST</span>
+              </div>
+              <div class="execution-log-box">
+                <div class="log-title">Site Action Progress Log:</div>
+                <ul id="card-execution-list" class="execution-list">
+                  <!-- Log entries dynamically rendered -->
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Before & After Photographic Verification (Requirement 4.5) -->
+        <div class="photometric-audit-card">
+          <div class="audit-card-header">
+            <div>
+              <span class="audit-badge-pill">Independent Photometric Verification</span>
+              <h4 class="audit-title">Road Condition Review (Before vs After Evidence)</h4>
+            </div>
+            <span id="audit-score-pill" class="audit-score-pill">Smoothness Index: 96.4% (Grade A)</span>
+          </div>
+
+          <div class="before-after-grid">
+            <div class="image-box before-box">
+              <div class="image-box-header">
+                <span class="badge-tag before">BEFORE REPAIR (Distress Evidence)</span>
+                <span class="badge-sub">GPS Exif & AI Timestamp Verified</span>
+              </div>
+              <div class="img-wrapper">
+                <img id="img-track-before" src="/assets/images/tracking/cement_road_cc_before.jpg" alt="Pothole Distress Before Repair">
+              </div>
+            </div>
+
+            <div class="image-box after-box">
+              <div class="image-box-header">
+                <span class="badge-tag after">AFTER REPAIR (Restored Surface)</span>
+                <span class="badge-sub">Post-Compaction Quality Sign-off</span>
+              </div>
+              <div class="img-wrapper">
+                <img id="img-track-after" src="/assets/images/tracking/cement_road_cc_after.jpg" alt="Pothole Restored Surface After Repair">
+              </div>
+            </div>
+          </div>
+
+          <div class="audit-assessment-row">
+            <div class="assessment-content">
+              <strong>Quality Control Auditor Findings:</strong>
+              <p id="audit-notes-text">
+                Deep concrete spalling fully restored with M30 grade concrete. Joint integrity and load-bearing capacity verified under 20-tonne roller test.
+              </p>
+            </div>
+            <div class="assessment-sign">
+              <div class="sign-seal">SEALED</div>
+              <div>
+                <strong id="audit-inspector-name">Dr. K. V. Raman</strong>
+                <small>Quality Control Auditor (R&B)</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Final Approval & Digital Resolution Sign-off -->
+        <div class="resolution-card">
+          <div class="res-left">
+            <div class="res-icon">🏆</div>
+            <div>
+              <h4>Final Approval & Grievance Closed</h4>
+              <p id="res-approved-by">Officially approved by Municipal Commissioner, Nuzvid Municipal Council.</p>
+              <small id="res-cert-id" class="cert-mono">Digital Audit Certificate: GOI-MORTH-AP-2026-98442</small>
+            </div>
+          </div>
+          <div class="res-right">
+            <div class="citizen-rating">
+              <span>Citizen Satisfaction Rating:</span>
+              <div class="stars">⭐⭐⭐⭐⭐ <strong>5.0 / 5.0</strong></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="btn-print-receipt" class="btn-outline-modal">🖨️ Print Grievance Certificate</button>
+        <button type="button" id="btn-close-modal-bottom" class="btn-primary-modal">Close Audit View</button>
+      </div>
+
+    </div>
+  </div>
 
   <!-- Loading screen -->
   <div id="loading-screen">
     <div class="loader-content">
       <span class="loader-logo brand-logo" data-logo-gaze data-logo-src="/logo.svg" aria-hidden="true"><img src="/logo.svg" alt="" /></span>
-      <h2>GOD'S EYE <span class="title-accent">VIEW</span></h2>
+      <h2>URBAN <span class="title-accent">TRACKER</span></h2>
       <p class="loader-status">Initializing photorealistic world...</p>
     </div>
   </div>

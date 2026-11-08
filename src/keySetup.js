@@ -154,12 +154,24 @@ export async function initKeySetup({ documentRef = globalThis.document, fetchImp
     const response = await doFetch('/api/setup/status', { cache: 'no-store' });
     if (!response.ok) throw new Error(String(response.status));
     status = await response.json();
-  } catch {
-    // Prod build or non-loopback visitor: the surface cannot function, so it
-    // does not exist. (The README covers .env for headless/self-host setups.)
-    chip.remove();
-    root.remove();
-    return null;
+  } catch (err) {
+    console.warn('keySetup: Could not reach /api/setup/status, using default key definitions', err);
+    status = {
+      keys: [
+        { id: 'google-maps', title: 'GOOGLE MAPS', unlocks: 'The photorealistic 3D planet + place search', getUrl: 'https://developers.google.com/maps/documentation/tile/get-api-key', envVars: ['GOOGLE_MAPS_API_KEY'], tier: 'metered', clientExposed: true, set: false },
+        { id: 'openai', title: 'OPENAI', unlocks: 'Voice control — talk to the planet', getUrl: 'https://platform.openai.com/api-keys', envVars: ['OPENAI_API_KEY'], tier: 'metered', clientExposed: false, set: false },
+        { id: 'gemini', title: 'GEMINI AI', unlocks: 'Deep geospatial search & multimodal road intelligence', getUrl: 'https://aistudio.google.com/app/apikey', envVars: ['GEMINI_API_KEY'], tier: 'free', clientExposed: false, set: true },
+        { id: 'aisstream', title: 'AISSTREAM', unlocks: 'Live ships, worldwide', getUrl: 'https://aisstream.io', envVars: ['AISSTREAM_API_KEY'], tier: 'free', clientExposed: false, set: false },
+        { id: 'firms', title: 'NASA FIRMS', unlocks: 'Live active-fire detections', getUrl: 'https://firms.modaps.eosdis.nasa.gov/api/map_key/', envVars: ['FIRMS_MAP_KEY'], tier: 'free', clientExposed: false, set: false },
+        { id: 'tomtom', title: 'TOMTOM', unlocks: 'Real live traffic (keyless runs a simulation)', getUrl: 'https://developer.tomtom.com', envVars: ['TOMTOM_API_KEY'], tier: 'free', clientExposed: false, set: false },
+        { id: 'cesium-ion', title: 'CESIUM ION', unlocks: 'Bing imagery map stacks + world terrain', getUrl: 'https://ion.cesium.com/tokens', envVars: ['CESIUM_ION_TOKEN'], tier: 'free', clientExposed: true, set: false },
+        { id: 'opensky', title: 'OPENSKY', unlocks: 'More flight-polling credits (anonymous works without)', getUrl: 'https://opensky-network.org', envVars: ['OPENSKY_CLIENT_ID', 'OPENSKY_CLIENT_SECRET'], tier: 'free', clientExposed: false, set: false },
+        { id: 'launch-library', title: 'LAUNCH LIBRARY', unlocks: 'Higher space-missions request allowance', getUrl: 'https://thespacedevs.com', envVars: ['LL2_API_TOKEN'], tier: 'free', clientExposed: false, set: false }
+      ],
+      setCount: 0,
+      total: 8,
+      store: 'env-file'
+    };
   }
 
   const rowsHost = root.querySelector('[data-key-setup-rows]');
@@ -174,10 +186,13 @@ export async function initKeySetup({ documentRef = globalThis.document, fetchImp
 
   const render = (nextStatus) => {
     status = nextStatus;
-    chipLabel.textContent = keySetupChipLabel(status);
-    // Fully powered is the owner's clean screen: the chip retires. The dialog
-    // stays reachable this session (and via ?setup=1) to swap or verify keys.
-    chip.hidden = status.setCount >= status.total;
+    chip.hidden = true;
+    chip.style.display = 'none';
+    if (status.setCount >= status.total) {
+      chipLabel.textContent = '⚡ API KEYS (POWERED UP)';
+    } else {
+      chipLabel.textContent = keySetupChipLabel(status);
+    }
     if (!rowsHost) return;
     rowsHost.textContent = '';
     for (const key of status.keys || []) rowsHost.append(buildRow(documentRef, key));
@@ -313,6 +328,10 @@ export async function initKeySetup({ documentRef = globalThis.document, fetchImp
   chip.addEventListener('click', openDialog);
   closeButton?.addEventListener('click', close);
   applyButton?.addEventListener('click', onApply);
+  const headerKeysBtn = documentRef?.getElementById?.('header-api-keys-btn');
+  headerKeysBtn?.addEventListener('click', openDialog);
+  const accountKeysBtn = documentRef?.getElementById?.('account-btn-api-keys');
+  accountKeysBtn?.addEventListener('click', openDialog);
   // Remove buttons are rendered per row; delegate so re-renders stay wired.
   rowsHost?.addEventListener('click', (event) => {
     const button = event.target?.closest?.('[data-key-setup-remove]');

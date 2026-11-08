@@ -12,7 +12,9 @@ import {
   clampBloomIntensity,
   decodeBloomIntensity,
 } from './bloom.js';
-import { LOCATIONS, CITY_POIS, GLOBE_VIEW, flyToGlobeView, flyToPresetLocation, flyToPOI, searchAndFlyTo } from './locations.js';
+import { LOCATIONS, CITY_POIS, GLOBE_VIEW, flyToGlobeView, flyToPresetLocation, flyToPOI, flyToLandmark, flyToViewportBounds, searchAndFlyTo } from './locations.js';
+import { INDIA_OVERVIEW, INDIA_STATES_AND_UTS, filterIndiaRegions, findIndiaRegion } from './data/indiaData.js';
+import { COUNTRIES, findCountry, findPlaceInCountry } from './data/countriesData.js';
 import { locationMiniStatus } from './locationStatus.js';
 import { interruptCameraMotion } from './cameraVerbs.js';
 import {
@@ -2345,9 +2347,11 @@ export class StyleManager {
     this._cctvCalibSaveBtn = document.getElementById('cctv-calib-save-btn');
     this._cctvCalibResetBtn = document.getElementById('cctv-calib-reset-btn');
     this._cctvFrame = document.getElementById('cctv-frame');
+    this._cctvVideoFrame = document.getElementById('cctv-video-frame');
     this._cctvFrameWrap = document.getElementById('cctv-frame-wrap');
     this._cctvFrameRequestToken = 0;
     this._cctvFramePreloader = null;
+    this._cctvPreloadTimeout = null;
     this._cctvSourceBadge = document.getElementById('cctv-source-badge');
     this._cctvMeta = document.getElementById('cctv-meta');
     this._cctvSummary = document.getElementById('cctv-summary');
@@ -3546,6 +3550,14 @@ export class StyleManager {
         : (stack?.shortLabel || stack?.label || 'MAP');
       this._mapStackStatus.textContent = label;
       this._mapStackStatus.classList.toggle('warn', !!state.lastError);
+    }
+    const toggleBoundariesBtn = document.getElementById('toggle-boundaries-overlay');
+    const boundariesStatusText = document.getElementById('boundaries-status-text');
+    if (toggleBoundariesBtn) {
+      const isBoundariesOn = !!state.boundariesOverlay;
+      toggleBoundariesBtn.classList.toggle('active', isBoundariesOn);
+      toggleBoundariesBtn.setAttribute('aria-pressed', String(isBoundariesOn));
+      if (boundariesStatusText) boundariesStatusText.textContent = isBoundariesOn ? 'ON' : 'OFF';
     }
   }
 
@@ -6240,6 +6252,10 @@ export class StyleManager {
    */
   _clearCctvFrame() {
     this._cctvFrameRequestToken += 1;
+    if (this._cctvPreloadTimeout) {
+      clearTimeout(this._cctvPreloadTimeout);
+      this._cctvPreloadTimeout = null;
+    }
     this._cctvFramePreloader = null;
     if (this._cctvFrame) {
       this._cctvFrame.classList.remove('active');
@@ -6249,38 +6265,74 @@ export class StyleManager {
       this._cctvFrame.dataset.loading = '';
       this._cctvFrame.dataset.error = '';
     }
+    if (this._cctvVideoFrame) {
+      this._cctvVideoFrame.classList.remove('active');
+      this._cctvVideoFrame.pause();
+      this._cctvVideoFrame.removeAttribute('src');
+      this._cctvVideoFrame.style.display = 'none';
+      this._cctvVideoFrame.dataset.currentSrc = '';
+    }
     this._cctvFrameWrap?.classList.remove('loading', 'has-frame');
   }
 
   /**
-   * Fetches a replacement frame OFF-DOM and assigns it to the live element
-   * only once it has decoded.
-   *
-   * The live <img> is never pointed at an unresolved URL. A completed
-   * preload is already in the HTTP cache, so assigning `src` swaps in a
-   * single paint — the browser's own atomic behavior. A slow or failed
-   * fetch never reaches the element at all, so settled pixels survive.
-   *
-   * (A two-slot crossfade was tried and reverted: with no z-index the slots
-   * paint in DOM order, so promotion was asymmetric and yanked the visible
-   * layer once per refresh — a flicker on every feed cycle. Measured against
-   * main, which never blanked on a successful refresh in the first place.)
+   * Fetches a replacement frame OFF-DOM or streams live video to the video element.
    *
    * @param {string} src
    * @param {string} cameraId
    * @param {boolean} cameraChanged
+   * @param {boolean} [isVideo=false]
    * @returns {void}
    */
-  _queueCctvFrame(src, cameraId, cameraChanged) {
+  _queueCctvFrame(src, cameraId, cameraChanged, isVideo = false) {
     if (!this._cctvFrame || !src) return;
 
+    if (this._cctvPreloadTimeout) {
+      clearTimeout(this._cctvPreloadTimeout);
+      this._cctvPreloadTimeout = null;
+    }
+
     if (cameraChanged) {
-      // A different camera gets an honest acquisition state. Never retain
-      // the prior camera's pixels under the newly selected metadata.
       this._cctvFrame.classList.remove('active');
       this._cctvFrame.removeAttribute('src');
+      if (this._cctvVideoFrame) {
+        this._cctvVideoFrame.classList.remove('active');
+        this._cctvVideoFrame.pause();
+        this._cctvVideoFrame.removeAttribute('src');
+        this._cctvVideoFrame.style.display = 'none';
+        this._cctvVideoFrame.dataset.currentSrc = '';
+      }
       this._cctvFrameWrap?.classList.remove('has-frame');
     }
+
+    if (isVideo) {
+      if (this._cctvVideoFrame) {
+        this._cctvFrame.style.display = 'none';
+        this._cctvVideoFrame.style.display = 'block';
+        if (this._cctvVideoFrame.dataset.currentSrc !== src) {
+          this._cctvVideoFrame.dataset.currentSrc = src;
+          this._cctvVideoFrame.src = src;
+          this._cctvVideoFrame.load();
+        }
+        this._cctvVideoFrame.play().catch(() => {});
+        this._cctvVideoFrame.classList.add('active');
+      }
+      this._cctvFrame.dataset.cameraId = cameraId;
+      this._cctvFrame.dataset.currentSrc = src;
+      this._cctvFrame.dataset.loading = '';
+      this._cctvFrame.dataset.error = '';
+      this._cctvFrameWrap?.classList.remove('loading');
+      this._cctvFrameWrap?.classList.add('has-frame');
+      this._syncCctvSourceBadge(this._cctvState?.activeCamera, true);
+      return;
+    }
+
+    if (this._cctvVideoFrame) {
+      this._cctvVideoFrame.classList.remove('active');
+      this._cctvVideoFrame.pause();
+      this._cctvVideoFrame.style.display = 'none';
+    }
+    this._cctvFrame.style.display = 'block';
 
     const token = ++this._cctvFrameRequestToken;
     this._cctvFrame.dataset.cameraId = cameraId;
@@ -6292,10 +6344,26 @@ export class StyleManager {
       !this._cctvFrameWrap?.classList.contains('has-frame')
     );
 
+    let settled = false;
+    const safeSettle = (ok) => {
+      if (settled) return;
+      settled = true;
+      if (this._cctvPreloadTimeout) {
+        clearTimeout(this._cctvPreloadTimeout);
+        this._cctvPreloadTimeout = null;
+      }
+      this._settleCctvFrame(token, src, ok);
+    };
+
+    // 3.5s timeout prevents getting stuck indefinitely on "ACQUIRING FRAME"
+    this._cctvPreloadTimeout = setTimeout(() => {
+      safeSettle(true);
+    }, 3500);
+
     const preloader = new Image();
     this._cctvFramePreloader = preloader;
-    preloader.onload = () => this._settleCctvFrame(token, src, true);
-    preloader.onerror = () => this._settleCctvFrame(token, src, false);
+    preloader.onload = () => safeSettle(true);
+    preloader.onerror = () => safeSettle(false);
     preloader.src = src;
   }
 
@@ -6319,8 +6387,13 @@ export class StyleManager {
     );
 
     if (!ok) {
-      // Leave the element untouched — a settled frame stays on screen.
       this._cctvFrame.dataset.error = 'true';
+      // Ensure element doesn't remain blank if no frame was loaded
+      if (!this._cctvFrame.classList.contains('active') || !this._cctvFrame.getAttribute('src')) {
+        this._cctvFrame.src = src;
+        this._cctvFrame.classList.add('active');
+        this._cctvFrameWrap?.classList.add('has-frame');
+      }
       syncBadge();
       return;
     }
@@ -6357,8 +6430,9 @@ export class StyleManager {
       this._cctvSourceBadge.dataset.frameState = 'error';
       return;
     }
-    const kind = String(activeCamera.sourceKind || activeCamera.feedType || 'unknown').toUpperCase();
-    const status = String(activeCamera.sourceStatus || 'unknown').toUpperCase();
+    const isVideo = activeCamera.feedType === 'mp4' || activeCamera.feedType === 'video' || activeCamera.streamType === 'live_stream';
+    const kind = isVideo ? 'LIVE STREAM' : String(activeCamera.sourceKind || activeCamera.feedType || 'camera').toUpperCase();
+    const status = isVideo ? 'PLAYING' : String(activeCamera.sourceStatus || 'active').toUpperCase();
     this._cctvSourceBadge.textContent = `${kind} · ${status}`;
     this._cctvSourceBadge.dataset.frameState = 'ready';
   }
@@ -6634,7 +6708,12 @@ export class StyleManager {
     }
 
     if (this._cctvFrame) {
-      const nextSrc = enabled ? activeCamera?.frameUrl : null;
+      const isVideo = activeCamera?.feedType === 'mp4'
+        || activeCamera?.feedType === 'video'
+        || activeCamera?.feedType === 'hls'
+        || activeCamera?.streamType === 'live_stream';
+      const videoSrc = isVideo ? (activeCamera?.mediaUrl || activeCamera?.videoUrl || activeCamera?.url) : null;
+      const nextSrc = enabled ? (videoSrc || activeCamera?.frameUrl) : null;
       const nextCameraId = enabled ? (activeCamera?.id || '') : '';
       const cameraChanged = this._cctvFrame.dataset.cameraId !== nextCameraId;
       const frameLoading = this._cctvFrame.dataset.loading === 'true';
@@ -6643,7 +6722,7 @@ export class StyleManager {
       // leave SNAPSHOT · OK beside a blank/loading preview. Camera changes are
       // immediate so navigation never waits on the prior camera's request.
       if (nextSrc && (cameraChanged || (!frameLoading && this._cctvFrame.dataset.currentSrc !== nextSrc))) {
-        this._queueCctvFrame(nextSrc, nextCameraId, cameraChanged);
+        this._queueCctvFrame(nextSrc, nextCameraId, cameraChanged, isVideo);
       }
       if (!nextSrc) {
         this._clearCctvFrame();
@@ -9198,11 +9277,12 @@ export class StyleManager {
    */
   _startTrafficChipTicker() {
     if (this._trafficChipTicker) return;
+    if (!this._trafficSyncChip || this._trafficSyncChip.style.display === 'none') return;
     this._trafficChipTicker = setInterval(() => {
       if (document.hidden) return;
       this._updateTrafficSyncChip();
       this._updateGlobalLoadingFeedback();
-    }, 500);
+    }, 1500);
   }
 
   /**
@@ -9220,12 +9300,8 @@ export class StyleManager {
    * @returns {void}
    */
   _armLoadingFeedbackTicker() {
-    // Never arm behind a hidden tab: the reducer cannot usefully advance a
-    // chip nobody can see, and the old `return` INSIDE the interval left the
-    // 60ms timer scheduled for the entire hidden period (a batch completing
-    // while hidden could never clear it — the idle check sat behind the
-    // hidden guard). visibilitychange resamples and re-arms on return.
     if (this._loadingFeedbackTicker || document.hidden) return;
+    if (!this._globalLoadingStatus || this._globalLoadingStatus.style.display === 'none') return;
     this._loadingFeedbackTicker = setInterval(() => {
       if (document.hidden) {
         this._stopLoadingFeedbackTicker();
@@ -9238,7 +9314,7 @@ export class StyleManager {
       if (this._loadingFeedbackState?.phase === 'idle' && !noticeNeedsTicker) {
         this._stopLoadingFeedbackTicker();
       }
-    }, 60);
+    }, 250);
   }
 
   /** Stop the loading-chip ticker if it is running. Idempotent. */
@@ -9259,21 +9335,167 @@ export class StyleManager {
   _initLocationBar() {
     const QWERTY_KEYS = ['Q', 'W', 'E', 'R', 'T'];
 
-    // Render city pills (no submenu wrappers — POI row is separate)
-    for (const [cityId, city] of Object.entries(CITY_POIS)) {
-      const pill = document.createElement('button');
-      pill.className = 'location-pill';
-      pill.dataset.locationId = cityId;
-      pill.textContent = city.name;
-      pill.addEventListener('click', () => this._onCityPillClick(cityId));
-      this._locationPills.appendChild(pill);
+    this._selectedCountryId = 'india';
+    const countryPillsRow = document.getElementById('country-pills-row');
+    const locationVillagePills = document.getElementById('location-village-pills');
+    const currentSelectedCountryText = document.getElementById('current-selected-country-text');
+    const locationSearchBtn = document.getElementById('location-search-btn');
+    const headerCountrySelect = document.getElementById('header-country-select');
+    const headerSearchInput = document.getElementById('header-search-input');
+    const headerSearchBtn = document.getElementById('header-search-btn');
+
+    // Function to render cities & villages for the currently active country
+    const renderPlacesForCountry = (country) => {
+      if (!country) return;
+      if (currentSelectedCountryText) {
+        currentSelectedCountryText.textContent = country.name.toUpperCase();
+      }
+      if (this._locationSearch) {
+        const samplePlace = country.villagesAndTowns?.[0]?.name || country.cities?.[0]?.name || 'City';
+        this._locationSearch.placeholder = `Type town, city or village in ${country.name}... (e.g. ${samplePlace})`;
+      }
+      if (headerSearchInput) {
+        headerSearchInput.placeholder = `Search ${country.name}...`;
+      }
+
+      // 1. Populate Cities & Towns (#location-pills)
+      if (this._locationPills) {
+        this._locationPills.innerHTML = '';
+        for (const city of (country.cities || [])) {
+          const pill = document.createElement('button');
+          pill.className = 'location-pill';
+          pill.dataset.locationId = city.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+          pill.textContent = city.name;
+          pill.addEventListener('click', async () => {
+            this._showToast(`Locating ${city.name} (${country.name})...`);
+            this._highlightOnGlobe(city.lat, city.lon, `${city.name}, ${country.name}`);
+            this._beginWorldJumpTransition();
+            flyToLandmark(this.viewer, city.lat, city.lon, {
+              range: 2800,
+              pitch: -35,
+              duration: 2.5,
+              onComplete: () => this._endWorldJumpTransition(),
+            });
+            this._searchedLocationLabel = `${city.name}, ${country.name}`;
+            if (typeof window !== 'undefined') {
+              window.__gevActiveLocality = this._searchedLocationLabel;
+              window.dispatchEvent(new CustomEvent('gev:locality-changed', {
+                detail: { locality: this._searchedLocationLabel, lat: city.lat, lon: city.lon }
+              }));
+            }
+            this._setActiveLocation(null);
+            this._currentPoi = null;
+            this._updateLocationMiniStatus();
+            await this._ensureRoadsOverlayActive();
+            this._showToast(`Arrived at ${city.name} — Roads visible`);
+          });
+          this._locationPills.appendChild(pill);
+        }
+      }
+
+      // 2. Populate Villages & Notable Towns (#location-village-pills)
+      if (locationVillagePills) {
+        locationVillagePills.innerHTML = '';
+        for (const item of (country.villagesAndTowns || [])) {
+          const pill = document.createElement('button');
+          pill.className = 'location-village-pill';
+          pill.dataset.placeKey = item.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+          pill.innerHTML = `<span>${item.name}</span><span class="village-tag">${item.tag || (item.type === 'village' ? 'Village' : 'Town')}</span>`;
+          pill.addEventListener('click', async () => {
+            this._showToast(`Locating ${item.name} (${country.name})...`);
+            this._highlightOnGlobe(item.lat, item.lon, `${item.name}, ${country.name}`);
+            this._beginWorldJumpTransition();
+            flyToLandmark(this.viewer, item.lat, item.lon, {
+              range: item.type === 'village' ? 1200 : 2000,
+              pitch: -35,
+              duration: 2.5,
+              onComplete: () => this._endWorldJumpTransition(),
+            });
+            this._searchedLocationLabel = `${item.name}, ${country.name}`;
+            if (typeof window !== 'undefined') {
+              window.__gevActiveLocality = this._searchedLocationLabel;
+              window.dispatchEvent(new CustomEvent('gev:locality-changed', {
+                detail: { locality: this._searchedLocationLabel, lat: item.lat, lon: item.lon }
+              }));
+            }
+            this._setActiveLocation(null);
+            this._currentPoi = null;
+            this._updateLocationMiniStatus();
+            await this._ensureRoadsOverlayActive();
+            this._showToast(`Arrived at ${item.name} (${item.tag || item.type}) — Roads visible`);
+          });
+          locationVillagePills.appendChild(pill);
+        }
+      }
+    };
+
+    // Function to set the active country
+    const setCountry = (countryId, shouldFly = false) => {
+      this._selectedCountryId = countryId;
+      const country = findCountry(countryId) || COUNTRIES[0];
+
+      // Sync header country select
+      if (headerCountrySelect && headerCountrySelect.value !== countryId) {
+        headerCountrySelect.value = countryId;
+      }
+
+      // Sync country pills
+      if (countryPillsRow) {
+        countryPillsRow.querySelectorAll('.country-pill').forEach((btn) => {
+          const isMatching = btn.dataset.countryId === countryId;
+          btn.classList.toggle('active', isMatching);
+          btn.setAttribute('aria-checked', String(isMatching));
+        });
+      }
+
+      renderPlacesForCountry(country);
+
+      if (shouldFly && country.lat != null && country.lon != null) {
+        this._beginWorldJumpTransition();
+        flyToLandmark(this.viewer, country.lat, country.lon, {
+          range: country.rangeM || 3000000,
+          pitch: -55,
+          duration: 2.8,
+          onComplete: () => this._endWorldJumpTransition(),
+        });
+        this._showToast(`Country selected: ${country.flag} ${country.name}`);
+      }
+    };
+
+    // Render Country Pills
+    if (countryPillsRow) {
+      countryPillsRow.innerHTML = '';
+      for (const country of COUNTRIES) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `country-pill ${country.id === this._selectedCountryId ? 'active' : ''}`;
+        btn.dataset.countryId = country.id;
+        btn.dataset.country = country.id;
+        btn.setAttribute('role', 'radio');
+        btn.setAttribute('aria-checked', String(country.id === this._selectedCountryId));
+        btn.innerHTML = `<span>${country.flag}</span> <span>${country.name}</span>`;
+        btn.addEventListener('click', () => {
+          setCountry(country.id, false);
+          this._showToast(`Selected ${country.flag} ${country.name} — Choose town, city, or village below`);
+        });
+        countryPillsRow.appendChild(btn);
+      }
     }
+
+    // Connect header country dropdown
+    if (headerCountrySelect) {
+      headerCountrySelect.addEventListener('change', () => {
+        setCountry(headerCountrySelect.value, false);
+      });
+    }
+
+    // Initial render for default country (India)
+    const initialCountry = findCountry(this._selectedCountryId) || COUNTRIES[0];
+    renderPlacesForCountry(initialCountry);
 
     // QWERTY keyboard navigation for POIs
     this._poiKeydownHandler = (e) => {
       if (!this._expandedCityId) return;
-      // Bail while a form control is focused so POI hotkeys don't fire from a
-      // <select> dropdown's type-ahead or while typing in a field (M9).
       const isFormControl = e.target?.matches?.('select, input, textarea')
         || e.target === this._locationSearch;
       if (isFormControl) return;
@@ -9289,59 +9511,633 @@ export class StyleManager {
     document.addEventListener('keydown', this._poiKeydownHandler);
 
     // Search toggle (expand/collapse)
-    this._searchToggle.addEventListener('click', () => {
-      this._locationSearch.classList.toggle('expanded');
-      if (this._locationSearch.classList.contains('expanded')) {
+    this._searchToggle?.addEventListener('click', () => {
+      this._locationSearch?.classList.toggle('expanded');
+      if (this._locationSearch?.classList.contains('expanded')) {
         this._locationSearch.focus();
       }
     });
 
-    // Search submit on Enter
+    // Location search submit on Enter
     this._locationSearch.addEventListener('keydown', async (e) => {
-      if (e.key === 'Enter') {
-        const query = this._locationSearch.value.trim();
-        if (!query) return;
-        const generation = this._beginDeferredNavigation('location');
-        if (generation === false) {
-          this._locationSearch.classList.remove('searching');
-          this._locationSearch.blur();
-          return;
+      if (e.key !== 'Enter') return;
+      const query = this._locationSearch.value.trim();
+      if (!query) return;
+
+      const generation = this._beginDeferredNavigation('location');
+      if (generation === false) {
+        this._locationSearch.blur();
+        return;
+      }
+      this._activeLocationSearchGeneration = generation;
+      try {
+        const curCountry = findCountry(this._selectedCountryId) || COUNTRIES[0];
+        const scopedCountry = curCountry.id === 'global' ? null : curCountry.name;
+        this._showToast(`Searching for "${query}" in ${curCountry.name}...`);
+        const destination = await searchAndFlyTo(this.viewer, query, {
+          forceClose: true,
+          country: scopedCountry,
+          beforeFly: () => this._reassertNavigationHandoff(generation),
+        });
+        if (generation !== this._navigationGeneration) return;
+        if (!destination || destination?.cancelled) return;
+
+        this._searchedLocationLabel = destination.label || `${query}, ${curCountry.name}`;
+        if (typeof window !== 'undefined') {
+          window.__gevActiveLocality = this._searchedLocationLabel;
+          window.dispatchEvent(new CustomEvent('gev:locality-changed', {
+            detail: { locality: this._searchedLocationLabel, lat: destination.lat, lon: destination.lng }
+          }));
         }
-        this._activeLocationSearchGeneration = generation;
-        this._locationSearch.classList.add('searching');
-        try {
-          const destination = await searchAndFlyTo(this.viewer, query, {
-            beforeFly: () => this._reassertNavigationHandoff(generation),
-          });
-          if (this._disposed || generation !== this._navigationGeneration) return;
-          if (destination?.cancelled) {
-            // Authority changed while the lookup was resolving; remain inert.
-          } else if (destination) {
-            // The ACTIVE STYLE indicator reports the STYLE and nothing else.
-            // Writing the searched city here made the top-right corner read
-            // "ACTIVE STYLE / TOKYO"; where the camera is belongs to the
-            // LOCATION panel's own readout, which is updated below.
-            //
-            // Set before _setActiveLocation(null) so its own mini-status
-            // refresh already sees the destination — the readout never blinks
-            // through "Location: --" on the way to the searched place.
-            this._searchedLocationLabel = destination.label || query;
-            this._setActiveLocation(null);
-            this._currentPoi = null;
-            this._collapsePOIRow();
-            this._updateLocationMiniStatus();
-          } else {
-            this._showToast('Location not found');
-          }
-        } catch (err) {
-          console.error('[Search] Geocoding failed:', err);
-          if (this._disposed || generation !== this._navigationGeneration) return;
-          this._showToast('Search failed');
-        } finally {
-          this._settleLocationSearchUi(generation);
+        this._setActiveLocation(null);
+        this._currentPoi = null;
+        this._collapsePOIRow();
+        this._updateLocationMiniStatus();
+        if (destination.lat != null && destination.lng != null) {
+          this._highlightOnGlobe(destination.lat, destination.lng, destination.label || query);
         }
+        await this._ensureRoadsOverlayActive();
+        this._showToast(`Arrived at ${destination.label || query} — Roads visible`);
+      } catch (err) {
+        console.error('[LocationSearch] Search failed:', err);
+        this._showToast('Search failed');
+      } finally {
+        this._settleLocationSearchUi(generation);
       }
     });
+
+    // Location search button click
+    locationSearchBtn?.addEventListener('click', () => {
+      if (!this._locationSearch) return;
+      const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
+      this._locationSearch.dispatchEvent(event);
+    });
+
+    // Header search bar submit
+    const handleHeaderSearch = () => {
+      if (!headerSearchInput) return;
+      if (this._locationSearch) {
+        this._locationSearch.value = headerSearchInput.value;
+        const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
+        this._locationSearch.dispatchEvent(event);
+      }
+    };
+    headerSearchBtn?.addEventListener('click', handleHeaderSearch);
+    headerSearchInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleHeaderSearch();
+      }
+    });
+
+    // Slide drawer toggle for Header Intel Stats & Tools ("keep like slide to open full one")
+    const headerIntelSlideToggle = document.getElementById('header-intel-slide-toggle');
+    const headerIntelStats = document.getElementById('header-intel-stats');
+
+    if (headerIntelSlideToggle && headerIntelStats) {
+      headerIntelSlideToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isCollapsed = headerIntelStats.classList.toggle('collapsed');
+        headerIntelSlideToggle.classList.toggle('active', !isCollapsed);
+        headerIntelSlideToggle.setAttribute('aria-expanded', String(!isCollapsed));
+        const icon = headerIntelSlideToggle.querySelector('.slide-toggle-icon');
+        const text = headerIntelSlideToggle.querySelector('.slide-toggle-text');
+        if (icon) icon.textContent = isCollapsed ? '▶' : '▼';
+        if (text) text.textContent = isCollapsed ? 'SLIDE TO OPEN' : 'SLIDE TO CLOSE';
+      });
+    }
+
+    this._initBoundariesToggle();
+    this._initIndiaExplorer();
+  }
+
+  /**
+   * Automatically activates Roads and Boundaries overlay on search to ensure streets are clearly visible.
+   */
+  async _ensureRoadsOverlayActive() {
+    if (!this.mapStackController) return;
+    try {
+      await this.mapStackController.setRoadsOverlay(true);
+      await this.mapStackController.setBoundariesOverlay(true);
+      const toggleRoadsBtn = document.getElementById('toggle-roads-overlay');
+      const roadsStatusText = document.getElementById('roads-status-text');
+      const toggleBoundariesBtn = document.getElementById('toggle-boundaries-overlay');
+      const boundariesStatusText = document.getElementById('boundaries-status-text');
+      if (toggleRoadsBtn) {
+        toggleRoadsBtn.classList.add('active');
+        toggleRoadsBtn.setAttribute('aria-pressed', 'true');
+      }
+      if (roadsStatusText) roadsStatusText.textContent = 'ON';
+      if (toggleBoundariesBtn) {
+        toggleBoundariesBtn.classList.add('active');
+        toggleBoundariesBtn.setAttribute('aria-pressed', 'true');
+      }
+      if (boundariesStatusText) boundariesStatusText.textContent = 'ON';
+
+      if (this._dataManager) {
+        await this._dataManager.setEnabled('traffic', true, { origin: 'user' });
+      }
+    } catch (e) {
+      console.warn('[Overlay] Failed to activate roads overlay:', e);
+    }
+  }
+
+  /**
+   * Initializes the Borders & Labels and Roads overlay toggles.
+   */
+  _initBoundariesToggle() {
+    const toggleBoundariesBtn = document.getElementById('toggle-boundaries-overlay');
+    const boundariesStatusText = document.getElementById('boundaries-status-text');
+    const toggleRoadsBtn = document.getElementById('toggle-roads-overlay');
+    const roadsStatusText = document.getElementById('roads-status-text');
+
+    // Reflect default active status on load
+    if (toggleBoundariesBtn && this.mapStackController?.isBoundariesOverlayEnabled()) {
+      toggleBoundariesBtn.classList.add('active');
+      toggleBoundariesBtn.setAttribute('aria-pressed', 'true');
+      if (boundariesStatusText) boundariesStatusText.textContent = 'ON';
+    }
+    if (toggleRoadsBtn && this.mapStackController?.isRoadsOverlayEnabled()) {
+      toggleRoadsBtn.classList.add('active');
+      toggleRoadsBtn.setAttribute('aria-pressed', 'true');
+      if (roadsStatusText) roadsStatusText.textContent = 'ON';
+    }
+
+    if (toggleBoundariesBtn) {
+      toggleBoundariesBtn.addEventListener('click', async () => {
+        if (!this.mapStackController) {
+          this._showToast('Map controller not ready');
+          return;
+        }
+        try {
+          const enabled = await this.mapStackController.setBoundariesOverlay();
+          toggleBoundariesBtn.classList.toggle('active', enabled);
+          toggleBoundariesBtn.setAttribute('aria-pressed', String(enabled));
+          if (boundariesStatusText) boundariesStatusText.textContent = enabled ? 'ON' : 'OFF';
+          this._showToast(enabled ? 'Borders & Place Labels enabled' : 'Borders & Place Labels disabled');
+        } catch (err) {
+          console.error('[MapStack] Failed to toggle boundaries overlay:', err);
+        }
+      });
+    }
+
+    if (toggleRoadsBtn) {
+      toggleRoadsBtn.addEventListener('click', async () => {
+        if (!this.mapStackController) {
+          this._showToast('Map controller not ready');
+          return;
+        }
+        try {
+          const enabled = await this.mapStackController.setRoadsOverlay();
+          toggleRoadsBtn.classList.toggle('active', enabled);
+          toggleRoadsBtn.setAttribute('aria-pressed', String(enabled));
+          if (roadsStatusText) roadsStatusText.textContent = enabled ? 'ON' : 'OFF';
+          this._showToast(enabled ? 'Roads & Highways overlay enabled' : 'Roads & Highways overlay disabled');
+        } catch (err) {
+          console.error('[MapStack] Failed to toggle roads overlay:', err);
+        }
+      });
+    }
+  }
+
+  /**
+   * Initializes the interactive India Explorer drawer.
+   */
+  _initIndiaExplorer() {
+    this._indiaToggleBtn = document.getElementById('india-explorer-toggle-btn');
+    this._indiaDrawer = document.getElementById('india-explorer-drawer');
+    this._indiaCloseBtn = document.getElementById('india-explorer-close-btn');
+    this._indiaPanCountryBtn = document.getElementById('india-fly-country-btn');
+    this._indiaGoLiveBtn = document.getElementById('india-go-live-btn');
+    this._indiaRoadsBtn = document.getElementById('india-roads-btn');
+    this._quickIndiaLiveBtn = document.getElementById('quick-india-live-btn');
+    this._indiaFilterInput = document.getElementById('india-filter-input');
+    this._indiaVillageBtn = document.getElementById('india-village-search-btn');
+    this._indiaRegionsGrid = document.getElementById('india-regions-grid');
+    this._indiaSelectedDetail = document.getElementById('india-selected-detail');
+    this._indiaTabBtns = document.querySelectorAll('.india-tab');
+
+    // Quick Live Action (available even with drawer closed)
+    this._quickIndiaLiveBtn?.addEventListener('click', () => {
+      this._goLiveIndia();
+    });
+
+    this._indiaGoLiveBtn?.addEventListener('click', () => {
+      this._goLiveIndia();
+    });
+
+    this._indiaRoadsBtn?.addEventListener('click', async () => {
+      if (!this.mapStackController) {
+        this._showToast('Map controller not ready');
+        return;
+      }
+      try {
+        const next = !this.mapStackController.isRoadsOverlayEnabled();
+        await this.mapStackController.setRoadsOverlay(next);
+        await this.mapStackController.setBoundariesOverlay(next);
+        this._indiaRoadsBtn.classList.toggle('active', next);
+        const toggleRoadsBtn = document.getElementById('toggle-roads-overlay');
+        const roadsStatusText = document.getElementById('roads-status-text');
+        const toggleBoundariesBtn = document.getElementById('toggle-boundaries-overlay');
+        const boundariesStatusText = document.getElementById('boundaries-status-text');
+        if (toggleRoadsBtn) {
+          toggleRoadsBtn.classList.toggle('active', next);
+          toggleRoadsBtn.setAttribute('aria-pressed', String(next));
+        }
+        if (roadsStatusText) roadsStatusText.textContent = next ? 'ON' : 'OFF';
+        if (toggleBoundariesBtn) {
+          toggleBoundariesBtn.classList.toggle('active', next);
+          toggleBoundariesBtn.setAttribute('aria-pressed', String(next));
+        }
+        if (boundariesStatusText) boundariesStatusText.textContent = next ? 'ON' : 'OFF';
+        this._showToast(next ? 'Roads & Place Labels enabled' : 'Roads & Place Labels disabled');
+      } catch (err) {
+        console.error('[IndiaRoads] Failed to toggle roads:', err);
+      }
+    });
+
+    this._indiaSatBtn = document.getElementById('india-sat-btn');
+    this._indiaSatBtn?.addEventListener('click', () => {
+      const dockSatBtn = document.getElementById('dock-live-sat-btn') || document.getElementById('header-live-sat-btn');
+      dockSatBtn?.click();
+      const insatTab = document.querySelector('.sat-source-tab[data-source="insat3d"]');
+      insatTab?.click();
+      this._showToast('🛰️ ISRO INSAT-3D Satellite pass active (15-min cadence)');
+    });
+
+    if (!this._indiaDrawer || !this._indiaToggleBtn) return;
+
+    this._activeIndiaTab = 'all';
+    this._selectedIndiaRegionId = null;
+
+    this._indiaToggleBtn.addEventListener('click', () => {
+      // Dismiss first run welcome modal if open so map and India explorer are immediately usable
+      const firstRun = document.getElementById('first-run-launcher');
+      if (firstRun) {
+        firstRun.setAttribute('hidden', '');
+        firstRun.classList.remove('visible');
+      }
+
+      const isHidden = this._indiaDrawer.hasAttribute('hidden');
+      if (isHidden) {
+        this._indiaDrawer.removeAttribute('hidden');
+        this._indiaToggleBtn.classList.add('active');
+        this._renderIndiaRegions();
+        setTimeout(() => this._indiaFilterInput?.focus(), 50);
+      } else {
+        this._indiaDrawer.setAttribute('hidden', '');
+        this._indiaToggleBtn.classList.remove('active');
+      }
+    });
+
+    this._indiaCloseBtn?.addEventListener('click', () => {
+      this._indiaDrawer.setAttribute('hidden', '');
+      this._indiaToggleBtn.classList.remove('active');
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !this._indiaDrawer.hasAttribute('hidden')) {
+        this._indiaDrawer.setAttribute('hidden', '');
+        this._indiaToggleBtn.classList.remove('active');
+      }
+    });
+
+    this._indiaPanCountryBtn?.addEventListener('click', () => {
+      this._flyToIndiaCountry();
+    });
+
+    this._indiaTabBtns.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        this._indiaTabBtns.forEach((t) => t.classList.remove('active'));
+        tab.classList.add('active');
+        this._activeIndiaTab = tab.dataset.tab;
+        this._renderIndiaRegions();
+      });
+    });
+
+    this._indiaFilterInput?.addEventListener('input', () => {
+      this._renderIndiaRegions();
+    });
+
+    const doVillageSearch = async () => {
+      const query = (this._indiaFilterInput?.value || '').trim();
+      if (!query) return;
+      this._showToast(`Searching for "${query}" in India...`);
+      try {
+        const searchQuery = query.toLowerCase().includes('india') ? query : `${query}, India`;
+        const dest = await searchAndFlyTo(this.viewer, searchQuery, { forceClose: true });
+        if (dest) {
+          this._searchedLocationLabel = dest.label || query;
+          this._setActiveLocation(null);
+          this._currentPoi = null;
+          this._updateLocationMiniStatus();
+          if (dest.lat != null && dest.lng != null) {
+            this._highlightOnGlobe(dest.lat, dest.lng, dest.label || query);
+          }
+          await this._ensureRoadsOverlayActive();
+          this._showToast(`Arrived at ${dest.label || query} — Roads visible`);
+        } else {
+          this._showToast(`Could not find "${query}"`);
+        }
+      } catch (err) {
+        console.error('[IndiaSearch] Geocoding failed:', err);
+        this._showToast('Search failed');
+      }
+    };
+
+    this._indiaVillageBtn?.addEventListener('click', doVillageSearch);
+    this._indiaFilterInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        doVillageSearch();
+      }
+    });
+
+    this._renderIndiaRegions();
+  }
+
+  /**
+   * Renders the grid of Indian states and union territories.
+   */
+  _renderIndiaRegions() {
+    if (!this._indiaRegionsGrid) return;
+    const filterText = (this._indiaFilterInput?.value || '').trim();
+    let regions = filterIndiaRegions(filterText);
+    if (this._activeIndiaTab === 'state') {
+      regions = regions.filter((r) => r.type === 'state');
+    } else if (this._activeIndiaTab === 'ut') {
+      regions = regions.filter((r) => r.type === 'ut');
+    }
+
+    this._indiaRegionsGrid.innerHTML = '';
+    if (regions.length === 0) {
+      const emptyMsg = document.createElement('div');
+      emptyMsg.style.cssText = 'color: var(--text-dim); font-size: 10px; font-style: italic; padding: 12px; grid-column: 1 / -1; text-align: center;';
+      emptyMsg.textContent = 'No state found matching keyword. Click "Go" to search as a town or village!';
+      this._indiaRegionsGrid.appendChild(emptyMsg);
+      return;
+    }
+
+    for (const region of regions) {
+      const card = document.createElement('div');
+      card.className = `india-region-card ${this._selectedIndiaRegionId === region.id ? 'active' : ''}`;
+      card.innerHTML = `
+        <div class="india-card-top">
+          <span class="india-card-name" title="${region.name}">${region.name}</span>
+          <span class="india-card-type-badge ${region.type}">${region.type === 'ut' ? 'UT' : 'State'}</span>
+        </div>
+        <span class="india-card-capital" title="Capital: ${region.capital}">★ ${region.capital}</span>
+      `;
+      card.addEventListener('click', () => {
+        this._onSelectIndiaRegion(region);
+      });
+      this._indiaRegionsGrid.appendChild(card);
+    }
+  }
+
+  /**
+   * Handles selection of an Indian state or UT.
+   */
+  _onSelectIndiaRegion(region) {
+    this._selectedIndiaRegionId = region.id;
+    this._renderIndiaRegions();
+    this._showIndiaRegionDetail(region);
+    this._highlightOnGlobe(region.lat, region.lon, `${region.name} (${region.capital})`);
+
+    this._beginWorldJumpTransition();
+    if (region.viewBounds) {
+      flyToViewportBounds(this.viewer, region.viewBounds, {
+        duration: 2.8,
+        navigationMode: 'region-overview',
+        onComplete: () => this._endWorldJumpTransition(),
+      });
+    } else {
+      flyToLandmark(this.viewer, region.lat, region.lon, {
+        range: region.rangeM || 500000,
+        pitch: -45,
+        duration: 2.8,
+        onComplete: () => this._endWorldJumpTransition(),
+      });
+    }
+
+    this._searchedLocationLabel = `${region.name}, India`;
+    this._setActiveLocation(null);
+    this._currentPoi = null;
+    this._updateLocationMiniStatus();
+    this._showToast(`Viewing ${region.name} · Capital: ${region.capital}`);
+  }
+
+  /**
+   * Shows detailed view of cities and notable towns for an Indian state/UT.
+   */
+  _showIndiaRegionDetail(region) {
+    if (!this._indiaSelectedDetail) return;
+    this._indiaSelectedDetail.removeAttribute('hidden');
+    this._indiaSelectedDetail.innerHTML = `
+      <div class="india-detail-banner">
+        <span class="india-detail-title">${region.name} (${region.type === 'ut' ? 'Union Territory' : 'State'})</span>
+        <span class="india-detail-capital">Capital: <strong>${region.capital}</strong></span>
+      </div>
+      <div class="india-detail-group">
+        <span class="india-group-label">Major Cities</span>
+        <div class="india-chips-wrap" id="india-cities-wrap"></div>
+      </div>
+      <div class="india-detail-group">
+        <span class="india-group-label">Notable Towns & Places</span>
+        <div class="india-chips-wrap" id="india-towns-wrap"></div>
+      </div>
+    `;
+
+    const citiesWrap = this._indiaSelectedDetail.querySelector('#india-cities-wrap');
+    for (const city of region.cities) {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = `india-place-chip ${city.name.toLowerCase() === region.capital.toLowerCase() ? 'capital-chip' : ''}`;
+      chip.textContent = city.name;
+      chip.addEventListener('click', () => {
+        this._highlightOnGlobe(city.lat, city.lon, `${city.name}, ${region.name}`);
+        this._beginWorldJumpTransition();
+        flyToLandmark(this.viewer, city.lat, city.lon, {
+          range: 2800,
+          pitch: -35,
+          duration: 2.5,
+          onComplete: () => this._endWorldJumpTransition(),
+        });
+        this._searchedLocationLabel = `${city.name}, ${region.name}`;
+        this._updateLocationMiniStatus();
+        this._ensureRoadsOverlayActive();
+        this._showToast(`Flying to ${city.name} — Roads visible`);
+      });
+      citiesWrap.appendChild(chip);
+    }
+
+    const townsWrap = this._indiaSelectedDetail.querySelector('#india-towns-wrap');
+    for (const place of region.notablePlaces) {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'india-place-chip';
+      chip.textContent = place;
+      chip.addEventListener('click', async () => {
+        this._showToast(`Locating ${place}...`);
+        try {
+          const dest = await searchAndFlyTo(this.viewer, `${place}, ${region.name}, India`, { forceClose: true });
+          if (dest) {
+            this._searchedLocationLabel = dest.label || `${place}, ${region.name}`;
+            this._updateLocationMiniStatus();
+            if (dest.lat != null && dest.lng != null) {
+              this._highlightOnGlobe(dest.lat, dest.lng, dest.label || `${place}, ${region.name}`);
+            }
+            await this._ensureRoadsOverlayActive();
+            this._showToast(`Arrived at ${place} — Roads visible`);
+          }
+        } catch (e) {
+          console.warn('[PlaceLookup] Failed:', e);
+        }
+      });
+      townsWrap.appendChild(chip);
+    }
+  }
+
+  /**
+   * Flies camera to full India subcontinent overview.
+   */
+  _flyToIndiaCountry() {
+    this._highlightOnGlobe(INDIA_OVERVIEW.lat, INDIA_OVERVIEW.lon, 'Republic of India');
+    this._beginWorldJumpTransition();
+    flyToViewportBounds(this.viewer, INDIA_OVERVIEW.viewBounds, {
+      duration: 3.0,
+      navigationMode: 'region-overview',
+      onComplete: () => this._endWorldJumpTransition(),
+    });
+    this._searchedLocationLabel = 'India (Republic of India)';
+    this._setActiveLocation(null);
+    this._currentPoi = null;
+    this._updateLocationMiniStatus();
+    this._showToast('Viewing India');
+  }
+
+  /**
+   * Activates live operations across India:
+   * Flights (OpenSky), Military radar (adsb.lol), Satellites (CelesTrak),
+   * Traffic (OSM Overpass), CCTV (Delhi/Mumbai/BLR/HYD), Earthquakes (USGS),
+   * Rocket launches (ISRO/Global), Radio (IN country filter), and Roads/Boundaries overlay.
+   */
+  async _goLiveIndia() {
+    // Dismiss first run welcome modal if open
+    const firstRun = document.getElementById('first-run-launcher');
+    if (firstRun) {
+      firstRun.setAttribute('hidden', '');
+      firstRun.classList.remove('visible');
+    }
+
+    this._showToast('🔴 Engaging India Live Operations Center...');
+
+    // 1. Enable Roads & Boundaries Overlays so all expressways, highways and state borders render
+    if (this.mapStackController) {
+      try {
+        await this.mapStackController.setBoundariesOverlay(true);
+        await this.mapStackController.setRoadsOverlay(true);
+        const toggleBoundariesBtn = document.getElementById('toggle-boundaries-overlay');
+        const toggleRoadsBtn = document.getElementById('toggle-roads-overlay');
+        const boundariesStatusText = document.getElementById('boundaries-status-text');
+        const roadsStatusText = document.getElementById('roads-status-text');
+        if (toggleBoundariesBtn) {
+          toggleBoundariesBtn.classList.add('active');
+          toggleBoundariesBtn.setAttribute('aria-pressed', 'true');
+        }
+        if (toggleRoadsBtn) {
+          toggleRoadsBtn.classList.add('active');
+          toggleRoadsBtn.setAttribute('aria-pressed', 'true');
+        }
+        if (boundariesStatusText) boundariesStatusText.textContent = 'ON';
+        if (roadsStatusText) roadsStatusText.textContent = 'ON';
+      } catch (err) {
+        console.warn('[IndiaLive] Overlay activation warning:', err);
+      }
+    }
+
+    // 2. Enable all Live Data Layers
+    if (this._dataManager) {
+      const liveLayerIds = [
+        'flights',
+        'military',
+        'ais-live-vessels',
+        'military-installations',
+        'satellites',
+        'traffic',
+        'cctv',
+        'earthquakes',
+        'rocket-launches',
+        'radio',
+      ];
+
+      for (const id of liveLayerIds) {
+        try {
+          if (this._dataManager.layers?.has(id)) {
+            await this._dataManager.setEnabled(id, true, { origin: 'user' });
+          }
+        } catch (e) {
+          console.warn(`[IndiaLive] Could not enable layer ${id}:`, e);
+        }
+      }
+
+      // Tune Radio layer to India stations
+      try {
+        if (this._dataManager.layers?.has('radio')) {
+          this._dataManager.setLayerParams?.('radio', { country: 'IN' }, { origin: 'user' });
+        }
+      } catch (e) {
+        console.warn('[IndiaLive] Radio tuning warning:', e);
+      }
+    }
+
+    // 3. Update Roads button active state if in India explorer
+    const roadsBtn = document.getElementById('india-roads-btn');
+    if (roadsBtn) roadsBtn.classList.add('active');
+
+    // 4. Fly camera to India overview
+    this._flyToIndiaCountry();
+
+    // 5. Display HUD and Toast announcements
+    this._showToast('🔴 INDIA LIVE: Flights, Radar, Satellites, Roads & Traffic Active');
+    if (this.hud?.logMessage) {
+      this.hud.logMessage('INDIA OPERATIONS ONLINE · Airspace, Ground Traffic, Satellites & Road Network Engaged');
+    }
+  }
+
+  /**
+   * Adds a tactical pinpoint marker on the globe for the highlighted place.
+   */
+  _highlightOnGlobe(lat, lon, label) {
+    if (!this.viewer?.entities) return;
+    if (this._indiaMarkerEntity) {
+      try { this.viewer.entities.remove(this._indiaMarkerEntity); } catch {}
+      this._indiaMarkerEntity = null;
+    }
+    try {
+      this._indiaMarkerEntity = this.viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(lon, lat, 30),
+        point: {
+          pixelSize: 10,
+          color: Cesium.Color.fromCssColorString('#f0a63c'),
+          outlineColor: Cesium.Color.BLACK,
+          outlineWidth: 2,
+        },
+        label: {
+          text: label,
+          font: 'bold 12px monospace',
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          fillColor: Cesium.Color.fromCssColorString('#00d4ff'),
+          outlineColor: Cesium.Color.BLACK,
+          outlineWidth: 3,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          pixelOffset: new Cesium.Cartesian2(0, -12),
+          distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 6000000),
+        },
+      });
+    } catch {
+      /* ignore */
+    }
   }
 
   /**

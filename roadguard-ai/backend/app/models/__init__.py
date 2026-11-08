@@ -1,0 +1,46 @@
+"""
+RoadGuard AI — Models package
+"""
+from .models import (
+    Base,
+    User,
+    Camera,
+    Department,
+    Detection,
+    Complaint,
+    ComplaintStatusHistory,
+    Inspection,
+    Repair,
+    Verification,
+    Notification,
+    AuditLog,
+    UserRole,
+    DefectType,
+    SeverityLevel,
+    PriorityLevel,
+    ComplaintStatus,
+    VerificationResult,
+    NotificationChannel,
+)
+
+__all__ = [
+    "Base",
+    "User",
+    "Camera",
+    "Department",
+    "Detection",
+    "Complaint",
+    "ComplaintStatusHistory",
+    "Inspection",
+    "Repair",
+    "Verification",
+    "Notification",
+    "AuditLog",
+    "UserRole",
+    "DefectType",
+    "SeverityLevel",
+    "PriorityLevel",
+    "ComplaintStatus",
+    "VerificationResult",
+    "NotificationChannel",
+]

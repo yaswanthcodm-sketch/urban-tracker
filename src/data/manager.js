@@ -26,6 +26,39 @@ const VALID_LAYER_SERIALIZATION_DISPOSITIONS = new Set([
   'enabled+mirrored-options',
 ]);
 
+export const LAYER_CATEGORIES = Object.freeze([
+  {
+    id: 'air',
+    title: 'Air & Radar',
+    icon: '✈️',
+    layerIds: ['flights', 'military'],
+  },
+  {
+    id: 'maritime',
+    title: 'Maritime Intelligence',
+    icon: '🚢',
+    layerIds: ['ais-live-vessels'],
+  },
+  {
+    id: 'space',
+    title: 'Space & Orbital',
+    icon: '🛰️',
+    layerIds: ['satellites', 'rocket-launches'],
+  },
+  {
+    id: 'urban',
+    title: 'Urban & Transit',
+    icon: '🚗',
+    layerIds: ['traffic', 'cctv', 'bikeshare'],
+  },
+  {
+    id: 'infrastructure',
+    title: 'Sensors & Infrastructure',
+    icon: '🌐',
+    layerIds: ['earthquakes', 'firms-fire-context', 'submarine-cables', 'military-installations', 'radio'],
+  },
+]);
+
 function isAbortError(error) {
   return error?.name === 'AbortError';
 }
@@ -2022,78 +2055,119 @@ export class DataLayerManager {
     if (!this._toggleContainer) return;
     this._toggleContainer.innerHTML = '';
 
+    const allLayers = [];
     for (const layer of this.getAll()) {
       if (!layer.showInTogglePanel) continue;
-      const row = document.createElement('div');
-      row.className = 'data-toggle-row';
-      row.dataset.layerId = layer.id;
-
-      const topRow = document.createElement('div');
-      topRow.className = 'data-toggle-top';
-
-      const left = document.createElement('div');
-      left.className = 'data-toggle-left';
-      left.innerHTML = `<span class="data-icon">${layer.icon}</span><span class="data-name">${layer.name}</span>`;
-
-      const right = document.createElement('div');
-      right.className = 'data-toggle-right';
-
-      const count = document.createElement('span');
-      count.className = 'data-count';
-      count.textContent = layer.stats.count ? this._formatCount(layer.stats.count) : '—';
-
-      const toggle = document.createElement('button');
-      toggle.className = `data-toggle-btn${layer.enabled ? ' active' : ''}`;
-      this._syncToggleButton(toggle, layer);
-      toggle.addEventListener('click', async () => {
-        toggle.disabled = true;
-        try {
-          await this.setEnabled(layer.id, !this.isEnabled(layer.id), { origin: 'user' });
-        } catch (error) {
-          console.warn(`[Data] ${layer.id} toggle error:`, error);
-        } finally {
-          toggle.disabled = false;
-        }
-      });
-
-      right.appendChild(count);
-      right.appendChild(toggle);
-      topRow.appendChild(left);
-      topRow.appendChild(right);
-
-      const bottomRow = document.createElement('div');
-      bottomRow.className = 'data-toggle-meta';
-      bottomRow.textContent = this._buildMetaText(layer);
-
-      row.appendChild(topRow);
-      row.appendChild(bottomRow);
-
-      // Optional per-layer sub-controls (chips + color legend). The click
-      // listener is delegated and attached once here, so it survives
-      // _refreshTogglePanel — which only rewrites the container's contents.
-      const rowModule = this.layers.get(layer.id)?.module;
-      if (typeof rowModule?.getRowControls === 'function') {
-        // A layer whose controls settle asynchronously (a chunked catalog load
-        // that can also fail) pushes a re-render through this; nothing else
-        // would repaint the row before its next scheduled refresh.
-        rowModule.setRowControlsListener?.(() => this._refreshTogglePanel());
-        const controls = document.createElement('div');
-        controls.className = 'data-toggle-controls';
-        controls.addEventListener('click', (event) => {
-          const button = event.target?.closest?.('.data-toggle-chip');
-          if (!button || button.disabled) return;
-          // Re-read the live descriptor rather than trusting the rendered
-          // chip, so a stale row can never apply an inverted toggle.
-          const chip = this._rowControlsFor(layer.id)?.chips
-            ?.find((entry) => entry.id === button.dataset.chipId);
-          if (chip?.params) this.setLayerParams(layer.id, chip.params, { origin: 'user' });
-        });
-        row.appendChild(controls);
-        this._syncRowControls(controls, layer);
-      }
-
-      this._toggleContainer.appendChild(row);
+      allLayers.push(layer);
     }
+    const layerMap = new Map(allLayers.map((layer) => [layer.id, layer]));
+    const placed = new Set();
+
+    for (const category of LAYER_CATEGORIES) {
+      const categoryLayers = [];
+      for (const id of category.layerIds) {
+        const layer = layerMap.get(id);
+        if (layer) {
+          categoryLayers.push(layer);
+          placed.add(id);
+        }
+      }
+      if (categoryLayers.length === 0) continue;
+
+      const header = document.createElement('div');
+      header.className = 'data-group-header';
+      header.innerHTML = `<span class="data-group-icon">${category.icon}</span><span class="data-group-title">${category.title}</span>`;
+      this._toggleContainer.appendChild(header);
+
+      for (const layer of categoryLayers) {
+        this._renderToggleRow(layer);
+      }
+    }
+
+    const remaining = allLayers.filter((layer) => !placed.has(layer.id));
+    if (remaining.length > 0) {
+      if (placed.size > 0) {
+        const header = document.createElement('div');
+        header.className = 'data-group-header';
+        header.innerHTML = '<span class="data-group-icon">📦</span><span class="data-group-title">Additional Layers</span>';
+        this._toggleContainer.appendChild(header);
+      }
+      for (const layer of remaining) {
+        this._renderToggleRow(layer);
+      }
+    }
+  }
+
+  _renderToggleRow(layer) {
+    const row = document.createElement('div');
+    row.className = 'data-toggle-row';
+    row.dataset.layerId = layer.id;
+
+    const topRow = document.createElement('div');
+    topRow.className = 'data-toggle-top';
+
+    const left = document.createElement('div');
+    left.className = 'data-toggle-left';
+    left.innerHTML = `<span class="data-icon">${layer.icon}</span><span class="data-name">${layer.name}</span>`;
+
+    const right = document.createElement('div');
+    right.className = 'data-toggle-right';
+
+    const count = document.createElement('span');
+    count.className = 'data-count';
+    count.textContent = layer.stats.count ? this._formatCount(layer.stats.count) : '—';
+
+    const toggle = document.createElement('button');
+    toggle.className = `data-toggle-btn${layer.enabled ? ' active' : ''}`;
+    this._syncToggleButton(toggle, layer);
+    toggle.addEventListener('click', async () => {
+      toggle.disabled = true;
+      try {
+        await this.setEnabled(layer.id, !this.isEnabled(layer.id), { origin: 'user' });
+      } catch (error) {
+        console.warn(`[Data] ${layer.id} toggle error:`, error);
+      } finally {
+        toggle.disabled = false;
+      }
+    });
+
+    right.appendChild(count);
+    right.appendChild(toggle);
+    topRow.appendChild(left);
+    topRow.appendChild(right);
+
+    const bottomRow = document.createElement('div');
+    bottomRow.className = 'data-toggle-meta';
+    bottomRow.textContent = this._buildMetaText(layer);
+
+    row.appendChild(topRow);
+    row.appendChild(bottomRow);
+
+    // Optional per-layer sub-controls (chips + color legend). The click
+    // listener is delegated and attached once here, so it survives
+    // _refreshTogglePanel — which only rewrites the container's contents.
+    const rowModule = this.layers.get(layer.id)?.module;
+    if (typeof rowModule?.getRowControls === 'function') {
+      // A layer whose controls settle asynchronously (a chunked catalog load
+      // that can also fail) pushes a re-render through this; nothing else
+      // would repaint the row before its next scheduled refresh.
+      rowModule.setRowControlsListener?.(() => this._refreshTogglePanel());
+      const controls = document.createElement('div');
+      controls.className = 'data-toggle-controls';
+      controls.addEventListener('click', (event) => {
+        const button = event.target?.closest?.('.data-toggle-chip');
+        if (!button || button.disabled) return;
+        // Re-read the live descriptor rather than trusting the rendered
+        // chip, so a stale row can never apply an inverted toggle.
+        const chip = this._rowControlsFor(layer.id)?.chips
+          ?.find((entry) => entry.id === button.dataset.chipId);
+        if (chip?.params) this.setLayerParams(layer.id, chip.params, { origin: 'user' });
+      });
+      row.appendChild(controls);
+      this._syncRowControls(controls, layer);
+    }
+
+    this._toggleContainer.appendChild(row);
   }
 
   /**

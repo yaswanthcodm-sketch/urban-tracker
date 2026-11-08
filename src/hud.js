@@ -146,20 +146,20 @@ export class IntelHUD {
 
     this._el.innerHTML = `
       <div class="hud-top-bar">
-        <span class="hud-top-bar-left">TOP SECRET // SI-TK // NOFORN</span>
-        <span class="hud-top-bar-center">${this._missionId}</span>
-        <span class="hud-top-bar-right">PAGE 1/1</span>
+        <span class="hud-top-bar-left">ROADGUARD AI // MUNICIPAL ROAD MONITORING</span>
+        <span class="hud-top-bar-center">AP R&B CIVIC SURVEILLANCE</span>
+        <span class="hud-top-bar-right">PAVEMENT INTEGRITY</span>
       </div>
 
       <div class="hud-corner hud-top-left">
         <div class="hud-bracket">┌</div>
         <div class="hud-content">
-          <div class="hud-classification">TOP SECRET // SI-TK // NOFORN</div>
-          <div class="hud-system">${this._missionId}  ${this._sensorId}</div>
-          <div class="hud-mode" id="hud-mode">NORMAL</div>
+          <div class="hud-classification">ROADGUARD AI // MUNICIPAL ROAD MONITORING</div>
+          <div class="hud-system">ROAD PATROL  AI PAVEMENT INSPECTOR</div>
+          <div class="hud-mode" id="hud-mode">MONITORING</div>
           <div class="hud-summary-wrap">
-            <div class="hud-summary-label">SUMMARY</div>
-            <div class="hud-summary" id="hud-summary">Awaiting telemetry...</div>
+            <div class="hud-summary-label">ROAD STATUS</div>
+            <div class="hud-summary" id="hud-summary">Active Road Pavement Health Surveillance</div>
           </div>
         </div>
       </div>
@@ -213,14 +213,16 @@ export class IntelHUD {
    * cadences and are cleaned up in {@link destroy}.
    */
   _startTimers() {
-    // Timestamp — every second
+    // Timestamp — every second (only when visible)
     this._timestampInterval = setInterval(() => {
+      if (!this._visible) return;
       const el = document.getElementById('hud-timestamp');
       if (el) el.textContent = this._formatUTC();
     }, 1000);
 
-    // REC blink — every 800ms
+    // REC blink — every 800ms (only when visible)
     this._recBlinkInterval = setInterval(() => {
+      if (!this._visible) return;
       this._recBlinkState = !this._recBlinkState;
       const dot = document.getElementById('hud-rec-dot');
       if (dot) dot.style.visibility = this._recBlinkState ? 'visible' : 'hidden';

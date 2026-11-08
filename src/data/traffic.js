@@ -13,6 +13,8 @@ import {
 import { queuePlatoons, locateAlongRoad } from './trafficQueue.js';
 import { registerDynamicCredit, TOMTOM_CREDIT } from './dataCredits.js';
 import { holdContinuousRender, releaseContinuousRender } from '../renderGovernor.js';
+import { registerPickOwner, unregisterPickOwner } from './pickRegistry.js';
+import { CITY_ROAD_CATALOGS, getRoadDamageProfile } from './allCitiesRoadsData.js';
 
 /**
  * @file Street Traffic — animated dots along OSM road polylines, colored by
@@ -44,9 +46,9 @@ import { holdContinuousRender, releaseContinuousRender } from '../renderGovernor
 /** @const {string} Proxy endpoint for Overpass API queries */
 const OVERPASS_URL = '/api/overpass';
 /** @const {number} Meters — hide all traffic dots above this camera altitude */
-const ACTIVATION_ALTITUDE = 8000;
+const ACTIVATION_ALTITUDE = 35000;
 /** @const {number} Meters — above this altitude, only major roads are fetched */
-const FAST_FETCH_ALTITUDE = 4500;
+const FAST_FETCH_ALTITUDE = 14000;
 /** @const {number} Milliseconds — debounce delay before fetching after camera settles */
 const FETCH_DEBOUNCE = 320;
 /** @const {number} Meters — vertical offset to keep dots above clamped terrain surface */
@@ -86,18 +88,24 @@ const SPEED_MPS = {
   tertiary:     8,    // ~30 km/h
   residential:  5,    // ~18 km/h
   unclassified: 5,
+  living_street: 4,
+  service:      4,
+  track:        3,
+  road:         4,
 };
 
 /** @const {Object<string,number>} Density multiplier — higher values spawn more dots on important roads */
 const DENSITY_MULT = {
   motorway: 3.0, trunk: 2.5, primary: 2.0, secondary: 1.5,
   tertiary: 1.0, residential: 0.5, unclassified: 0.4,
+  living_street: 0.4, service: 0.3, track: 0.3, road: 0.4,
 };
 
 /** @const {Object<string,number>} Pixel size per road type (scaled up 25% for screen-recording visibility) */
 const SIZE_BY_TYPE = {
   motorway: 6, trunk: 6, primary: 5, secondary: 5,
   tertiary: 4, residential: 4, unclassified: 4,
+  living_street: 4, service: 3, track: 3, road: 4,
 };
 
 /**
@@ -150,6 +158,18 @@ const CREEP_STOP_MS = [1500, 5000];
 let _viewer = null;
 /** @type {Cesium.PointPrimitiveCollection|null} */
 let _pointCollection = null;
+/** @type {Cesium.PolylineCollection|null} Collection of visible road lines */
+let _roadPolylineCollection = null;
+/** @type {Cesium.PolylineCollection|null} Highlight collection for selected road */
+let _highlightPolylineCollection = null;
+/** @type {Cesium.Polyline|null} Highlighted polyline */
+let _highlightPolyline = null;
+/** @type {Cesium.ScreenSpaceEventHandler|null} */
+let _clickHandler = null;
+/** @type {Map<string, object>} */
+const _roadById = new Map();
+/** @type {boolean} */
+let _roadDeselectBound = false;
 /** @type {Array<{point:Cesium.PointPrimitive, waypoints:Cesium.Cartesian3[], segmentDist:number[], numSegments:number, segIdx:number, t:number, mps:number, direction:number, stoppedUntil:number}>} Active animated dots */
 let _dots = [];
 /** @type {Array<{coords:number[][], type:string, waypoints:Cesium.Cartesian3[], segmentDist:number[]}>} Parsed roads with pre-computed Cartesian3 waypoints */
@@ -448,7 +468,7 @@ function buildOverpassQuery(south, west, north, east, { majorOnly = false, timeo
   // Regex matches the OSM `highway` tag value against allowed road types
   const regex = majorOnly
     ? '^(motorway|trunk|primary|secondary)$'
-    : '^(motorway|trunk|primary|secondary|tertiary|residential|unclassified)$';
+    : '^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|living_street|service|track|road)$';
   return `[out:json][timeout:${timeoutSec}];(way["highway"~"${regex}"](${south},${west},${north},${east}););out geom qt;`;
 }
 
@@ -602,7 +622,33 @@ function parseRoads(overpassData) {
       segmentDist.push(Cesium.Cartesian3.distance(waypoints[i], waypoints[i + 1]));
     }
 
-    roads.push({ coords, type, oneway, waypoints, segmentDist });
+    const id = String(el.id ? `way-${el.id}` : `road-${Math.random().toString(36).slice(2, 9)}`);
+    const name = el.tags?.name || el.tags?.['name:en'] || el.tags?.ref || '';
+    const ref = el.tags?.ref || '';
+    const surface = el.tags?.surface || (type === 'track' ? 'unpaved' : 'paved');
+    const maxspeed = el.tags?.maxspeed || '';
+    const lanes = el.tags?.lanes || '';
+    const midIdx = Math.floor(coords.length / 2);
+    const centerLon = coords[midIdx][0];
+    const centerLat = coords[midIdx][1];
+
+    const roadObj = {
+      id,
+      name,
+      ref,
+      type,
+      surface,
+      maxspeed,
+      lanes,
+      centerLon,
+      centerLat,
+      coords,
+      oneway,
+      waypoints,
+      segmentDist,
+    };
+    roadObj.damage = resolveRoadDamage(roadObj);
+    roads.push(roadObj);
   }
 
   return roads;
@@ -1480,9 +1526,222 @@ function recolorDotsInPlace(label) {
  * @returns {Array} The roads visible at this altitude.
  */
 function visibleRoadsForAltitude(roads, altitude) {
-  return altitude > 5000
-    ? roads.filter(r => r.type === 'motorway' || r.type === 'trunk' || r.type === 'primary')
-    : roads;
+  if (altitude > 18000) {
+    return roads.filter(r => r.type === 'motorway' || r.type === 'trunk' || r.type === 'primary');
+  }
+  if (altitude > 12000) {
+    return roads.filter(r => r.type === 'motorway' || r.type === 'trunk' || r.type === 'primary' || r.type === 'secondary');
+  }
+  return roads;
+}
+
+/**
+ * Resolves or evaluates the road damage condition profile for a given road.
+ * @param {object} road
+ * @returns {{ tag: string, severity: 'high'|'med'|'low'|'clean', type: 'pothole'|'garbage'|'clean' }}
+ */
+export function resolveRoadDamage(road) {
+  if (road?.damage) return road.damage;
+  if (!road) return { tag: '✅ Surface Intact', severity: 'clean', type: 'clean' };
+
+  const roadName = (road.name || '').toLowerCase();
+  const roadRef = (road.ref || '').toLowerCase();
+
+  // 1. Try to match against curated databases (e.g. Nuzvid, Vijayawada, Guntur)
+  if (CITY_ROAD_CATALOGS) {
+    for (const catalog of Object.values(CITY_ROAD_CATALOGS)) {
+      for (const item of catalog) {
+        if (
+          (roadName && item.name && item.name.toLowerCase().includes(roadName)) ||
+          (roadName && item.name && roadName.includes(item.name.toLowerCase())) ||
+          (roadRef && item.ref && item.ref.toLowerCase() === roadRef) ||
+          (road.id && item.id === road.id)
+        ) {
+          road.damage = item.damage;
+          return item.damage;
+        }
+      }
+    }
+  }
+
+  // 2. Deterministic AI evaluation based on road geometry and attributes
+  const damage = getRoadDamageProfile(road);
+  road.damage = damage;
+  return damage;
+}
+
+/**
+ * Returns color and polyline width for rendering road geometry based on AI road condition & damage assessment.
+ * - 🔴 Damaged (Potholes, Cracks): High-visibility glowing crimson red
+ * - 🟡 Fair / Moderate (Wear, Debris): Warning amber
+ * - 🟢 Good / Clean (Smooth Pavement): Vibrant emerald green
+ * @param {object} road
+ * @returns {{ color: Cesium.Color, width: number }}
+ */
+function getRoadStyle(road) {
+  const damage = resolveRoadDamage(road);
+  if (damage.severity === 'high' || damage.type === 'pothole') {
+    return {
+      color: Cesium.Color.fromCssColorString('#ff1744').withAlpha(0.95), // Glowing Crimson Red: DAMAGED
+      width: 3.8,
+    };
+  }
+  if (damage.severity === 'med' || damage.severity === 'low' || damage.type === 'garbage') {
+    return {
+      color: Cesium.Color.fromCssColorString('#ffb300').withAlpha(0.85), // Warning Amber: MODERATE / FAIR
+      width: 2.8,
+    };
+  }
+  return {
+    color: Cesium.Color.fromCssColorString('#00e676').withAlpha(0.8), // Vibrant Emerald Green: GOOD
+    width: 2.2,
+  };
+}
+
+/** Remove all polylines from the road polyline collection. */
+function clearRoadPolylines() {
+  if (_roadPolylineCollection) {
+    _roadPolylineCollection.removeAll();
+  }
+  _roadById.clear();
+}
+
+/**
+ * Render physical polylines for each visible road in the current viewport.
+ * @param {Array} roads - Road objects to render.
+ */
+function renderRoadPolylines(roads) {
+  if (!_roadPolylineCollection) return;
+  _roadPolylineCollection.removeAll();
+  _roadById.clear();
+
+  for (const road of roads) {
+    if (!road.waypoints || road.waypoints.length < 2) continue;
+    _roadById.set(road.id, road);
+    const style = getRoadStyle(road);
+    _roadPolylineCollection.add({
+      positions: road.waypoints,
+      width: style.width,
+      material: Cesium.Material.fromType('Color', {
+        color: style.color,
+      }),
+      id: { id: road.id, roadId: road.id, type: 'road' },
+    });
+  }
+}
+
+/**
+ * Highlights a selected road with a glowing cyan surveillance halo.
+ * @param {object} road
+ */
+function highlightSelectedRoad(road) {
+  if (!_highlightPolylineCollection) return;
+  _highlightPolylineCollection.removeAll();
+  _highlightPolyline = null;
+  if (!road || !road.waypoints || road.waypoints.length < 2) return;
+
+  _highlightPolyline = _highlightPolylineCollection.add({
+    positions: road.waypoints,
+    width: 7.0,
+    material: Cesium.Material.fromType('PolylineGlow', {
+      color: Cesium.Color.fromCssColorString('#00f2ff'),
+      glowPower: 0.35,
+    }),
+    id: { id: road.id, roadId: road.id, type: 'road-highlight' },
+  });
+}
+
+/** Clear the glowing highlight polyline. */
+function clearRoadHighlight() {
+  if (_highlightPolylineCollection) {
+    _highlightPolylineCollection.removeAll();
+  }
+  _highlightPolyline = null;
+}
+
+/**
+ * Proximity search in screen space to find the road closest to a click position.
+ * @param {Cesium.Cartesian2} clickPosition
+ * @param {number} [maxPixelDist=30]
+ * @returns {object|null}
+ */
+function findNearestRoad(clickPosition, maxPixelDist = 30) {
+  if (!_viewer || !_roads || _roads.length === 0) return null;
+  const scene = _viewer.scene;
+  let bestRoad = null;
+  let bestDistSq = maxPixelDist * maxPixelDist;
+  const scratchWinPos = new Cesium.Cartesian2();
+
+  for (const road of _roads) {
+    if (!road.waypoints || road.waypoints.length < 2) continue;
+    for (let i = 0; i < road.waypoints.length; i++) {
+      const winPos = Cesium.SceneTransforms.worldToWindowCoordinates(scene, road.waypoints[i], scratchWinPos);
+      if (!winPos) continue;
+      const dx = winPos.x - clickPosition.x;
+      const dy = winPos.y - clickPosition.y;
+      const dSq = dx * dx + dy * dy;
+      if (dSq < bestDistSq) {
+        bestDistSq = dSq;
+        bestRoad = road;
+      }
+    }
+  }
+  return bestRoad;
+}
+
+/**
+ * Handles clicks on the Cesium canvas to select roads and pop open Road Recon HUD.
+ * @param {{ position: Cesium.Cartesian2 }} movement
+ */
+function handleRoadClick(movement) {
+  if (!_viewer || !_enabled || !_roads || _roads.length === 0) return;
+  const position = movement?.position;
+  if (!position) return;
+
+  const picked = _viewer.scene.pick(position);
+  const pickId = resolvePickId(picked);
+
+  if (pickId && isOwnedByOtherLayer('traffic', pickId)) {
+    return;
+  }
+
+  let road = null;
+  if (picked?.id?.roadId && _roadById.has(picked.id.roadId)) {
+    road = _roadById.get(picked.id.roadId);
+  } else if (picked?.primitive?.id?.roadId && _roadById.has(picked.primitive.id.roadId)) {
+    road = _roadById.get(picked.primitive.id.roadId);
+  } else if (pickId && _roadById.has(pickId)) {
+    road = _roadById.get(pickId);
+  }
+
+  if (!road) {
+    road = findNearestRoad(position, 30);
+  }
+
+  if (road) {
+    highlightSelectedRoad(road);
+    const damage = resolveRoadDamage(road);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('gev:road-selected', {
+        detail: {
+          road: {
+            id: road.id,
+            name: road.name,
+            ref: road.ref,
+            type: road.type,
+            surface: road.surface,
+            maxspeed: road.maxspeed,
+            lanes: road.lanes,
+            centerLat: road.centerLat,
+            centerLon: road.centerLon,
+            coords: road.coords,
+            waypoints: road.waypoints,
+            damage,
+          },
+        },
+      }));
+    }
+  }
 }
 
 /** Remove both heat-line ground primitives from the scene. */
@@ -1599,6 +1858,19 @@ function renderRoadsForAltitude(roads, altitude, label, trace = null) {
 
   // At high altitude, drop minor roads to reduce visual noise
   const filteredRoads = visibleRoadsForAltitude(roads, altitude);
+  renderRoadPolylines(filteredRoads);
+  if (typeof window !== 'undefined') {
+    window.__gevRoads = roads;
+    window.__gevFilteredRoads = filteredRoads;
+    window.__gevRoadPolylines = _roadPolylineCollection;
+    window.dispatchEvent(new CustomEvent('gev:roads-loaded', {
+      detail: {
+        roads: filteredRoads,
+        allRoads: roads,
+        locality: window.__gevActiveLocality || '',
+      },
+    }));
+  }
 
   // Closed roads spawn zero dots (computeDotCount/spawnDotsForRoad) — count
   // them here so the closure signal is visible in stats even at zero dots.
@@ -1624,20 +1896,12 @@ function renderRoadsForAltitude(roads, altitude, label, trace = null) {
   _fadeScaleFar = Math.max(8000, areaDist * 1.5);
   _fadeTransFar = Math.max(10000, areaDist * 1.8);
 
-  const dotStart = state ? trafficTimingMark(state, 'dot-construction-start', {
-    renderId,
-    renderLabel: label,
-    roadCount: roads.length,
-    visibleRoadCount: filteredRoads.length,
-  }) : null;
-  const roadBudgets = allocateRoadDotBudgets(filteredRoads, altitude, MAX_DOTS);
-  for (let i = 0; i < filteredRoads.length; i++) {
-    const road = filteredRoads[i];
-    const budget = roadBudgets[i] || 0;
-    if (budget <= 0) continue;
-    spawnDotsForRoad(road, altitude, budget);
-    if (_dots.length >= MAX_DOTS) break;
-  }
+  // Simulated fake vehicle dots are disabled per user request:
+  // "why it is showing facke traveling one fix it and it should decte the roads the condition and say tis roade is damaged like that and i want real traveling one not fack!"
+  // Physical roads are rendered in high-definition RoadGuard AI condition colors (🔴 Damaged, 🟡 Fair, 🟢 Good).
+  // Real traveling entities are provided exclusively via Live Flights (ADSB) and Live Ships (AIS).
+  if (_pointCollection) _pointCollection.show = false;
+  _dots = [];
 
   const renderMetrics = state ? {
     renderId,
@@ -1909,7 +2173,33 @@ function parseRoadsTimed(overpassData, trace) {
     _trafficTimingWaypointMaterializationMs += performance.now() - _trafficTimingMaterializeStart;
     /* TRACE_ONLY_END */
 
-    roads.push({ coords, type, oneway, waypoints, segmentDist });
+    const id = String(el.id ? `way-${el.id}` : `road-${Math.random().toString(36).slice(2, 9)}`);
+    const name = el.tags?.name || el.tags?.['name:en'] || el.tags?.ref || '';
+    const ref = el.tags?.ref || '';
+    const surface = el.tags?.surface || (type === 'track' ? 'unpaved' : 'paved');
+    const maxspeed = el.tags?.maxspeed || '';
+    const lanes = el.tags?.lanes || '';
+    const midIdx = Math.floor(coords.length / 2);
+    const centerLon = coords[midIdx][0];
+    const centerLat = coords[midIdx][1];
+
+    const roadObj = {
+      id,
+      name,
+      ref,
+      type,
+      surface,
+      maxspeed,
+      lanes,
+      centerLon,
+      centerLat,
+      coords,
+      oneway,
+      waypoints,
+      segmentDist,
+    };
+    roadObj.damage = resolveRoadDamage(roadObj);
+    roads.push(roadObj);
   }
 
   /* TRACE_ONLY_BEGIN */
@@ -2152,6 +2442,7 @@ async function loadRoadsForBounds(bounds, altitude, trace = null) {
 function clearDots() {
   if (_pointCollection) _pointCollection.removeAll();
   removeHeatLines();
+  clearRoadPolylines();
   _dots = [];
   _roads = [];
   _count = 0;
@@ -2192,6 +2483,15 @@ const trafficLayer = {
     // Add permanently — toggle with .show to avoid destroy-on-remove errors
     viewer.scene.primitives.add(_pointCollection);
     _pointCollection.show = false;
+
+    _roadPolylineCollection = new Cesium.PolylineCollection();
+    viewer.scene.primitives.add(_roadPolylineCollection);
+    _roadPolylineCollection.show = false;
+
+    _highlightPolylineCollection = new Cesium.PolylineCollection();
+    viewer.scene.primitives.add(_highlightPolylineCollection);
+    _highlightPolylineCollection.show = true;
+
     _dots = [];
     _roads = [];
     _count = 0;
@@ -2239,6 +2539,24 @@ const trafficLayer = {
     holdContinuousRender('traffic'); // per-frame animator (perf wave 2)
     _lastAnimTime = 0;
     _pointCollection.show = true;
+    if (_roadPolylineCollection) _roadPolylineCollection.show = true;
+    if (_highlightPolylineCollection) _highlightPolylineCollection.show = true;
+
+    registerPickOwner('traffic', (pickedId) => {
+      if (!pickedId) return false;
+      const idStr = String(pickedId);
+      return idStr.startsWith('road-') || idStr.startsWith('way-') || _roadById.has(idStr);
+    });
+
+    if (!_clickHandler && viewer.canvas) {
+      _clickHandler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+      _clickHandler.setInputAction(handleRoadClick, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    }
+
+    if (typeof window !== 'undefined' && !_roadDeselectBound) {
+      window.addEventListener('gev:road-deselected', () => clearRoadHighlight());
+      _roadDeselectBound = true;
+    }
 
     // One status check per session decides sim vs live-TomTom mode.
     ensureFlowStatus();
@@ -2318,7 +2636,14 @@ const trafficLayer = {
       viewer.camera.percentageChanged = _prevPercentageChanged;
       _prevPercentageChanged = null;
     }
+    if (_clickHandler) {
+      _clickHandler.destroy();
+      _clickHandler = null;
+    }
+    unregisterPickOwner('traffic');
+    clearRoadHighlight();
     _pointCollection.show = false;
+    if (_roadPolylineCollection) _roadPolylineCollection.show = false;
   },
 
   /**
@@ -2394,35 +2719,55 @@ const trafficLayer = {
    * @param {number}  [options.seed]     - Integer seed to offset the sampling start.
    * @returns {Array<{position:Cesium.Cartesian3, id:string, type:string}>}
    */
+  /**
+   * Return detected road damage defects (potholes, structural wear, debris)
+   * for the HUD detection overlay, replacing fake vehicle target brackets.
+   *
+   * @param {Object}  [options]
+   * @param {number}  [options.maxCount] - Maximum objects to return.
+   * @returns {Array<{position:Cesium.Cartesian3, id:string, type:string, tier:string, klass:string, metric:string, sourceId:string}>}
+   */
   getDetectableObjects(options = {}) {
-    if (!_enabled || _dots.length === 0) return [];
+    if (!_enabled || !_roads || _roads.length === 0) return [];
     const maxCount = Number.isFinite(options.maxCount)
       ? Math.max(1, Math.floor(options.maxCount))
-      : _dots.length;
-    const seed = Number.isFinite(options.seed) ? Math.floor(options.seed) : 0;
-    // Stride-based sampling: step through dots evenly to get ~maxCount samples
-    const stride = Math.max(1, Math.ceil(_dots.length / maxCount));
-    const start = seed % stride;
+      : 50;
 
     const result = [];
-    for (let i = start; i < _dots.length; i += stride) {
-      const pos = _dots[i].point.position;
-      if (!pos) continue;
-      const entry = {
-        position: pos,
-        id: `VEH-${String(i).padStart(4, '0')}`,
-        type: 'VEH',
-      };
-      // Live mode: the detection bracket carries the congestion signal —
-      // its canvas sits ABOVE the post-FX chain, so tier colors survive
-      // every preset (owner round 2: "bounding boxes do the heavy
-      // lifting"). Keyless mode sets no tier: contacts keep the stock
-      // 'vehicle' bracket and the keyless experience stays untouched.
-      if (_liveMode) {
-        const tier = trafficBucketTier(_dots[i].bucket || 'sim');
-        if (tier) entry.tier = tier;
+    for (let i = 0; i < _roads.length; i++) {
+      const road = _roads[i];
+      const damage = resolveRoadDamage(road);
+      if (!damage) continue;
+
+      if (damage.severity === 'high' || damage.type === 'pothole') {
+        const centerPos = road.waypoints?.[Math.floor(road.waypoints.length / 2)] ||
+          (road.centerLon && road.centerLat ? Cesium.Cartesian3.fromDegrees(road.centerLon, road.centerLat, 10) : null);
+        if (centerPos) {
+          result.push({
+            position: centerPos,
+            id: `⚠️ ${(road.ref || road.name || 'DEFECT').slice(0, 14)}`,
+            sourceId: road.id,
+            type: 'DEFECT',
+            tier: 'danger',
+            klass: 'ROAD DAMAGE',
+            metric: damage.tag || 'POTHOLE',
+          });
+        }
+      } else if (damage.severity === 'med' || damage.type === 'garbage') {
+        const centerPos = road.waypoints?.[Math.floor(road.waypoints.length / 2)] ||
+          (road.centerLon && road.centerLat ? Cesium.Cartesian3.fromDegrees(road.centerLon, road.centerLat, 10) : null);
+        if (centerPos) {
+          result.push({
+            position: centerPos,
+            id: `🗑️ ${(road.ref || road.name || 'HAZARD').slice(0, 14)}`,
+            sourceId: road.id,
+            type: 'DEFECT',
+            tier: 'warning',
+            klass: 'ROAD HAZARD',
+            metric: damage.tag || 'DEBRIS',
+          });
+        }
       }
-      result.push(entry);
       if (result.length >= maxCount) break;
     }
     return result;
@@ -2439,6 +2784,14 @@ const trafficLayer = {
     if (_pointCollection) {
       viewer.scene.primitives.remove(_pointCollection);
       _pointCollection = null;
+    }
+    if (_roadPolylineCollection) {
+      viewer.scene.primitives.remove(_roadPolylineCollection);
+      _roadPolylineCollection = null;
+    }
+    if (_highlightPolylineCollection) {
+      viewer.scene.primitives.remove(_highlightPolylineCollection);
+      _highlightPolylineCollection = null;
     }
     removeHeatLines();
     _tileCache.clear();

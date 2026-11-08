@@ -30,6 +30,8 @@ const COLOR_BY_CLASS = {
   range: '#d9a85d',
   military_land: '#9ca6b0',
   places_candidate: '#c58cff',
+  nuclear_facility: '#00ffd5',
+  conflict_zone: '#ff3344',
 };
 const EARTH_MEAN_RADIUS_M = 6371008.8;
 const DISTANCE_PREFILTER_MARGIN_M = 5000;

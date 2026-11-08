@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Analytics Dashboard — RoadGuard AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/static/index.html" class="brand">
+      <div class="brand-logo">🛡️</div>
+      <div class="brand-text">
+        <h1>RoadGuard AI</h1>
+        <p>Live Infrastructure Analytics</p>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/static/index.html">Home</a></li>
+      <li><a href="/static/dashboard.html" class="active">Live Dashboard</a></li>
+      <li><a href="/static/detect.html">AI Detection</a></li>
+      <li><a href="/static/cameras.html">CCTV Feeds</a></li>
+      <li><a href="/static/satellite.html">Satellite Screening</a></li>
+      <li><a href="/static/map.html">Damage Map</a></li>
+      <li><a href="/static/report.html">Report Damage</a></li>
+      <li><a href="/static/track.html">Track Complaint</a></li>
+      <li><a href="/static/admin.html">Officer Portal</a></li>
+    </ul>
+
+    <div class="demo-mode-pill">Database Connected</div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h2 style="font-size: 1.75rem; font-weight: 800; color: white;">Executive Road Health & Repair Dashboard</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Real-time metrics computed directly from active database records.</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <button id="btn-refresh" class="btn btn-secondary btn-sm">
+          <span>🔄</span> Refresh Data
+        </button>
+        <a href="/api/analytics/export-csv" class="btn btn-primary btn-sm">
+          <span>📥</span> Export Audit CSV
+        </a>
+      </div>
+    </div>
+
+    <!-- 8 Main Metric Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-title">Total Detected Defects</div>
+        <div id="kpi-detections" class="kpi-value">--</div>
+        <div class="kpi-subtext">AI & Manual Pipeline</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Complaints Registered</div>
+        <div id="kpi-complaints" class="kpi-value">--</div>
+        <div class="kpi-subtext">Formal Tracking IDs</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Awaiting Acknowledgment</div>
+        <div id="kpi-pending-ack" class="kpi-value" style="color: #cbd5e1;">--</div>
+        <div class="kpi-subtext">Queued in Control Room</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">High Priority (P1/P2)</div>
+        <div id="kpi-high-priority" class="kpi-value" style="color: #f87171;">--</div>
+        <div class="kpi-subtext">Immediate Safety Hazards</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Repairs In Progress</div>
+        <div id="kpi-repairs" class="kpi-value" style="color: #a78bfa;">--</div>
+        <div class="kpi-subtext">Crews On-Site</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Overdue (Exceeded SLA)</div>
+        <div id="kpi-overdue" class="kpi-value" style="color: #ef4444;">--</div>
+        <div class="kpi-subtext">Escalation Triggered</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Awaiting Verification</div>
+        <div id="kpi-awaiting-verif" class="kpi-value" style="color: #fbbf24;">--</div>
+        <div class="kpi-subtext">Patch Completed</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Verified & Resolved</div>
+        <div id="kpi-verified" class="kpi-value" style="color: #34d399;">--</div>
+        <div class="kpi-subtext">Quality Certified</div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+      
+      <!-- Severity Distribution Donut -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Distress Severity Breakdown</h3>
+          <span class="badge badge-low">Geometric Impact</span>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="chart-severity"></canvas>
+        </div>
+      </div>
+
+      <!-- Monthly Trend Line Chart -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Reported vs. Resolved Trends</h3>
+          <span class="badge badge-resolved">Monthly Velocity</span>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="chart-trends"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Department Performance Table -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Road Authority & Municipal Performance</h3>
+        <span class="badge badge-medium">SLA Adherence</span>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Authority / Department</th>
+              <th>Jurisdiction</th>
+              <th>Target SLA</th>
+              <th>Assigned</th>
+              <th>In Progress</th>
+              <th>Resolved</th>
+              <th>Resolution Rate</th>
+            </tr>
+          </thead>
+          <tbody id="table-department-body">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading departmental records...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Activity Grids -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+      
+      <!-- Recent Complaints -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Recent Complaint Registrations</h3>
+          <a href="/static/map.html" class="btn btn-secondary btn-sm">View on Map</a>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Tracking ID</th>
+                <th>Defect</th>
+                <th>Road</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="table-recent-complaints">
+              <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent AI Detections -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Recent Vision Detections</h3>
+          <a href="/static/detect.html" class="btn btn-secondary btn-sm">Run AI Scanner</a>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Defect Class</th>
+                <th>Confidence</th>
+                <th>Severity</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="table-recent-detections">
+              <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer>
+    <p>RoadGuard AI — Certified Public Works Management System &bull; Demonstration Mode</p>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

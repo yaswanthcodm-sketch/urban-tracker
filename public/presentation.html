@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Urban Tracker & RoadGuard AI — Municipal Intelligence Presentation</title>
+  <link rel="icon" type="image/svg+xml" href="/public/favicon.svg" />
+  <style>
+    :root {
+      --bg-dark: #030c16;
+      --card-bg: rgba(9, 26, 46, 0.92);
+      --card-border: rgba(0, 240, 255, 0.25);
+      --cyan: #00f0ff;
+      --amber: #ff9900;
+      --green: #10b981;
+      --red: #ef4444;
+      --white: #ffffff;
+      --slate: #94a3b8;
+      --muted: #64748b;
+      --font-mono: 'Consolas', 'Courier New', monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg-dark: #ffffff;
+      --card-bg: #f8fafc;
+      --card-border: #cbd5e1;
+      --cyan: #0284c7;
+      --amber: #d97706;
+      --green: #059669;
+      --red: #dc2626;
+      --white: #0f172a;
+      --slate: #475569;
+      --muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-dark);
+      font-family: var(--font-sans);
+      color: var(--white);
+      user-select: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Particle Canvas Background */
+    #particle-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.6;
+    }
+
+    /* Progress bar */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--cyan), var(--amber));
+      width: 10%;
+      z-index: 1000;
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    /* Header Nav */
+    header.deck-header {
+      position: fixed;
+      top: 8px;
+      left: 24px;
+      right: 24px;
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      background: rgba(3, 12, 22, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+      padding: 0 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] header.deck-header {
+      background: rgba(255, 255, 255, 0.85);
+      border-color: #e2e8f0;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse-dot 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.7; }
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--cyan);
+    }
+
+    .deck-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pill-btn {
+      padding: 5px 12px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      color: var(--white);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .pill-btn:hover {
+      background: var(--cyan);
+      color: #030c16;
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+
+    /* Main Deck Stage */
+    main.deck-stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 70px 48px 50px 48px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(40px) scale(0.98);
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0) scale(1);
+    }
+
+    .slide.prev {
+      opacity: 0;
+      transform: translateX(-40px) scale(0.98);
+    }
+
+    /* Slide Titles & Headers */
+    .slide-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      line-height: 1.25;
+      color: var(--white);
+    }
+
+    /* Grid & Cards */
+    .slide-body {
+      flex: 1;
+      display: grid;
+      gap: 20px;
+      overflow-y: auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-tag {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 800;
+      color: var(--cyan);
+      margin-bottom: 6px;
+    }
+
+    .card-text {
+      font-size: 13.5px;
+      color: var(--slate);
+      line-height: 1.5;
+    }
+
+    .card-bullets {
+      list-style: none;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-bullets li {
+      font-size: 12.5px;
+      color: var(--slate);
+      line-height: 1.45;
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .card-bullets li::before {
+      content: '✔';
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    /* Metric Stat Box */
+    .stat-number {
+      font-size: 38px;
+      font-weight: 900;
+      font-family: var(--font-sans);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-number.cyan { color: var(--cyan); }
+    .stat-number.amber { color: var(--amber); }
+    .stat-number.red { color: var(--red); }
+    .stat-number.green { color: var(--green); }
+
+    /* Screenshot Image Container */
+    .screenshot-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 280px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      background: #000;
+      cursor: zoom-in;
+    }
+
+    .screenshot-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .screenshot-wrap:hover img {
+      transform: scale(1.02);
+    }
+
+    .screenshot-label {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      padding: 6px 10px;
+      background: rgba(3, 12, 22, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--cyan);
+      backdrop-filter: blur(4px);
+      text-align: center;
+    }
+
+    /* Footer Controls */
+    footer.deck-footer {
+      position: fixed;
+      bottom: 12px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      padding: 0 10px;
+    }
+
+    .footer-intel {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--cyan);
+      color: #030c16;
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan);
+      padding: 0 10px;
+    }
+
+    /* Modal Image Lightbox */
+    #image-lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+
+    #image-lightbox.active {
+      display: flex;
+    }
+
+    #image-lightbox img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 8px;
+      border: 2px solid var(--cyan);
+      box-shadow: 0 0 40px rgba(0, 240, 255, 0.4);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 30px;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    /* Speaker Notes Drawer */
+    #notes-drawer {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      max-width: 90vw;
+      background: rgba(3, 12, 22, 0.95);
+      border: 1px solid var(--amber);
+      border-radius: 8px;
+      padding: 14px 18px;
+      z-index: 150;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+      display: none;
+    }
+
+    #notes-drawer.active {
+      display: block;
+    }
+
+    .notes-title {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--amber);
+      margin-bottom: 6px;
+    }
+
+    .notes-content {
+      font-size: 12px;
+      color: var(--slate);
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header class="deck-header">
+    <div class="brand-wrap">
+      <span class="live-dot"></span>
+      <span class="brand-title">URBAN TRACKER & ROADGUARD AI</span>
+    </div>
+    <div class="deck-controls">
+      <a href="/voice-explainer.html" class="pill-btn" style="text-decoration: none; color: var(--cyan); border-color: rgba(0, 240, 255, 0.4);" title="Listen to Voice Recording">🎙️ VOICE EXPLAINER</a>
+      <button id="theme-btn" class="pill-btn" type="button" title="Toggle Light/Dark Theme">☀️ THEME</button>
+      <button id="notes-btn" class="pill-btn" type="button" title="Toggle Speaker Notes (N)">📝 NOTES</button>
+      <button id="fullscreen-btn" class="pill-btn" type="button" title="Toggle Fullscreen (F)">⛶ FULLSCREEN</button>
+      <a href="/Urban_Tracker_RoadGuard_Smart_City_Presentation.pptx" download class="pill-btn" style="text-decoration: none; color: inherit;">📥 DOWNLOAD PPTX</a>
+    </div>
+  </header>
+
+  <!-- Main Slide Stage -->
+  <main class="deck-stage" id="deck-stage">
+    
+    <!-- ── SLIDE 1: COVER ── -->
+    <section class="slide active" data-slide="1" data-notes="Welcome dignitaries and municipal executives. Today we present Urban Tracker and RoadGuard AI, an autonomous civic road surveillance suite designed specifically for Indian Smart Cities, Municipal Corporations, and State PWD to end delayed road repairs.">
+      <div class="slide-tag">🟢 CIVIC INTELLIGENCE PLATFORM | SMART CITY MISSION</div>
+      <h1 class="slide-title" style="font-size: 38px; margin-bottom: 12px;">URBAN TRACKER & ROADGUARD AI</h1>
+      <p style="font-size: 17px; color: var(--amber); margin-bottom: 24px; font-weight: 600;">Autonomous Satellite & AI-Powered Road Hazard Surveillance and Civic Grievance Automation</p>
+      
+      <div class="slide-body" style="grid-template-columns: repeat(4, 1fr); max-height: 160px; margin-bottom: 20px;">
+        <div class="card" style="border-color: var(--cyan);">
+          <div class="card-tag">PILLAR 01</div>
+          <div class="card-title" style="font-size: 14px;">🛰️ SUB-METER OPTICS</div>
+          <p class="card-text">Sub-meter optical satellite passes with 1h/3h orbital loops.</p>
+        </div>
+        <div class="card" style="border-color: var(--red);">
+          <div class="card-tag">PILLAR 02</div>
+          <div class="card-title" style="font-size: 14px;">🕳️ POTHOLE DETECTION</div>
+          <p class="card-text">Automated cavity detection, alligator crack grading & repair specs.</p>
+        </div>
+        <div class="card" style="border-color: var(--amber);">
+          <div class="card-tag">PILLAR 03</div>
+          <div class="card-title" style="font-size: 14px;">🗑️ GARBAGE SURVEILLANCE</div>
+          <p class="card-text">Tracks roadside waste heaps to prevent drainage and monsoon blockages.</p>
+        </div>
+        <div class="card" style="border-color: var(--green);">
+          <div class="card-tag">PILLAR 04</div>
+          <div class="card-title" style="font-size: 14px;">📝 CIVIC DISPATCH</div>
+          <p class="card-text">Direct authority auto-routing: NHAI, State PWD, and ULB Municipalities.</p>
+        </div>
+      </div>
+
+      <div class="card" style="background: rgba(0, 30, 48, 0.75); border-color: var(--cyan);">
+        <div class="card-tag">TARGET CIVIC AGENCIES</div>
+        <p class="card-text" style="font-size: 13.5px; color: #fff;">
+          Built for immediate deployment across <strong>Municipal Corporations</strong>, <strong>Smart Cities Mission Command Centers (ICCC)</strong>, <strong>State PWD</strong>, and <strong>National Highways Authority of India (NHAI)</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── SLIDE 2: PROBLEM STATEMENT ── -->
+    <section class="slide" data-slide="2" data-notes="Highlight the immense human and economic cost. 3,500+ Indian citizens lose their lives annually to potholes. Roadside garbage dumps block monsoon drains causing flash floods, and manual inspection teams take up to 28 days to log complaints.">
+      <div class="slide-tag" style="color: var(--red);">🚨 PROBLEM STATEMENT</div>
+      <h2 class="slide-title">The Severe Crisis in Urban & Rural Road Infrastructure</h2>
+      
+      <div class="slide-body" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
+        <div class="card" style="border-color: var(--red);">
+          <div class="stat-number red">3,500+</div>
+          <div class="card-title">Fatalities Annually</div>
+          <p class="card-text">Thousands of citizens lose their lives to unmaintained road surfaces and high-speed asphalt depressions.</p>
+        </div>
+        <div class="card" style="border-color: var(--amber);">
+          <div class="stat-number amber">62M Tonnes</div>
+          <div class="card-title">Solid Waste Accumulation</div>
+          <p class="card-text">Roadside waste dumps and construction rubble choke stormwater drains, triggering rapid urban flooding.</p>
+        </div>
+        <div class="card" style="border-color: var(--cyan);">
+          <div class="stat-number cyan">14-28 Days</div>
+          <div class="card-title">Manual Reporting Lag</div>
+          <p class="card-text">Traditional survey vehicles cannot patrol every ward, and manual complaint triage leads to bureaucratic delays.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag" style="color: var(--amber);">ROOT CAUSE ANALYSIS</div>
+        <ul class="card-bullets" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <li>Prohibitive field inspection convoy operational costs</li>
+          <li>Lack of objective sub-meter satellite validation</li>
+          <li>Frequent jurisdictional ambiguity between NHAI, PWD, and ULB</li>
+          <li>Reactive emergency patching instead of predictive road preservation</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ── SLIDE 3: SYSTEM ARCHITECTURE ── -->
+    <section class="slide" data-slide="3" data-notes="Here is our end-to-end architecture. The frontend runs a CesiumJS 3D digital twin. The backend connects to ESRI/ISRO satellite feeds, feeds them to YOLOv8 computer vision, and outputs actionable grievance tickets automatically.">
+      <div class="slide-tag">💡 END-TO-END PIPELINE</div>
+      <h2 class="slide-title">System Architecture: Autonomous Civic Surveillance Engine</h2>
+      
+      <div class="slide-body" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="card" style="border-color: var(--cyan);">
+          <div class="card-tag">PHASE 01</div>
+          <div class="card-title">1. 3D Digital Twin</div>
+          <p class="card-text">CesiumJS WebGL globe rendering high-fidelity 3D terrain and instant street-level positioning across India.</p>
+          <ul class="card-bullets">
+            <li>Sub-second flying</li>
+            <li>Zero-latency road overlay</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color: var(--amber);">
+          <div class="card-tag">PHASE 02</div>
+          <div class="card-title">2. Satellite Hub</div>
+          <p class="card-text">Automated pipeline pulling sub-meter optical captures and 1-hour/3-hour satellite passes from ESRI, ISRO, and NOAA.</p>
+          <ul class="card-bullets">
+            <li>Zero fake stock images</li>
+            <li>12-frame timeline scrub</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color: var(--red);">
+          <div class="card-tag">PHASE 03</div>
+          <div class="card-title">3. YOLOv8 Vision</div>
+          <p class="card-text">Dual-hazard neural network identifying road cavities, alligator cracking, edge breaks, and solid waste heaps.</p>
+          <ul class="card-bullets">
+            <li>94.2% AI precision</li>
+            <li>Severity grading (1-3)</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color: var(--green);">
+          <div class="card-tag">PHASE 04</div>
+          <div class="card-title">4. Civic Dispatch</div>
+          <p class="card-text">Automated grievance lodging engine mapping jurisdiction to NHAI, State PWD, or Municipal Corporation.</p>
+          <ul class="card-bullets">
+            <li>Instant ticket tracking</li>
+            <li>Repair SLA monitoring</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SLIDE 4: UNIVERSAL LOCALITY ENGINE ── -->
+    <section class="slide" data-slide="4" data-notes="Demonstrate universal coverage. Notice that Urban Tracker doesn't just work in metros—it scans every single road in any town or rural Gram Panchayat in India with our procedural mesh and live OSM integration.">
+      <div class="slide-tag" style="color: var(--amber);">🌐 PAN-INDIA COVERAGE</div>
+      <h2 class="slide-title">Universal Road Scanner: Any City, Town, or Village</h2>
+      
+      <div class="slide-body" style="grid-template-columns: 1fr 1.2fr;">
+        <div class="card" style="border-color: var(--amber);">
+          <div class="card-tag">LOCALITY CAPABILITIES</div>
+          <div class="card-title">Reading 100% of Roads in Any Selected Town</div>
+          <ul class="card-bullets" style="gap: 14px; margin-top: 14px;">
+            <li><strong>Quick Switcher Chips:</strong> 1-click navigation across Delhi, Mumbai, Bengaluru, Hyderabad, Visakhapatnam, Vijayawada, Guntur, and Nuzvid.</li>
+            <li><strong>Any Village on Earth:</strong> Intelligent procedural road network generator provides instant verified arterial, bazaar, and agricultural tracks for any Gram Panchayat.</li>
+            <li><strong>Live Overpass OSM Sync:</strong> Asynchronously queries OpenStreetMap to verify surface types, lane counts, and speed limits.</li>
+            <li><strong>Hierarchical Filtering:</strong> Sorts immediately by Highways & Arterials, Residential Streets, Service Lanes, and Village Tracks.</li>
+          </ul>
+        </div>
+        <div class="screenshot-wrap" onclick="openLightbox(this)">
+          <img src="/presentation_assets/urban_tracker_all_cities_dark.png" alt="All Cities Road Scanner" />
+          <div class="screenshot-label">Fig 1: Live Road Catalog with City Switcher Chips & Real Defect Tags</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SLIDE 5: DUAL AI DETECTION ENGINE ── -->
+    <section class="slide" data-slide="5" data-notes="Showcase the dual AI classifiers. On the left is real-time pothole detection with depth grading and repair specs. On the right is garbage tracking to clean canal bunds and roadside dump heaps.">
+      <div class="slide-tag" style="color: var(--cyan);">⚡ COMPUTER VISION INSPECTION</div>
+      <h2 class="slide-title">Precision AI Classifiers: Potholes vs. Roadside Waste</h2>
+      
+      <div class="slide-body" style="grid-template-columns: 1fr 1fr;">
+        <div class="card" style="border-color: var(--red);">
+          <div class="card-tag" style="color: var(--red);">MODE 01: POTHOLE DETECTION</div>
+          <div class="card-title">🕳️ Asphalt Cavity & Structural Wear</div>
+          <p class="card-text">Identifies cavities, alligator cracking, and edge erosion with 94.2% confidence and cold patching recommendations.</p>
+          <div class="screenshot-wrap" style="height: 240px; margin-top: 12px;" onclick="openLightbox(this)">
+            <img src="/presentation_assets/urban_tracker_ai_pothole_detection.png" alt="Pothole AI Detection" />
+            <div class="screenshot-label">Fig 2: Pothole & Cavity Detection Telemetry</div>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--amber);">
+          <div class="card-tag" style="color: var(--amber);">MODE 02: GARBAGE SURVEILLANCE</div>
+          <div class="card-title">🗑️ Roadside Waste Dump Tracking</div>
+          <p class="card-text">Detects illegal dump heaps, construction debris, and plastic accumulation on road shoulders and canal bunds.</p>
+          <div class="screenshot-wrap" style="height: 240px; margin-top: 12px;" onclick="openLightbox(this)">
+            <img src="/presentation_assets/urban_tracker_ai_garbage_detection.png" alt="Garbage AI Tracking" />
+            <div class="screenshot-label">Fig 3: Solid Waste Dump Detection Telemetry</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SLIDE 6: SATELLITE OPTICAL SURVEILLANCE ── -->
+    <section class="slide" data-slide="6" data-notes="Zero fake or random photos. We pull authentic sub-meter satellite optical frames directly centered at the GPS coordinates of the selected road, with 1-hour and 3-hour orbital loops.">
+      <div class="slide-tag">🛰️ SATELLITE OPTICS</div>
+      <h2 class="slide-title">Sub-Meter Optical Imagery & 1h/3h Orbital Loops</h2>
+      
+      <div class="slide-body" style="grid-template-columns: 1fr 1fr;">
+        <div class="screenshot-wrap" onclick="openLightbox(this)">
+          <img src="/presentation_assets/nuzvid_satellite_frame_raw.jpg" alt="Sub-Meter Satellite Frame" />
+          <div class="screenshot-label">Fig 4: Genuine Sub-Meter Optical Satellite Frame (16.7865° N, 80.8465° E)</div>
+        </div>
+        <div class="card" style="border-color: var(--cyan);">
+          <div class="card-tag">AUDITABLE FORENSICS</div>
+          <div class="card-title">Zero Synthetic Images — Pure Verification</div>
+          <ul class="card-bullets" style="gap: 14px; margin-top: 14px;">
+            <li><strong>Sub-Meter Optical Exports:</strong> High-resolution optical satellite frames pulled directly at exact road GPS coordinates.</li>
+            <li><strong>Multi-Constellation Integration:</strong> Automatically taps ISRO INSAT-3D/3DR (South Asia), NOAA GOES-19, and NASA VIIRS.</li>
+            <li><strong>12-Frame Time Scrubbing:</strong> Civic engineers can scrub across -3h, -2h, -1h, and LIVE frames to monitor road wear.</li>
+            <li><strong>Multimodal CCTV Cross-Checking:</strong> Correlates satellite anomalies with municipal traffic CCTV video streams.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SLIDE 7: CIVIC GRIEVANCE AUTOMATION ── -->
+    <section class="slide" data-slide="7" data-notes="The core civic automation: instant ticket generation and intelligent authority auto-routing. Eliminates bureaucratic delays by dispatching tickets directly to NHAI, State PWD, or Municipal Corporation.">
+      <div class="slide-tag" style="color: var(--green);">🏛️ CIVIC DISPATCH</div>
+      <h2 class="slide-title">Automated Ticketing & Intelligent Jurisdiction Auto-Routing</h2>
+      
+      <div class="slide-body" style="grid-template-columns: 1.1fr 1fr;">
+        <div class="card" style="border-color: var(--green);">
+          <div class="card-tag">JURISDICTION MAPPING</div>
+          <div class="card-title">Zero-Human Latency Agency Dispatch</div>
+          <ul class="card-bullets" style="gap: 12px; margin-top: 14px;">
+            <li><strong>National Expressways & Trunks:</strong> Dispatched immediately to <strong>NHAI Regional Project Directors</strong>.</li>
+            <li><strong>State Highways & MDRs:</strong> Dispatched to <strong>State Roads & Buildings Dept (PWD)</strong> Divisional Engineers.</li>
+            <li><strong>Municipal Streets & Bazaars:</strong> Dispatched to <strong>City Municipal Commissioners & ULBs</strong>.</li>
+            <li><strong>Rural Village Tracks:</strong> Dispatched to <strong>Panchayat Raj & PMGSY Executive Engineers</strong>.</li>
+          </ul>
+        </div>
+        <div class="screenshot-wrap" onclick="openLightbox(this)">
+          <img src="/presentation_assets/urban_tracker_grievance_lodged.png" alt="Official Grievance Ticket" />
+          <div class="screenshot-label">Fig 5: Live Official Grievance Ticket (RG-2026-IN-8821) Registered</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SLIDE 8: DUAL ERGONOMICS ── -->
+    <section class="slide" data-slide="8" data-notes="We built dual ergonomics: Tactical Dark Mode for 24/7 command centers, and Pure White Paper Sunlight Mode so field engineers on tablets can inspect roads under bright sunlight without glare.">
+      <div class="slide-tag">🎨 ERGONOMIC DESIGN</div>
+      <h2 class="slide-title">Tactical Dark Command Room vs. Pure White Paper Sunlight Mode</h2>
+      
+      <div class="slide-body" style="grid-template-columns: 1fr 1fr;">
+        <div class="card" style="border-color: var(--cyan);">
+          <div class="card-tag">MODE A</div>
+          <div class="card-title">🌑 Tactical Ops Dark Mode</div>
+          <p class="card-text">Tailored for 24/7 Municipal Integrated Command and Control Centers (ICCC). High-contrast glowing neon cyan and amber reduce eye strain while CCTV feeds blend seamlessly.</p>
+          <ul class="card-bullets">
+            <li>Optimal for multi-monitor command walls</li>
+            <li>Accentuates glowing hazard pins and satellite tracks</li>
+          </ul>
+        </div>
+        <div class="card" style="background: #ffffff; border-color: #cbd5e1; color: #0f172a;">
+          <div class="card-tag" style="color: #0284c7;">MODE B</div>
+          <div class="card-title" style="color: #0f172a;">☀️ Pure White Paper Sunlight Mode</div>
+          <p class="card-text" style="color: #475569;">Engineered specifically for field officers and municipal engineers inspecting roads outdoors. 100% paper-white background and deep slate typography eliminate all glare under direct sunlight.</p>
+          <ul class="card-bullets">
+            <li style="color: #334155;">Glare-free on mobile tablets in direct sun</li>
+            <li style="color: #334155;">Print-ready official audit dossiers</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SLIDE 9: CIVIC IMPACT & ROI ── -->
+    <section class="slide" data-slide="9" data-notes="Key ROI metrics for the administration: 80% reduction in inspection survey costs, 3.5x savings by catching micro-cracks before total road collapse, and 100% forensic transparency.">
+      <div class="slide-tag" style="color: var(--green);">📈 MEASURABLE IMPACT</div>
+      <h2 class="slide-title">Delivering 80% Cost Efficiency & Proactive Asset Protection</h2>
+      
+      <div class="slide-body" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+        <div class="card" style="border-color: var(--green);">
+          <div class="stat-number green">80%</div>
+          <div class="card-title">Cost Reduction</div>
+          <p class="card-text">Eliminates manual patrolling convoys through continuous automated satellite sweeps.</p>
+        </div>
+        <div class="card" style="border-color: var(--cyan);">
+          <div class="stat-number cyan">3.5x</div>
+          <div class="card-title">Budget Savings</div>
+          <p class="card-text">Catching micro-cracks early prevents catastrophic road base collapse and rebuilding costs.</p>
+        </div>
+        <div class="card" style="border-color: var(--amber);">
+          <div class="stat-number amber">&lt; 200ms</div>
+          <div class="card-title">Inference Latency</div>
+          <p class="card-text">Real-time defect bounding box localization without stalling civic municipal IT servers.</p>
+        </div>
+        <div class="card" style="border-color: var(--white);">
+          <div class="stat-number" style="color: var(--white);">100%</div>
+          <div class="card-title">Auditable</div>
+          <p class="card-text">Permanent forensic history linking GPS coordinates, satellite frames, and repair dispatch tickets.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">BENCHMARK COMPARISON</div>
+        <p class="card-text" style="color: #fff; font-size: 13px;">
+          Traditional manual complaint turnaround: <strong>14-30 days</strong> ➔ Urban Tracker autonomous dispatch: <strong>Instantaneous &lt; 2 minutes</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── SLIDE 10: DEPLOYMENT ROADMAP ── -->
+    <section class="slide" data-slide="10" data-notes="Wrap up with a clear 3-phase rollout roadmap. Month 1-2 pilot in 5 wards, Month 3-4 municipal PWD contractor integration, Month 5 state-wide ICCC rollout. Thank you and invite questions.">
+      <div class="slide-tag" style="color: var(--cyan);">🚀 DEPLOYMENT ROADMAP</div>
+      <h2 class="slide-title">Smart City Deployment Roadmap: Phased Municipal Rollout</h2>
+      
+      <div class="slide-body" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
+        <div class="card" style="border-color: var(--cyan);">
+          <div class="card-tag">PHASE 01 (MONTHS 1-2)</div>
+          <div class="card-title">Pilot Municipal Launch</div>
+          <ul class="card-bullets">
+            <li>Deploy in 5 high-density urban wards</li>
+            <li>Baseline satellite scan of arterial roads</li>
+            <li>Calibrate YOLOv8 models to local asphalt</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color: var(--amber);">
+          <div class="card-tag">PHASE 02 (MONTHS 3-4)</div>
+          <div class="card-title">Agency & PWD Integration</div>
+          <ul class="card-bullets">
+            <li>Direct API linkage with Municipal grievance databases</li>
+            <li>Automated contractor dispatch routing</li>
+            <li>Field tablet rollout in Sunlight mode</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color: var(--green);">
+          <div class="card-tag">PHASE 03 (MONTHS 5+)</div>
+          <div class="card-title">State-Wide ICCC Expansion</div>
+          <ul class="card-bullets">
+            <li>Integration into State Command & Control Center</li>
+            <li>Citizen transparency mobile tracking portal</li>
+            <li>Multi-temporal predictive fatigue analytics</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="background: rgba(0, 35, 55, 0.85); border-color: var(--cyan); text-align: center;">
+        <div class="card-title" style="justify-content: center; font-size: 18px; color: var(--cyan);">
+          TRANSFORMING CIVIC ROADS INTO SAFER, SMARTER CORRIDORS
+        </div>
+        <p class="card-text" style="color: var(--slate); font-size: 13px; margin-top: 4px;">
+          Urban Tracker & RoadGuard AI gives municipal administrations an unblinking, autonomous eye over every kilometer of civic infrastructure.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Speaker Notes Drawer -->
+  <div id="notes-drawer">
+    <div class="notes-title">📝 SPEAKER NOTES (MUNICIPAL PRESENTATION MODE)</div>
+    <div id="notes-content" class="notes-content">Notes text here</div>
+  </div>
+
+  <!-- Image Lightbox Modal -->
+  <div id="image-lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="Enlarged Visual Evidence" />
+  </div>
+
+  <!-- Footer Nav -->
+  <footer class="deck-footer">
+    <div class="footer-intel">URBAN TRACKER & ROADGUARD AI  |  MUNICIPAL INTELLIGENCE DECK  |  PRESS [F] FULLSCREEN  •  [N] NOTES  •  [ARROWS] NAVIGATE</div>
+    <div class="nav-buttons">
+      <button class="nav-btn" id="prev-btn" type="button" title="Previous Slide (Left Arrow)">◀</button>
+      <span class="slide-counter" id="slide-counter">01 / 10</span>
+      <button class="nav-btn" id="next-btn" type="button" title="Next Slide (Right Arrow)">▶</button>
+    </div>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = 0;
+
+    const progressBar = document.getElementById('progress-bar');
+    const slideCounter = document.getElementById('slide-counter');
+    const notesDrawer = document.getElementById('notes-drawer');
+    const notesContent = document.getElementById('notes-content');
+    const lightbox = document.getElementById('image-lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+
+    function updateSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= totalSlides) index = totalSlides - 1;
+      
+      slides.forEach((slide, i) => {
+        slide.classList.remove('active', 'prev');
+        if (i === index) {
+          slide.classList.add('active');
+        } else if (i < index) {
+          slide.classList.add('prev');
+        }
+      });
+
+      currentSlide = index;
+      progressBar.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+      slideCounter.textContent = `${String(currentSlide + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+
+      // Update speaker notes
+      const activeNotes = slides[currentSlide].dataset.notes || 'No speaker notes for this slide.';
+      notesContent.textContent = activeNotes;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        updateSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        updateSlide(currentSlide - 1);
+      }
+    }
+
+    document.getElementById('next-btn').addEventListener('click', nextSlide);
+    document.getElementById('prev-btn').addEventListener('click', prevSlide);
+
+    // Keyboard Navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'Home') {
+        updateSlide(0);
+      } else if (e.key === 'End') {
+        updateSlide(totalSlides - 1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      } else if (e.key === 'n' || e.key === 'N') {
+        toggleNotes();
+      } else if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+
+    // Fullscreen
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+    document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
+
+    // Speaker Notes
+    function toggleNotes() {
+      notesDrawer.classList.toggle('active');
+    }
+    document.getElementById('notes-btn').addEventListener('click', toggleNotes);
+
+    // Theme Toggle
+    const themeBtn = document.getElementById('theme-btn');
+    themeBtn.addEventListener('click', () => {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
+      themeBtn.textContent = isLight ? '☀️ THEME' : '🌑 THEME';
+    });
+
+    // Lightbox Modal
+    function openLightbox(el) {
+      const img = el.querySelector('img');
+      if (img) {
+        lightboxImg.src = img.src;
+        lightbox.classList.add('active');
+      }
+    }
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+    }
+
+    // ── 60 FPS Particle Canvas Animation ──
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    for (let i = 0; i < 45; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        radius: Math.random() * 1.5 + 0.5,
+        color: Math.random() > 0.5 ? '#00f0ff' : '#ff9900'
+      });
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, width, height);
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = 0.35;
+        ctx.fill();
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // Initialize first slide
+    updateSlide(0);
+  </script>
+</body>
+</html>

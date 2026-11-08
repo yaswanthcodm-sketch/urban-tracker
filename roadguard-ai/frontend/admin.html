@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Officer & Inspector Portal — RoadGuard AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/static/index.html" class="brand">
+      <div class="brand-logo">🛡️</div>
+      <div class="brand-text">
+        <h1>RoadGuard AI</h1>
+        <p>Authority Operations Console</p>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/static/index.html">Home</a></li>
+      <li><a href="/static/dashboard.html">Live Dashboard</a></li>
+      <li><a href="/static/detect.html">AI Detection</a></li>
+      <li><a href="/static/cameras.html">CCTV Feeds</a></li>
+      <li><a href="/static/satellite.html">Satellite Screening</a></li>
+      <li><a href="/static/map.html">Damage Map</a></li>
+      <li><a href="/static/report.html">Report Damage</a></li>
+      <li><a href="/static/track.html">Track Complaint</a></li>
+      <li><a href="/static/admin.html" class="active">Officer Portal</a></li>
+    </ul>
+
+    <div class="demo-mode-pill">Authority Auth Active</div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h2 style="font-size: 1.75rem; font-weight: 800; color: white;">Road Authority Management Console</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Manage complaint acknowledgment, schedule field surveys, record contractor asphalt repairs, and conduct independent verification audits.
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="btn-scan-sla" class="btn btn-secondary btn-sm">
+          <span>⏰</span> Scan SLA Escalations
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Complaints Management Table -->
+    <div class="card">
+      <div class="card-header" style="flex-wrap: wrap; gap: 0.75rem;">
+        <h3 class="card-title">Active Complaint Queue</h3>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <select id="admin-filter-status" class="form-select" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+            <option value="">All Statuses</option>
+            <option value="Submitted">Submitted (New)</option>
+            <option value="Acknowledged">Acknowledged</option>
+            <option value="Inspection Scheduled">Inspection Scheduled</option>
+            <option value="Repair In Progress">Repair In Progress</option>
+            <option value="Awaiting Verification">Awaiting Verification</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+          <button id="admin-refresh-btn" class="btn btn-secondary btn-sm">Refresh</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Tracking ID</th>
+              <th>Defect & Severity</th>
+              <th>Road & Location</th>
+              <th>Status</th>
+              <th>Target SLA</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-complaints-tbody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading active complaints...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal 1: Status Update & Acknowledgment -->
+    <div id="modal-status-update" class="modal-backdrop">
+      <div class="modal-dialog">
+        <div class="card-header">
+          <h3 class="card-title">Update Complaint Status</h3>
+          <button class="btn btn-secondary btn-sm btn-close-modal">✕</button>
+        </div>
+
+        <form id="form-status-update">
+          <input type="hidden" id="status-complaint-id">
+
+          <div class="form-group">
+            <label class="form-label">Next Lifecycle Status</label>
+            <select id="status-select-next" class="form-select" required>
+              <option value="Acknowledged">Acknowledged (Noted by department)</option>
+              <option value="Inspection Scheduled">Inspection Scheduled (Inspector assigned)</option>
+              <option value="Repair In Progress">Repair In Progress (Contractor dispatched)</option>
+              <option value="Awaiting Verification">Awaiting Verification (Work done)</option>
+              <option value="Resolved">Resolved (Approved)</option>
+              <option value="Closed">Closed (Archived)</option>
+              <option value="Rejected">Rejected (Out of scope / False)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Officer / Reviewer Name</label>
+            <input type="text" id="status-changed-by" class="form-control" value="Er. Sharma (Senior Inspector)" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Audit Notes</label>
+            <textarea id="status-notes" class="form-control" rows="2" placeholder="Reason for transition, road division assigned..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Commit Status Change</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 2: Log Inspection -->
+    <div id="modal-inspection" class="modal-backdrop">
+      <div class="modal-dialog">
+        <div class="card-header">
+          <h3 class="card-title">Log Field / Drone Inspection</h3>
+          <button class="btn btn-secondary btn-sm btn-close-modal">✕</button>
+        </div>
+
+        <form id="form-inspection">
+          <input type="hidden" id="insp-complaint-id">
+
+          <div class="form-group">
+            <label class="form-label">Inspector Name</label>
+            <input type="text" id="insp-name" class="form-control" value="Er. Sharma (Senior Inspector)" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Inspection Findings</label>
+            <textarea id="insp-findings" class="form-control" rows="3" placeholder="Surface fatigue assessment, water subgrade condition, estimated area..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Inspection Verdict</label>
+            <select id="insp-result" class="form-select" required>
+              <option value="Verified Defect - Rapid Patch Required">Verified Defect - Rapid Patch Required</option>
+              <option value="Requires Heavy Milling & Subgrade Base">Requires Heavy Milling & Subgrade Base</option>
+              <option value="Minor Surface Distress - Monitor">Minor Surface Distress - Monitor</option>
+              <option value="False Alarm / Normal Seam">False Alarm / Normal Seam</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Save Inspection Findings</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 3: Contractor Repair Log -->
+    <div id="modal-repair" class="modal-backdrop">
+      <div class="modal-dialog">
+        <div class="card-header">
+          <h3 class="card-title">Log Contractor Repair Work</h3>
+          <button class="btn btn-secondary btn-sm btn-close-modal">✕</button>
+        </div>
+
+        <form id="form-repair">
+          <input type="hidden" id="repair-complaint-id">
+
+          <div class="form-group">
+            <label class="form-label">Assigned Contractor / Crew</label>
+            <input type="text" id="repair-crew" class="form-control" value="PWD Rapid Patch Squad 04" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Repair Specifications & Materials</label>
+            <textarea id="repair-notes" class="form-control" rows="3" placeholder="Tack coat applied, 50mm Bituminous Concrete compacted, roller passes..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Post-Repair Photo (Proof of Work)</label>
+            <input type="file" id="repair-proof-file" class="form-control" accept="image/*">
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem;">
+            <input type="checkbox" id="repair-is-completed" checked style="accent-color: var(--primary); cursor: pointer;">
+            <label for="repair-is-completed" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer;">
+              Mark repair completed (Transitions status to 'Awaiting Verification')
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Record Repair Progress</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 4: Independent Verification -->
+    <div id="modal-verification" class="modal-backdrop">
+      <div class="modal-dialog">
+        <div class="card-header">
+          <h3 class="card-title">Independent Quality Verification</h3>
+          <button class="btn btn-secondary btn-sm btn-close-modal">✕</button>
+        </div>
+
+        <form id="form-verification">
+          <input type="hidden" id="verif-complaint-id">
+
+          <div class="form-group">
+            <label class="form-label">Auditor / Quality Reviewer Name</label>
+            <input type="text" id="verif-auditor-name" class="form-control" value="Quality Auditor K. Verma" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Verification Verdict</label>
+            <select id="verif-result-select" class="form-select" required>
+              <option value="Approved">Approved (Surface restoration verified, resolve complaint)</option>
+              <option value="Requires Rework">Requires Rework (Inadequate compaction / uneven seam)</option>
+              <option value="Rejected">Rejected (Repair failed quality standards)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">After-Repair Inspection Photo</label>
+            <input type="file" id="verif-after-photo" class="form-control" accept="image/*">
+            <small style="color: var(--text-dim); font-size: 0.75rem;">AI will compare surface texture reduction against initial defect image.</small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Quality Audit Notes</label>
+            <textarea id="verif-notes" class="form-control" rows="2" placeholder="Surface leveling verified, no edge detachment observed..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Verification Verdict</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>RoadGuard AI — Public Works Authority Management &bull; Demonstration Mode</p>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/admin.js"></script>
+</body>
+</html>

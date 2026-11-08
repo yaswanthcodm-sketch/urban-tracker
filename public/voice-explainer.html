@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Urban Tracker & RoadGuard AI — Voice Explanation & Audio Player</title>
+  <link rel="icon" type="image/svg+xml" href="/public/favicon.svg" />
+  <style>
+    :root {
+      --bg-dark: #030c16;
+      --card-bg: rgba(9, 26, 46, 0.92);
+      --card-border: rgba(0, 240, 255, 0.25);
+      --cyan: #00f0ff;
+      --amber: #ff9900;
+      --green: #10b981;
+      --red: #ef4444;
+      --white: #ffffff;
+      --slate: #94a3b8;
+      --muted: #64748b;
+      --font-mono: 'Consolas', 'Courier New', monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--white);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px 60px 20px;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background glow */
+    .glow-sphere {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.12) 0%, rgba(255, 153, 0, 0.05) 50%, transparent 80%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header Bar */
+    header.app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: rgba(3, 12, 22, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--cyan);
+    }
+
+    .top-links {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      padding: 6px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 6px;
+      color: var(--white);
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--cyan);
+      color: #030c16;
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+
+    /* Hero Audio Card */
+    .player-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 240, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      backdrop-filter: blur(16px);
+    }
+
+    .player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tag-live {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--amber);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .player-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .player-subtitle {
+      font-size: 13.5px;
+      color: var(--slate);
+      margin-top: 4px;
+    }
+
+    /* Voice Switcher Chips */
+    .voice-selector-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 12px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .voice-chip {
+      padding: 5px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      background: transparent;
+      border: none;
+      border-radius: 20px;
+      color: var(--slate);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .voice-chip.active {
+      background: var(--cyan);
+      color: #030c16;
+      font-weight: 800;
+      box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    }
+
+    /* Animated Visualizer */
+    #visualizer-canvas {
+      width: 100%;
+      height: 60px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+    }
+
+    /* Scrubber / Timeline */
+    .timeline-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--amber));
+      border-radius: 4px;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .time-display {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--slate);
+    }
+
+    /* Controls Row */
+    .controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .main-playback-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-play {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--cyan);
+      border: none;
+      color: #030c16;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-play:hover {
+      transform: scale(1.08);
+      background: #38f4ff;
+    }
+
+    .btn-skip {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      transition: all 0.2s ease;
+    }
+
+    .btn-skip:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .speed-pills {
+      display: flex;
+      gap: 6px;
+    }
+
+    .speed-btn {
+      padding: 4px 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      color: var(--slate);
+      cursor: pointer;
+    }
+
+    .speed-btn.active {
+      background: var(--amber);
+      color: #030c16;
+      border-color: var(--amber);
+      font-weight: 800;
+    }
+
+    .download-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn-download {
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--green);
+      border-radius: 6px;
+      color: var(--green);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-download:hover {
+      background: var(--green);
+      color: #030c16;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-download.btn-whatsapp {
+      background: #25D366;
+      border-color: #25D366;
+      color: #030c16;
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(37, 211, 102, 0.4);
+    }
+
+    .btn-download.btn-whatsapp:hover {
+      background: #1eb855;
+      color: #ffffff;
+      box-shadow: 0 0 18px rgba(37, 211, 102, 0.7);
+    }
+
+    /* Live Transcript Sections */
+    .transcript-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .transcript-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+
+    .transcript-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .transcript-hint {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .section-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-item {
+      padding: 14px 18px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .section-item:hover {
+      background: rgba(0, 240, 255, 0.08);
+      border-color: var(--cyan);
+      transform: translateX(4px);
+    }
+
+    .section-item.active {
+      background: rgba(0, 240, 255, 0.12);
+      border-color: var(--cyan);
+      box-shadow: inset 3px 0 0 var(--cyan);
+    }
+
+    .section-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-time {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--cyan);
+    }
+
+    .section-heading {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .section-text {
+      font-size: 12.5px;
+      color: var(--slate);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-sphere"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand-group">
+        <span class="pulse-dot"></span>
+        <span class="brand-title">URBAN TRACKER & ROADGUARD AI</span>
+      </div>
+      <div class="top-links">
+        <a href="/" class="nav-btn">🌍 3D LIVE TRACKER</a>
+        <a href="/presentation.html" class="nav-btn">📊 SLIDE DECK</a>
+        <a href="/Urban_Tracker_RoadGuard_Smart_City_Presentation.pptx" download class="nav-btn">📥 PPTX</a>
+      </div>
+    </header>
+
+    <!-- Main Player Card -->
+    <div class="player-card">
+      <div class="player-header">
+        <div>
+          <div class="tag-live">🎙️ OFFICIAL VOICE WALKTHROUGH & AUDIO EXPLAINER</div>
+          <h1 class="player-title">Urban Tracker & RoadGuard AI Complete System Briefing</h1>
+          <p class="player-subtitle">High-fidelity voice explanation covering problem statement, universal locality scanning, satellite optics, dual YOLOv8 AI, and civic dispatch.</p>
+        </div>
+        <div class="voice-selector-wrap">
+          <button class="voice-chip active" data-voice="samantha" type="button">Samantha (Clear Studio)</button>
+          <button class="voice-chip" data-voice="rishi" type="button">Rishi (Indian English)</button>
+        </div>
+      </div>
+
+      <!-- Real-Time Audio Visualizer Canvas -->
+      <canvas id="visualizer-canvas"></canvas>
+
+      <!-- Timeline & Scrubber -->
+      <div class="timeline-wrap">
+        <div class="progress-bar-container" id="timeline-container">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <div class="time-display">
+          <span id="current-time">0:00</span>
+          <span id="duration-time">--:--</span>
+        </div>
+      </div>
+
+      <!-- Playback Controls -->
+      <div class="controls-row">
+        <div class="main-playback-controls">
+          <button class="btn-skip" id="btn-back-10" type="button" title="Rewind 10s">-10s</button>
+          <button class="btn-play" id="btn-play-pause" type="button" title="Play / Pause">▶</button>
+          <button class="btn-skip" id="btn-forward-10" type="button" title="Forward 10s">+10s</button>
+        </div>
+
+        <div class="speed-pills">
+          <button class="speed-btn" data-speed="0.75" type="button">0.75x</button>
+          <button class="speed-btn active" data-speed="1.0" type="button">1.0x</button>
+          <button class="speed-btn" data-speed="1.25" type="button">1.25x</button>
+          <button class="speed-btn" data-speed="1.5" type="button">1.5x</button>
+        </div>
+
+        <div class="download-group">
+          <a id="download-whatsapp-btn" href="/audio/urban_tracker_voice_explanation.mp3" download="urban_tracker_voice_explanation.mp3" class="btn-download btn-whatsapp">
+            📲 DOWNLOAD FOR WHATSAPP (.MP3 — 1.8 MB)
+          </a>
+          <a id="download-m4a-btn" href="/audio/urban_tracker_voice_explanation.m4a" download="urban_tracker_voice_explanation.m4a" class="btn-download">
+            📥 M4A (2.0 MB)
+          </a>
+          <a id="download-wav-btn" href="/audio/urban_tracker_voice_explanation.wav" download="urban_tracker_voice_explanation.wav" class="btn-download">
+            📥 WAV (9.9 MB)
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Transcript / Teleprompter -->
+    <div class="transcript-card">
+      <div class="transcript-header">
+        <div class="transcript-title">📜 Synchronized Interactive Transcript</div>
+        <div class="transcript-hint">CLICK ANY SECTION TO JUMP DIRECTLY TO THAT TOPIC</div>
+      </div>
+
+      <div class="section-list">
+        <!-- Section 1 -->
+        <div class="section-item" data-start="0" data-end="17">
+          <div class="section-meta">
+            <span class="section-time">0:00 — 0:17</span>
+            <span class="section-heading">01. Introduction & Civic Mission</span>
+          </div>
+          <p class="section-text">Welcome to Urban Tracker and RoadGuard AI, a next-generation civic intelligence and real-time road hazard surveillance platform engineered for Smart Cities, Municipal Corporations, and State Public Works Departments across India.</p>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="section-item" data-start="17" data-end="35">
+          <div class="section-meta">
+            <span class="section-time">0:17 — 0:35</span>
+            <span class="section-heading">02. The Fatalities & Drainage Crisis</span>
+          </div>
+          <p class="section-text">Every single year in India, over 3,500 lives are tragically lost due to unmaintained road surfaces, sudden asphalt depressions, and critical potholes. In addition, over 62 million tonnes of unauthorized solid waste and debris are dumped along road shoulders and canal bunds, choking urban drainage and causing rapid flash floods during the monsoons.</p>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="section-item" data-start="35" data-end="56">
+          <div class="section-meta">
+            <span class="section-time">0:35 — 0:56</span>
+            <span class="section-heading">03. The Bottlenecks of Manual Surveys</span>
+          </div>
+          <p class="section-text">Conventional municipal inspection fails for three fundamental reasons. First, cities cannot afford physical inspection convoys patrolling every single ward and village lane daily. Second, citizen complaints are filed manually, lacking precise sub-meter GPS coordinates and objective visual evidence. Third, jurisdictional ambiguity between the National Highways Authority of India, State PWD, and municipal corporations leads to weeks of delayed repairs.</p>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="section-item" data-start="56" data-end="84">
+          <div class="section-meta">
+            <span class="section-time">0:56 — 1:24</span>
+            <span class="section-heading">04. Universal Locality Scanner (Any Town/Village)</span>
+          </div>
+          <p class="section-text">First, is our Universal Locality Road Scanner. Unlike typical systems restricted to major metropolitan centers, Urban Tracker reads and maps each and every road in any city, town, or rural Gram Panchayat on Earth. From Tier-1 cities like Delhi, Mumbai, Bengaluru, and Hyderabad, to Tier-2 cities like Vijayawada and Visakhapatnam, down to rural towns like Nuzvid and Eluru. It generates verified road networks with zero latency, synchronizing live with OpenStreetMap to categorize highways, residential streets, and village tracks.</p>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="section-item" data-start="84" data-end="112">
+          <div class="section-meta">
+            <span class="section-time">1:24 — 1:52</span>
+            <span class="section-heading">05. Genuine Sub-Meter Satellite Optics</span>
+          </div>
+          <p class="section-text">Second, is our Genuine Sub-Meter Satellite Optical Surveillance. Urban Tracker eliminates synthetic stock photography. Whenever a road is inspected, the system pulls real, high-resolution sub-meter optical satellite imagery centered at the exact geographic coordinates of that road. It also captures 1-hour and 3-hour regional orbital satellite passes from ISRO INSAT-3D and NOAA constellations, with an interactive 12-frame timeline slider allowing civic engineers to monitor surface degradation over time.</p>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="section-item" data-start="112" data-end="140">
+          <div class="section-meta">
+            <span class="section-time">1:52 — 2:20</span>
+            <span class="section-heading">06. Dual-Class YOLOv8 AI Vision Engine</span>
+          </div>
+          <p class="section-text">Third, is our Dual-Class Computer Vision AI Engine powered by Ultralytics YOLOv8. The AI analyzes road frames with a 94.2% precision rate. In Pothole Detection mode, it identifies asphalt cavities, alligator fatigue cracking, and edge erosion, grading damage severity and prescribing technical repair specifications like Cold Patching and Surface Milling. In Garbage Surveillance mode, it flags roadside waste heaps and construction debris, dispatching sanitation squads before monsoon clogs occur.</p>
+        </div>
+
+        <!-- Section 7 -->
+        <div class="section-item" data-start="140" data-end="166">
+          <div class="section-meta">
+            <span class="section-time">2:20 — 2:46</span>
+            <span class="section-heading">07. Automated Civic Redressal & Authority Routing</span>
+          </div>
+          <p class="section-text">Fourth, is our Automated Civic Grievance Redressal Engine. With a single click, an official public tracking ticket is generated. The system's intelligent jurisdiction engine automatically routes the complaint to the correct authority: National Highways to NHAI, State Highways to State PWD, urban residential lanes to Municipal Corporations, and rural tracks to Panchayat Raj PMGSY engineering, complete with automated SLA tracking.</p>
+        </div>
+
+        <!-- Section 8 -->
+        <div class="section-item" data-start="166" data-end="192">
+          <div class="section-meta">
+            <span class="section-time">2:46 — 3:12</span>
+            <span class="section-heading">08. Dual Ergonomics: Dark vs. Pure White Paper</span>
+          </div>
+          <p class="section-text">Finally, the platform is engineered with Dual Operational Ergonomics. A high-tech Tactical Ops Dark Mode designed for 24/7 Smart City Command and Control Centers, and a Pure White Paper Sunlight Mode, engineered specifically for municipal field officers using mobile tablets under direct sunlight without glare.</p>
+        </div>
+
+        <!-- Section 9 -->
+        <div class="section-item" data-start="192" data-end="215">
+          <div class="section-meta">
+            <span class="section-time">3:12 — 3:35</span>
+            <span class="section-heading">09. 80% Cost Reduction & Closing</span>
+          </div>
+          <p class="section-text">By moving civic governance from slow, reactive emergency patching to proactive, autonomous intelligence, Urban Tracker and RoadGuard AI delivers an 80% reduction in municipal survey costs, 3.5 times capital savings on road rebuilding, and creates safer, cleaner roads for every citizen. Thank you for listening to this overview of Urban Tracker and RoadGuard AI.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Element (Uses Universal MP3 for 100% WhatsApp / Web compatibility) -->
+  <audio id="audio-player" src="/audio/urban_tracker_voice_explanation.mp3" preload="auto"></audio>
+
+  <script>
+    const audio = document.getElementById('audio-player');
+    const playBtn = document.getElementById('btn-play-pause');
+    const progressFill = document.getElementById('progress-fill');
+    const timelineContainer = document.getElementById('timeline-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationTimeEl = document.getElementById('duration-time');
+    const sections = document.querySelectorAll('.section-item');
+    const voiceChips = document.querySelectorAll('.voice-chip');
+    const speedBtns = document.querySelectorAll('.speed-btn');
+
+    const downloadWhatsapp = document.getElementById('download-whatsapp-btn');
+    const downloadM4a = document.getElementById('download-m4a-btn');
+    const downloadWav = document.getElementById('download-wav-btn');
+
+    // Visualizer canvas setup
+    const canvas = document.getElementById('visualizer-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    });
+
+    function formatTime(secs) {
+      if (!Number.isFinite(secs)) return '0:00';
+      const m = Math.floor(secs / 60);
+      const s = Math.floor(secs % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    // Play/Pause
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play().catch(e => console.log('Audio playback error:', e));
+        playBtn.textContent = '⏸';
+      } else {
+        audio.pause();
+        playBtn.textContent = '▶';
+      }
+    });
+
+    audio.addEventListener('play', () => {
+      playBtn.textContent = '⏸';
+    });
+    audio.addEventListener('pause', () => {
+      playBtn.textContent = '▶';
+    });
+
+    // Time update & Teleprompter highlighting
+    audio.addEventListener('timeupdate', () => {
+      const current = audio.currentTime;
+      const duration = audio.duration || 215;
+      currentTimeEl.textContent = formatTime(current);
+      durationTimeEl.textContent = formatTime(duration);
+
+      const percent = (current / duration) * 100;
+      progressFill.style.width = `${percent}%`;
+
+      // Highlight active section
+      sections.forEach(sec => {
+        const start = parseFloat(sec.dataset.start);
+        const end = parseFloat(sec.dataset.end);
+        if (current >= start && current < end) {
+          sec.classList.add('active');
+        } else {
+          sec.classList.remove('active');
+        }
+      });
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      durationTimeEl.textContent = formatTime(audio.duration);
+    });
+
+    // Seeking
+    timelineContainer.addEventListener('click', (e) => {
+      const rect = timelineContainer.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const percent = clickX / rect.width;
+      audio.currentTime = percent * (audio.duration || 215);
+    });
+
+    document.getElementById('btn-back-10').addEventListener('click', () => {
+      audio.currentTime = Math.max(0, audio.currentTime - 10);
+    });
+    document.getElementById('btn-forward-10').addEventListener('click', () => {
+      audio.currentTime = Math.min(audio.duration || 215, audio.currentTime + 10);
+    });
+
+    // Transcript Section Click to seek
+    sections.forEach(sec => {
+      sec.addEventListener('click', () => {
+        const start = parseFloat(sec.dataset.start);
+        audio.currentTime = start;
+        audio.play().catch(() => {});
+      });
+    });
+
+    // Voice switching
+    voiceChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        voiceChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const voice = chip.dataset.voice;
+        const wasPlaying = !audio.paused;
+        const currentPos = audio.currentTime;
+
+        if (voice === 'rishi') {
+          audio.src = '/audio/urban_tracker_voice_explanation_rishi.mp3';
+          downloadWhatsapp.href = '/audio/urban_tracker_voice_explanation_rishi.mp3';
+          downloadWhatsapp.setAttribute('download', 'urban_tracker_voice_explanation_rishi.mp3');
+          downloadWhatsapp.innerHTML = '📲 DOWNLOAD FOR WHATSAPP (.MP3 — 2.0 MB)';
+          downloadM4a.href = '/audio/urban_tracker_voice_explanation_rishi.m4a';
+          downloadM4a.setAttribute('download', 'urban_tracker_voice_explanation_rishi.m4a');
+          downloadWav.href = '/audio/urban_tracker_voice_explanation_rishi.wav';
+          downloadWav.setAttribute('download', 'urban_tracker_voice_explanation_rishi.wav');
+        } else {
+          audio.src = '/audio/urban_tracker_voice_explanation.mp3';
+          downloadWhatsapp.href = '/audio/urban_tracker_voice_explanation.mp3';
+          downloadWhatsapp.setAttribute('download', 'urban_tracker_voice_explanation.mp3');
+          downloadWhatsapp.innerHTML = '📲 DOWNLOAD FOR WHATSAPP (.MP3 — 1.8 MB)';
+          downloadM4a.href = '/audio/urban_tracker_voice_explanation.m4a';
+          downloadM4a.setAttribute('download', 'urban_tracker_voice_explanation.m4a');
+          downloadWav.href = '/audio/urban_tracker_voice_explanation.wav';
+          downloadWav.setAttribute('download', 'urban_tracker_voice_explanation.wav');
+        }
+
+        audio.currentTime = currentPos;
+        if (wasPlaying) {
+          audio.play().catch(() => {});
+        }
+      });
+    });
+
+    // Speed controls
+    speedBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        speedBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        audio.playbackRate = parseFloat(btn.dataset.speed);
+      });
+    });
+
+    // ── Animated Visualizer Waves ──
+    let animPhase = 0;
+    function renderVisualizer() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const isPlaying = !audio.paused;
+      const numBars = 48;
+      const barWidth = canvas.width / numBars;
+
+      for (let i = 0; i < numBars; i++) {
+        let barHeight = 6;
+        if (isPlaying) {
+          const wave = Math.sin((i * 0.25) + animPhase) * Math.cos((i * 0.15) - animPhase);
+          barHeight = 8 + (Math.abs(wave) * 38);
+        } else {
+          barHeight = 4 + (Math.sin(i * 0.3) * 3);
+        }
+
+        const x = i * barWidth;
+        const y = (canvas.height - barHeight) / 2;
+
+        const grad = ctx.createLinearGradient(0, y, 0, y + barHeight);
+        grad.addColorStop(0, '#00f0ff');
+        grad.addColorStop(1, '#ff9900');
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
+      }
+
+      if (isPlaying) {
+        animPhase += 0.08;
+      }
+      requestAnimationFrame(renderVisualizer);
+    }
+    renderVisualizer();
+  </script>
+</body>
+</html>

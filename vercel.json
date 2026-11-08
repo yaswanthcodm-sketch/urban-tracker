@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/track", "destination": "/track.html" },
+    { "source": "/presentation", "destination": "/presentation.html" }
+  ]
+}

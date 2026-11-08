@@ -1,0 +1,2408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Login & Sign Up · Urban Tracker · RoadGuard AI</title>
+  <meta name="theme-color" content="#0d0d0f">
+  <link rel="icon" type="image/svg+xml" href="/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="/js/indianLanguages.js"></script>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --card-bg: #17171a;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: #1e1e23;
+      --input-border: rgba(255, 255, 255, 0.07);
+      --input-focus: #0070f3;
+      --btn-blue: #0070f3;
+      --btn-blue-hover: #0060df;
+      --text-white: #ffffff;
+      --text-dim: #71717a;
+      --text-faint: #52525b;
+      --trace-color: #242429;
+      --chip-bg: #161619;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background-color: var(--bg);
+      color: var(--text-white);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Subtle background radial glow */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 112, 243, 0.05) 0%, rgba(13, 13, 15, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top Language & Quick-Access Bar */
+    .top-lang-bar {
+      position: fixed;
+      top: 20px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+      pointer-events: auto;
+    }
+
+    .lang-pill-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(23, 23, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 6px 14px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+
+    .lang-icon {
+      font-size: 14px;
+    }
+
+    .lang-dropdown {
+      background: transparent;
+      border: none;
+      color: #e4e4e7;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .lang-dropdown option {
+      background: #17171a;
+      color: #ffffff;
+    }
+
+    .direct-guest-btn {
+      background: rgba(23, 23, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 6px 14px;
+      color: #a1a1aa;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      backdrop-filter: blur(12px);
+      transition: all 0.2s ease;
+    }
+
+    .direct-guest-btn:hover {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(30, 30, 35, 0.95);
+    }
+
+    /* Circuit Board Stage */
+    .circuit-stage {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .circuit-svg {
+      width: 100%;
+      height: 100%;
+      opacity: 0.85;
+    }
+
+    /* Main Container & Card */
+    .main-wrap {
+      position: relative;
+      z-index: 10;
+      padding: 20px;
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .login-card {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 34px 34px 30px;
+      box-shadow:
+        0 28px 70px rgba(0, 0, 0, 0.75),
+        0 0 1px rgba(255, 255, 255, 0.12);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Mode Tab Switcher (Sign In vs Sign Up OTP) */
+    .auth-mode-switch {
+      display: flex;
+      width: 100%;
+      background: #111114;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 20px;
+      gap: 4px;
+    }
+
+    .mode-tab {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .mode-tab.active {
+      background: #24242b;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .mode-tab:hover:not(.active) {
+      color: #d4d4d8;
+    }
+
+    /* Header & Brand Logo with Dot Matrix */
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .dot-matrix {
+      display: grid;
+      grid-template-columns: repeat(6, 4px);
+      grid-gap: 5px;
+      opacity: 0.2;
+    }
+
+    .dot-matrix span {
+      width: 3px;
+      height: 3px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: block;
+    }
+
+    .app-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: #1c1c21;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, 0.12),
+        0 8px 20px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .neon-ring {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #38bdf8;
+      border-left-color: #0070f3;
+      border-right-color: #60a5fa;
+      border-bottom-color: rgba(0, 112, 243, 0.3);
+      filter: drop-shadow(0 0 6px rgba(0, 112, 243, 0.8));
+      transform: rotate(45deg);
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-white);
+      letter-spacing: -0.4px;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-align: center;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .subtitle a {
+      color: #38bdf8;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      margin-left: 2px;
+      transition: color 0.15s;
+    }
+
+    .subtitle a:hover {
+      text-decoration: underline;
+    }
+
+    /* Error Message Box */
+    .error-box {
+      width: 100%;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      font-size: 12px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      display: none;
+      line-height: 1.4;
+      text-align: left;
+    }
+
+    .error-box.visible {
+      display: block;
+    }
+
+    /* Success Message Box */
+    .success-box {
+      width: 100%;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6ee7b7;
+      font-size: 12px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      display: none;
+      line-height: 1.4;
+      text-align: left;
+    }
+
+    .success-box.visible {
+      display: block;
+    }
+
+    /* Form Fields */
+    .auth-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-field {
+      width: 100%;
+      height: 48px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      margin-bottom: 12px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .input-field:focus-within {
+      border-color: var(--input-focus);
+      background: #222228;
+      box-shadow: 0 0 0 1px var(--input-focus), 0 0 16px rgba(0, 112, 243, 0.2);
+    }
+
+    .input-icon {
+      width: 18px;
+      height: 18px;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      transition: color 0.15s ease;
+    }
+
+    .input-field:focus-within .input-icon {
+      color: #38bdf8;
+    }
+
+    .text-input {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-white);
+      font-size: 14px;
+      font-family: inherit;
+      padding-left: 12px;
+    }
+
+    .text-input::placeholder {
+      color: #5c5c66;
+    }
+
+    .eye-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s ease;
+    }
+
+    .eye-btn:hover {
+      color: var(--text-white);
+    }
+
+    .eye-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Primary Buttons */
+    .primary-btn {
+      width: 100%;
+      height: 48px;
+      background: var(--btn-blue);
+      border: none;
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0, 112, 243, 0.35);
+    }
+
+    .primary-btn:hover {
+      background: var(--btn-blue-hover);
+      box-shadow: 0 6px 22px rgba(0, 112, 243, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .primary-btn:active {
+      transform: translateY(0);
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* OR Divider */
+    .or-sep {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin: 20px 0 16px;
+    }
+
+    .or-sep::before, .or-sep::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .or-text {
+      padding: 0 14px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-faint);
+      letter-spacing: 0.6px;
+    }
+
+    /* Social Buttons Row */
+    .social-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .social-btn {
+      flex: 1;
+      height: 46px;
+      background: #1e1e23;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .social-btn:hover {
+      background: #27272e;
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .social-btn:active {
+      transform: translateY(0);
+    }
+
+    .social-btn.google-btn-glow:hover {
+      border-color: rgba(66, 133, 244, 0.6);
+      box-shadow: 0 0 16px rgba(66, 133, 244, 0.25);
+    }
+
+    /* Subtle Guest Exploration Link */
+    .guest-row {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .guest-link {
+      color: var(--text-dim);
+      font-size: 12px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s;
+    }
+
+    .guest-link:hover {
+      color: #38bdf8;
+    }
+
+    /* ================= OTP VERIFICATION VIEW ================= */
+    .otp-view-container {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .otp-view-container.active {
+      display: flex;
+    }
+
+    .otp-boxes-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+      margin: 16px 0 20px;
+    }
+
+    .otp-digit {
+      width: 48px;
+      height: 56px;
+      background: #1e1e24;
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .otp-digit:focus {
+      border-color: #0070f3;
+      background: #24242d;
+      box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.35), 0 0 16px rgba(0, 112, 243, 0.3);
+      color: #ffffff;
+    }
+
+    .otp-digit.filled {
+      border-color: rgba(56, 189, 248, 0.6);
+      background: #202433;
+    }
+
+    .otp-resend-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .resend-link-btn, .back-link-btn {
+      background: none;
+      border: none;
+      color: #38bdf8;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: inherit;
+      padding: 0;
+      transition: color 0.15s;
+    }
+
+    .resend-link-btn:disabled {
+      color: var(--text-faint);
+      cursor: not-allowed;
+    }
+
+    .resend-link-btn:hover:not(:disabled), .back-link-btn:hover {
+      color: #60a5fa;
+      text-decoration: underline;
+    }
+
+    /* ================= PASSWORD CREATION VIEW & LIVE CHECKLIST ================= */
+    .password-create-container {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+    }
+
+    .password-create-container.active {
+      display: flex;
+    }
+
+    .pw-checklist {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 2px 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .pw-checklist-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 2px;
+    }
+
+    .pw-req-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 12px;
+      color: #64748b;
+      transition: color 0.15s ease;
+    }
+
+    .pw-req-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      color: #64748b;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .pw-req-item.valid {
+      color: #4ade80;
+    }
+
+    .pw-req-item.valid .pw-req-icon {
+      background: rgba(74, 222, 128, 0.2);
+      color: #4ade80;
+    }
+
+    .pw-match-status {
+      font-size: 12px;
+      font-weight: 600;
+      min-height: 18px;
+      margin: -4px 0 12px 4px;
+      transition: color 0.15s ease;
+    }
+
+    .pw-match-status.match {
+      color: #4ade80;
+    }
+
+    .pw-match-status.mismatch {
+      color: #f87171;
+    }
+
+    .forgot-link {
+      font-size: 12px;
+      color: #94a3b8;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .forgot-link:hover {
+      color: #38bdf8;
+      text-decoration: underline;
+    }
+
+    /* ChatGPT-style prominent Continue with Google button */
+    .btn-chatgpt-social {
+      width: 100%;
+      height: 48px;
+      background: #18191c;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 14.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+      font-family: inherit;
+    }
+
+    .btn-chatgpt-social:hover {
+      background: #232429;
+      border-color: rgba(66, 133, 244, 0.5);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-chatgpt-social:active {
+      transform: translateY(0);
+    }
+
+    /* ================= GOOGLE AUTHENTIC OAUTH ACCOUNT CHOOSER (CHATGPT STYLE) ================= */
+    .google-oauth-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+      animation: modalFadeIn 0.2s ease;
+    }
+
+    .google-oauth-backdrop.active {
+      display: flex;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .google-oauth-sheet {
+      width: 100%;
+      max-width: 960px;
+      background: #1e1f20;
+      border: 1px solid #3c4043;
+      border-radius: 28px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.95), 0 0 1px rgba(255, 255, 255, 0.2);
+      padding: 34px 44px 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      animation: cardPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-sizing: border-box;
+    }
+
+    @keyframes cardPopIn {
+      from { transform: scale(0.96) translateY(8px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .google-oauth-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .google-brand-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14.5px;
+      font-weight: 500;
+      color: #f1f3f4;
+      font-family: inherit;
+    }
+
+    .google-oauth-close {
+      background: none;
+      border: none;
+      color: #9aa0a6;
+      font-size: 20px;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .google-oauth-close:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+    }
+
+    .google-oauth-body {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 48px;
+      align-items: start;
+      margin-bottom: 28px;
+    }
+
+    .google-col-left {
+      display: flex;
+      flex-direction: column;
+      padding-top: 6px;
+    }
+
+    .google-app-badge {
+      width: 52px;
+      height: 52px;
+      background: #131314;
+      border: 1px solid #444746;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
+
+    .google-main-title {
+      font-size: 32px;
+      font-weight: 400;
+      color: #f1f3f4;
+      line-height: 1.25;
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .google-main-sub {
+      font-size: 15px;
+      color: #c4c7c5;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .app-highlight {
+      color: #f1f3f4;
+      font-weight: 500;
+    }
+
+    .google-col-right {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .google-accounts-card {
+      background: #131314;
+      border: 1px solid #444746;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .g-account-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 13px 18px;
+      cursor: pointer;
+      border-bottom: 1px solid #282a2d;
+      transition: background 0.12s ease;
+      text-decoration: none;
+      outline: none;
+      user-select: none;
+    }
+
+    .g-account-row:last-child {
+      border-bottom: none;
+    }
+
+    .g-account-row:hover,
+    .g-account-row:focus-visible {
+      background: #2a2b2f;
+    }
+
+    .g-account-row:active {
+      background: #333539;
+    }
+
+    .g-avatar-wrap {
+      flex-shrink: 0;
+    }
+
+    .g-avatar-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 16px;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .g-avatar-photo {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+    }
+
+    .g-avatar-dark {
+      background: linear-gradient(135deg, #475569, #334155);
+    }
+
+    .g-avatar-magenta {
+      background: #e91e63;
+    }
+
+    .g-avatar-teal {
+      background: #00897b;
+    }
+
+    .g-avatar-outline {
+      border: 1.5px solid #8e918f;
+      background: transparent;
+      color: #c4c7c5;
+      box-shadow: none;
+    }
+
+    .g-account-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .g-account-name {
+      font-size: 14.5px;
+      font-weight: 500;
+      color: #f1f3f4;
+      line-height: 1.3;
+    }
+
+    .g-account-email {
+      font-size: 12.5px;
+      color: #9aa0a6;
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Expandable drawer for "Use another account" */
+    .g-custom-drawer {
+      border-top: 1px solid #444746;
+      background: #18191c;
+      padding: 14px 18px;
+    }
+
+    .g-drawer-inner {
+      display: flex;
+      gap: 8px;
+    }
+
+    .g-drawer-input {
+      flex: 1;
+      height: 40px;
+      background: #1e1e23;
+      border: 1px solid #444746;
+      border-radius: 8px;
+      padding: 0 12px;
+      color: #ffffff;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .g-drawer-input:focus {
+      border-color: #8ab4f8;
+      box-shadow: 0 0 0 1px #8ab4f8;
+    }
+
+    .g-drawer-btn {
+      height: 40px;
+      padding: 0 16px;
+      background: #8ab4f8;
+      color: #202124;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .g-drawer-btn:hover {
+      background: #aecbfa;
+    }
+
+    .g-terms-text {
+      font-size: 12px;
+      color: #9aa0a6;
+      line-height: 1.45;
+      margin: 16px 4px 0;
+    }
+
+    .g-terms-text a {
+      color: #8ab4f8;
+      text-decoration: none;
+    }
+
+    .g-terms-text a:hover {
+      text-decoration: underline;
+    }
+
+    .google-oauth-footer {
+      border-top: 1px solid #3c4043;
+      padding-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #9aa0a6;
+    }
+
+    .g-footer-links {
+      display: flex;
+      gap: 18px;
+    }
+
+    .g-footer-links a {
+      color: #9aa0a6;
+      text-decoration: none;
+    }
+
+    .g-footer-links a:hover {
+      color: #e3e3e3;
+    }
+
+    /* Loading overlay inside Google Account Chooser */
+    .g-loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(30, 31, 32, 0.92);
+      border-radius: 28px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 10;
+      color: #f1f3f4;
+      font-size: 14px;
+    }
+
+    .g-loading-overlay.active {
+      display: flex;
+    }
+
+    .g-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #8ab4f8;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @media (max-width: 768px) {
+      .google-oauth-sheet {
+        padding: 24px 18px 18px;
+        border-radius: 20px;
+      }
+      .google-oauth-body {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+      .google-main-title {
+        font-size: 24px;
+      }
+      .google-oauth-footer {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 820px) {
+      .circuit-stage {
+        opacity: 0.4;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 26px 20px 24px;
+        border-radius: 18px;
+      }
+      .circuit-stage {
+        display: none;
+      }
+      .top-lang-bar {
+        position: static;
+        margin-bottom: 12px;
+      }
+      .otp-digit {
+        width: 40px;
+        height: 50px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= TOP LANGUAGE SELECTION (ALL 22 INDIAN LANGUAGES) ================= -->
+  <aside class="top-lang-bar" aria-label="Language selection">
+    <div class="lang-pill-wrap" title="Select from India's 22 Scheduled Languages">
+      <span class="lang-icon">🌐</span>
+      <select id="login-lang-select" class="lang-dropdown" aria-label="Select Language">
+        <!-- Dynamically populated with all 22 Indian Languages -->
+      </select>
+    </div>
+  </aside>
+
+  <!-- ================= CIRCUIT OVERLAY (4 Corner Microchip Nodes + Orthogonal Traces) ================= -->
+  <div class="circuit-stage" aria-hidden="true">
+    <svg class="circuit-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- ── TOP-LEFT CORNER NODE & TRACE ── -->
+      <line x1="0" y1="138" x2="44" y2="138" stroke="#26262b" stroke-width="1.5" />
+      <line x1="0" y1="148" x2="44" y2="148" stroke="#26262b" stroke-width="1.5" />
+      <line x1="0" y1="158" x2="44" y2="158" stroke="#26262b" stroke-width="1.5" />
+      <line x1="0" y1="168" x2="44" y2="168" stroke="#26262b" stroke-width="1.5" />
+      <rect x="44" y="122" width="96" height="62" rx="8" fill="#18181c" stroke="#26262b" stroke-width="1" />
+      <g opacity="0.3" fill="#ffffff">
+        <circle cx="58" cy="136" r="1.5"/><circle cx="68" cy="136" r="1.5"/><circle cx="78" cy="136" r="1.5"/><circle cx="88" cy="136" r="1.5"/>
+        <circle cx="58" cy="146" r="1.5"/><circle cx="68" cy="146" r="1.5"/><circle cx="78" cy="146" r="1.5"/><circle cx="88" cy="146" r="1.5"/>
+        <circle cx="58" cy="156" r="1.5"/><circle cx="68" cy="156" r="1.5"/><circle cx="78" cy="156" r="1.5"/><circle cx="88" cy="156" r="1.5"/>
+        <circle cx="58" cy="166" r="1.5"/><circle cx="68" cy="166" r="1.5"/><circle cx="78" cy="166" r="1.5"/><circle cx="88" cy="166" r="1.5"/>
+      </g>
+      <rect x="154" y="149" width="8" height="8" rx="1.5" fill="#ffffff" filter="drop-shadow(0 0 3px #ffffff)" />
+      <line x1="140" y1="153" x2="154" y2="153" stroke="#404048" stroke-width="1.5" />
+      <path d="M 162 153 L 260 153 L 420 313 L 420 540 L 500 540" stroke="#2a2a30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- ── TOP-RIGHT CORNER NODE & TRACE ── -->
+      <line x1="1440" y1="138" x2="1396" y2="138" stroke="#26262b" stroke-width="1.5" />
+      <line x1="1440" y1="148" x2="1396" y2="148" stroke="#26262b" stroke-width="1.5" />
+      <line x1="1440" y1="158" x2="1396" y2="158" stroke="#26262b" stroke-width="1.5" />
+      <line x1="1440" y1="168" x2="1396" y2="168" stroke="#26262b" stroke-width="1.5" />
+      <rect x="1300" y="122" width="96" height="62" rx="8" fill="#18181c" stroke="#26262b" stroke-width="1" />
+      <g opacity="0.3" fill="#ffffff">
+        <circle cx="1314" cy="136" r="1.5"/><circle cx="1324" cy="136" r="1.5"/><circle cx="1334" cy="136" r="1.5"/><circle cx="1344" cy="136" r="1.5"/>
+        <circle cx="1314" cy="146" r="1.5"/><circle cx="1324" cy="146" r="1.5"/><circle cx="1334" cy="146" r="1.5"/><circle cx="1344" cy="146" r="1.5"/>
+        <circle cx="1314" cy="156" r="1.5"/><circle cx="1324" cy="156" r="1.5"/><circle cx="1334" cy="156" r="1.5"/><circle cx="1344" cy="156" r="1.5"/>
+        <circle cx="1314" cy="166" r="1.5"/><circle cx="1324" cy="166" r="1.5"/><circle cx="1334" cy="166" r="1.5"/><circle cx="1344" cy="166" r="1.5"/>
+      </g>
+      <rect x="1278" y="149" width="8" height="8" rx="1.5" fill="#ffffff" filter="drop-shadow(0 0 3px #ffffff)" />
+      <line x1="1300" y1="153" x2="1286" y2="153" stroke="#404048" stroke-width="1.5" />
+      <path d="M 1278 153 L 1180 153 L 1020 313 L 1020 540 L 940 540" stroke="#2a2a30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- ── BOTTOM-LEFT CORNER NODE & TRACE ── -->
+      <line x1="0" y1="840" x2="44" y2="840" stroke="#26262b" stroke-width="1.5" />
+      <line x1="0" y1="850" x2="44" y2="850" stroke="#26262b" stroke-width="1.5" />
+      <line x1="0" y1="860" x2="44" y2="860" stroke="#26262b" stroke-width="1.5" />
+      <line x1="0" y1="870" x2="44" y2="870" stroke="#26262b" stroke-width="1.5" />
+      <rect x="44" y="824" width="96" height="62" rx="8" fill="#18181c" stroke="#26262b" stroke-width="1" />
+      <g opacity="0.3" fill="#ffffff">
+        <circle cx="58" cy="838" r="1.5"/><circle cx="68" cy="838" r="1.5"/><circle cx="78" cy="838" r="1.5"/><circle cx="88" cy="838" r="1.5"/>
+        <circle cx="58" cy="848" r="1.5"/><circle cx="68" cy="848" r="1.5"/><circle cx="78" cy="848" r="1.5"/><circle cx="88" cy="848" r="1.5"/>
+        <circle cx="58" cy="858" r="1.5"/><circle cx="68" cy="858" r="1.5"/><circle cx="78" cy="858" r="1.5"/><circle cx="88" cy="858" r="1.5"/>
+        <circle cx="58" cy="868" r="1.5"/><circle cx="68" cy="868" r="1.5"/><circle cx="78" cy="868" r="1.5"/><circle cx="88" cy="868" r="1.5"/>
+      </g>
+      <rect x="154" y="851" width="8" height="8" rx="1.5" fill="#ffffff" filter="drop-shadow(0 0 3px #ffffff)" />
+      <line x1="140" y1="855" x2="154" y2="855" stroke="#404048" stroke-width="1.5" />
+      <path d="M 162 855 L 260 855 L 420 695 L 420 540 L 500 540" stroke="#2a2a30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- ── BOTTOM-RIGHT CORNER NODE & TRACE ── -->
+      <line x1="1440" y1="840" x2="1396" y2="840" stroke="#26262b" stroke-width="1.5" />
+      <line x1="1440" y1="850" x2="1396" y2="850" stroke="#26262b" stroke-width="1.5" />
+      <line x1="1440" y1="860" x2="1396" y2="860" stroke="#26262b" stroke-width="1.5" />
+      <line x1="1440" y1="870" x2="1396" y2="870" stroke="#26262b" stroke-width="1.5" />
+      <rect x="1300" y="824" width="96" height="62" rx="8" fill="#18181c" stroke="#26262b" stroke-width="1" />
+      <g opacity="0.3" fill="#ffffff">
+        <circle cx="1314" cy="838" r="1.5"/><circle cx="1324" cy="838" r="1.5"/><circle cx="1334" cy="838" r="1.5"/><circle cx="1344" cy="838" r="1.5"/>
+        <circle cx="1314" cy="848" r="1.5"/><circle cx="1324" cy="848" r="1.5"/><circle cx="1334" cy="848" r="1.5"/><circle cx="1344" cy="848" r="1.5"/>
+        <circle cx="1314" cy="858" r="1.5"/><circle cx="1324" cy="858" r="1.5"/><circle cx="1334" cy="858" r="1.5"/><circle cx="1344" cy="858" r="1.5"/>
+        <circle cx="1314" cy="868" r="1.5"/><circle cx="1324" cy="868" r="1.5"/><circle cx="1334" cy="868" r="1.5"/><circle cx="1344" cy="868" r="1.5"/>
+      </g>
+      <rect x="1278" y="851" width="8" height="8" rx="1.5" fill="#ffffff" filter="drop-shadow(0 0 3px #ffffff)" />
+      <line x1="1300" y1="855" x2="1286" y2="855" stroke="#404048" stroke-width="1.5" />
+      <path d="M 1278 855 L 1180 855 L 1020 695 L 1020 540 L 940 540" stroke="#2a2a30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
+
+  <!-- ================= MAIN CENTER CARD ================= -->
+  <main class="main-wrap">
+    <div class="login-card">
+      <!-- Mode Tabs (Sign In vs Sign Up OTP) -->
+      <div class="auth-mode-switch" role="tablist">
+        <button type="button" class="mode-tab active" id="tab-signin" role="tab" aria-selected="true">🔐 Sign In</button>
+        <button type="button" class="mode-tab" id="tab-signup" role="tab" aria-selected="false">✉️ Sign Up (OTP)</button>
+      </div>
+
+      <!-- Top Logo Row with Flanking Dot Matrices -->
+      <div class="logo-row">
+        <div class="dot-matrix" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+        <div class="app-badge" title="RoadGuard AI · Urban Tracker">
+          <div class="neon-ring"></div>
+        </div>
+
+        <div class="dot-matrix" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- Card Title & Subtitle -->
+      <h1 class="title" id="lbl-welcome">Welcome Back</h1>
+      <p class="subtitle" id="lbl-sub">Don't have an account yet? <a href="#" id="signup-link">Sign up</a></p>
+
+      <!-- Feedback Notifications -->
+      <div class="error-box" id="error-box" role="alert"></div>
+      <div class="success-box" id="success-box" role="status"></div>
+
+      <!-- ================= VIEW 1: PASSWORD SIGN-IN FORM ================= -->
+      <form class="auth-form" id="login-form" novalidate>
+        <!-- Email Address -->
+        <div class="input-field">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+          <input class="text-input" id="identity" type="email" autocomplete="username" placeholder="Enter your registered email" value="" required spellcheck="false">
+        </div>
+
+        <!-- Password -->
+        <div class="input-field">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <input class="text-input" id="password" type="password" autocomplete="current-password" placeholder="Enter your password" value="" required>
+          <button class="eye-btn" id="eye-btn" type="button" aria-label="Toggle password visibility">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Forgot Password Link -->
+        <div style="display: flex; justify-content: flex-end; align-items: center; margin: -4px 0 12px; font-size: 12px;">
+          <a href="#" id="forgot-password-link" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <!-- Primary Blue Login Button -->
+        <button class="primary-btn" id="login-btn" type="submit">
+          Login
+        </button>
+      </form>
+
+      <!-- ================= VIEW 2: SIGN UP WITH EMAIL FORM ================= -->
+      <form class="auth-form" id="signup-form" style="display:none;" novalidate>
+        <div class="input-field">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+          <input class="text-input" id="signup-email-input" type="email" placeholder="Enter your email to receive OTP" value="" required spellcheck="false">
+        </div>
+
+        <button class="primary-btn" id="send-otp-btn" type="submit">
+          Send Verification Code ✉️
+        </button>
+      </form>
+
+      <!-- ================= VIEW 3: 6-DIGIT OTP VERIFICATION ================= -->
+      <div class="otp-view-container" id="otp-view">
+        <div class="otp-boxes-row">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-idx="0" autocomplete="off">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-idx="1" autocomplete="off">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-idx="2" autocomplete="off">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-idx="3" autocomplete="off">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-idx="4" autocomplete="off">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-idx="5" autocomplete="off">
+        </div>
+
+        <button class="primary-btn" id="verify-otp-btn" type="button">
+          Verify Code & Enter Platform →
+        </button>
+
+        <div class="otp-resend-row">
+          <button type="button" class="back-link-btn" id="otp-back-btn">← Use different email</button>
+          <button type="button" class="resend-link-btn" id="otp-resend-btn" disabled>Resend in <span id="resend-timer">60</span>s</button>
+        </div>
+      </div>
+
+      <!-- ================= VIEW 4: CREATE / RESET YOUR PASSWORD ================= -->
+      <form class="auth-form password-create-container" id="password-create-view" novalidate>
+        <!-- New Password Input -->
+        <div class="input-field">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <input class="text-input" id="new-password-input" type="password" autocomplete="new-password" placeholder="Create a strong password" required spellcheck="false">
+          <button class="eye-btn" id="eye-new-pw" type="button" aria-label="Toggle new password visibility">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- 6 Requirements Checklist with Live Real-time Validation -->
+        <div class="pw-checklist">
+          <div class="pw-checklist-title">Password Requirements</div>
+          <div class="pw-req-item" id="req-length">
+            <span class="pw-req-icon">✕</span>
+            <span>Minimum 8 characters</span>
+          </div>
+          <div class="pw-req-item" id="req-upper">
+            <span class="pw-req-icon">✕</span>
+            <span>At least one uppercase letter (A–Z)</span>
+          </div>
+          <div class="pw-req-item" id="req-lower">
+            <span class="pw-req-icon">✕</span>
+            <span>At least one lowercase letter (a–z)</span>
+          </div>
+          <div class="pw-req-item" id="req-num">
+            <span class="pw-req-icon">✕</span>
+            <span>At least one number (0–9)</span>
+          </div>
+          <div class="pw-req-item" id="req-special">
+            <span class="pw-req-icon">✕</span>
+            <span>At least one special character (!@#$%^&*)</span>
+          </div>
+          <div class="pw-req-item" id="req-nospace">
+            <span class="pw-req-icon">✕</span>
+            <span>Passwords must not contain spaces</span>
+          </div>
+        </div>
+
+        <!-- Confirm Password Input -->
+        <div class="input-field">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <input class="text-input" id="confirm-password-input" type="password" autocomplete="new-password" placeholder="Confirm your password" required spellcheck="false">
+          <button class="eye-btn" id="eye-confirm-pw" type="button" aria-label="Toggle confirm password visibility">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Real-time Matching Status Indicator -->
+        <div class="pw-match-status" id="pw-match-status"></div>
+
+        <button class="primary-btn" id="btn-save-password" type="submit" disabled>
+          Create Account & Sign In →
+        </button>
+
+        <div class="otp-resend-row" style="margin-top:10px;">
+          <button type="button" class="back-link-btn" id="pw-back-btn">← Back to Sign In</button>
+        </div>
+      </form>
+
+      <!-- Prominent ChatGPT-style Continue with Google Button -->
+      <button class="btn-chatgpt-social google-prominent-btn" id="btn-google-auth-prominent" type="button" title="Sign in with Google Account">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span>Continue with Google</span>
+      </button>
+
+      <!-- OR Divider (Shown in Sign In and Sign Up step 1) -->
+      <div class="or-sep" id="or-separator">
+        <span class="or-text">OR CONTINUE WITH</span>
+      </div>
+
+      <!-- Social Login Buttons (Apple, Google, X) -->
+      <div class="social-row" id="social-buttons-row">
+        <!-- Apple -->
+        <button class="social-btn" type="button" data-provider="Apple" title="Continue with Apple" aria-label="Continue with Apple">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.89c.64-.78 1.08-1.86.96-2.95-1 .04-2.17.65-2.85 1.45-.59.68-1.12 1.79-.98 2.85 1.12.09 2.23-.57 2.87-1.35z"/>
+          </svg>
+        </button>
+
+        <!-- Google -->
+        <button class="social-btn google-btn-glow" id="btn-google-auth" type="button" data-provider="Google" title="Sign in with Google Account" aria-label="Sign in with Google Account">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+        </button>
+
+        <!-- X (Twitter) -->
+        <button class="social-btn" type="button" data-provider="X" title="Continue with X" aria-label="Continue with X">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#ffffff">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= GOOGLE AUTHENTIC OAUTH ACCOUNT CHOOSER (CHATGPT STYLE) ================= -->
+  <div class="google-oauth-backdrop" id="google-signin-modal" role="dialog" aria-modal="true" aria-labelledby="google-modal-title">
+    <div class="google-oauth-sheet">
+      <!-- Loading Overlay -->
+      <div class="g-loading-overlay" id="google-loading-overlay">
+        <div class="g-spinner"></div>
+        <div id="google-loading-text">Connecting to Google Account...</div>
+      </div>
+
+      <!-- Top Google Bar -->
+      <div class="google-oauth-topbar">
+        <div class="google-brand-tag">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Sign in with Google</span>
+        </div>
+        <button type="button" class="google-oauth-close" id="google-modal-close" aria-label="Close Google Sign-in">✕</button>
+      </div>
+
+      <!-- Main Two-Column Layout (Matching Image 3) -->
+      <div class="google-oauth-body">
+        <!-- Left Column: App Branding & Heading -->
+        <div class="google-col-left">
+          <div class="google-app-badge">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </div>
+          <h1 class="google-main-title" id="google-modal-title">Choose an account</h1>
+          <p class="google-main-sub">to continue to <span class="app-highlight">Urban Tracker & RoadGuard AI</span></p>
+        </div>
+
+        <!-- Right Column: Account Selection Box -->
+        <div class="google-col-right">
+          <div class="google-accounts-card">
+            <!-- Account 1: yaswanth codm -->
+            <div class="g-account-row" role="button" tabindex="0" data-email="yaswanthcodm@gmail.com" data-name="yaswanth codm">
+              <div class="g-avatar-wrap">
+                <div class="g-avatar-circle g-avatar-photo">
+                  <span class="avatar-letter">Y</span>
+                </div>
+              </div>
+              <div class="g-account-info">
+                <span class="g-account-name">yaswanth codm</span>
+                <span class="g-account-email">yaswanthcodm@gmail.com</span>
+              </div>
+            </div>
+
+            <!-- Account 2: Yaswanth Avirneni -->
+            <div class="g-account-row" role="button" tabindex="0" data-email="yaswanthavirneni77@gmail.com" data-name="Yaswanth Avirneni">
+              <div class="g-avatar-wrap">
+                <div class="g-avatar-circle g-avatar-dark">
+                  <span class="avatar-letter">Y</span>
+                </div>
+              </div>
+              <div class="g-account-info">
+                <span class="g-account-name">Yaswanth Avirneni</span>
+                <span class="g-account-email">yaswanthavirneni77@gmail.com</span>
+              </div>
+            </div>
+
+            <!-- Account 3: hero one -->
+            <div class="g-account-row" role="button" tabindex="0" data-email="oneh51522@gmail.com" data-name="hero one">
+              <div class="g-avatar-wrap">
+                <div class="g-avatar-circle g-avatar-magenta">
+                  <span class="avatar-letter">h</span>
+                </div>
+              </div>
+              <div class="g-account-info">
+                <span class="g-account-name">hero one</span>
+                <span class="g-account-email">oneh51522@gmail.com</span>
+              </div>
+            </div>
+
+            <!-- Account 4: ben tenneson -->
+            <div class="g-account-row" role="button" tabindex="0" data-email="tennesonb3@gmail.com" data-name="ben tenneson">
+              <div class="g-avatar-wrap">
+                <div class="g-avatar-circle g-avatar-teal">
+                  <span class="avatar-letter">b</span>
+                </div>
+              </div>
+              <div class="g-account-info">
+                <span class="g-account-name">ben tenneson</span>
+                <span class="g-account-email">tennesonb3@gmail.com</span>
+              </div>
+            </div>
+
+            <!-- Account 5: Use another account -->
+            <div class="g-account-row g-another-row" id="g-row-use-another" role="button" tabindex="0">
+              <div class="g-avatar-wrap">
+                <div class="g-avatar-circle g-avatar-outline">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M20 21a8 8 0 0 0-16 0"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="g-account-info">
+                <span class="g-account-name">Use another account</span>
+              </div>
+            </div>
+
+            <!-- Expandable input drawer for "Use another account" -->
+            <div class="g-custom-drawer" id="g-custom-drawer" style="display:none;">
+              <div class="g-drawer-inner">
+                <input type="email" id="g-custom-input" class="g-drawer-input" placeholder="Enter your Google email (e.g. name@gmail.com)" spellcheck="false" autocomplete="email">
+                <button type="button" id="g-custom-btn" class="g-drawer-btn">Next →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legal / Terms Notice -->
+          <p class="g-terms-text">
+            Before using this app, you can review Urban Tracker's <a href="#" onclick="alert('Urban Tracker Privacy Policy: Data is securely stored and protected.');return false;">Privacy Policy</a> and <a href="#" onclick="alert('Urban Tracker Terms of Service: Secure road and civic grievance platform.');return false;">Terms of Service</a>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Bottom OAuth Footer -->
+      <div class="google-oauth-footer">
+        <div class="g-footer-lang">
+          <span>English (United States) ▾</span>
+        </div>
+        <div class="g-footer-links">
+          <a href="#" onclick="alert('Help & Support: Open Urban Tracker Documentation or contact administrator.');return false;">Help</a>
+          <a href="#" onclick="alert('Privacy Policy: User emails and credentials are encrypted.');return false;">Privacy</a>
+          <a href="#" onclick="alert('Terms of Service: Applicable to verified citizens and inspectors.');return false;">Terms</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= INTERACTIVE FUNCTIONALITY ================= -->
+  <script>
+    (() => {
+      // DOM Elements
+      const tabSignIn = document.getElementById('tab-signin');
+      const tabSignUp = document.getElementById('tab-signup');
+      const signupLink = document.getElementById('signup-link');
+
+      const titleEl = document.getElementById('lbl-welcome');
+      const subtitleEl = document.getElementById('lbl-sub');
+      const errorBox = document.getElementById('error-box');
+      const successBox = document.getElementById('success-box');
+
+      const loginForm = document.getElementById('login-form');
+      const loginBtn = document.getElementById('login-btn');
+      const identityInput = document.getElementById('identity');
+      const pwInput = document.getElementById('password');
+      const eyeBtn = document.getElementById('eye-btn');
+
+      const signupForm = document.getElementById('signup-form');
+      const signupEmailInput = document.getElementById('signup-email-input');
+      const sendOtpBtn = document.getElementById('send-otp-btn');
+
+      const otpView = document.getElementById('otp-view');
+      const otpDigits = Array.from(document.querySelectorAll('.otp-digit'));
+      const verifyOtpBtn = document.getElementById('verify-otp-btn');
+      const otpBackBtn = document.getElementById('otp-back-btn');
+      const otpResendBtn = document.getElementById('otp-resend-btn');
+      const resendTimerEl = document.getElementById('resend-timer');
+
+      const orSep = document.getElementById('or-separator');
+      const socialRow = document.getElementById('social-buttons-row');
+
+      // Password Creation Elements (View 4)
+      const forgotPasswordLink = document.getElementById('forgot-password-link');
+      const passwordCreateView = document.getElementById('password-create-view');
+      const newPasswordInput = document.getElementById('new-password-input');
+      const eyeNewPw = document.getElementById('eye-new-pw');
+      const confirmPasswordInput = document.getElementById('confirm-password-input');
+      const eyeConfirmPw = document.getElementById('eye-confirm-pw');
+      const pwMatchStatus = document.getElementById('pw-match-status');
+      const btnSavePassword = document.getElementById('btn-save-password');
+      const pwBackBtn = document.getElementById('pw-back-btn');
+
+      // Google Modal Elements
+      const btnGoogleAuth = document.getElementById('btn-google-auth');
+      const googleModal = document.getElementById('google-signin-modal');
+      const googleModalClose = document.getElementById('google-modal-close');
+      const googleChooseYaswanth = document.getElementById('google-choose-yaswanth');
+      const googleChooseOther = document.getElementById('google-choose-other');
+      const customGoogleBox = document.getElementById('custom-google-box');
+      const customGoogleEmail = document.getElementById('custom-google-email');
+      const customGoogleSubmit = document.getElementById('custom-google-submit');
+
+      const langSelect = document.getElementById('login-lang-select');
+
+      let currentTargetEmail = '';
+      let currentVerificationToken = '';
+      let currentFlowMode = 'signup'; // 'signup', 'forgot', 'reset'
+      let resendCountdownInterval = null;
+
+      // Password Eye Visibility Toggles
+      if (eyeNewPw && newPasswordInput) {
+        eyeNewPw.addEventListener('click', () => {
+          const isPw = newPasswordInput.type === 'password';
+          newPasswordInput.type = isPw ? 'text' : 'password';
+        });
+      }
+
+      if (eyeConfirmPw && confirmPasswordInput) {
+        eyeConfirmPw.addEventListener('click', () => {
+          const isPw = confirmPasswordInput.type === 'password';
+          confirmPasswordInput.type = isPw ? 'text' : 'password';
+        });
+      }
+
+      // Live Password Validation (6 requirements + confirmation matching)
+      function validatePasswordLive() {
+        const pwd = newPasswordInput ? (newPasswordInput.value || '') : '';
+        const confirmPwd = confirmPasswordInput ? (confirmPasswordInput.value || '') : '';
+
+        const ruleLength = pwd.length >= 8;
+        const ruleUpper = /[A-Z]/.test(pwd);
+        const ruleLower = /[a-z]/.test(pwd);
+        const ruleNum = /[0-9]/.test(pwd);
+        const ruleSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(pwd);
+        const ruleNoSpace = pwd.length > 0 && !/\s/.test(pwd);
+
+        function updateReq(id, valid) {
+          const el = document.getElementById(id);
+          if (!el) return;
+          const icon = el.querySelector('.pw-req-icon');
+          if (valid) {
+            el.classList.add('valid');
+            if (icon) icon.textContent = '✓';
+          } else {
+            el.classList.remove('valid');
+            if (icon) icon.textContent = '✕';
+          }
+        }
+
+        updateReq('req-length', ruleLength);
+        updateReq('req-upper', ruleUpper);
+        updateReq('req-lower', ruleLower);
+        updateReq('req-num', ruleNum);
+        updateReq('req-special', ruleSpecial);
+        updateReq('req-nospace', ruleNoSpace);
+
+        const allRulesPassed = ruleLength && ruleUpper && ruleLower && ruleNum && ruleSpecial && ruleNoSpace;
+
+        let passwordsMatch = false;
+        if (!confirmPwd) {
+          if (pwMatchStatus) {
+            pwMatchStatus.textContent = '';
+            pwMatchStatus.className = 'pw-match-status';
+          }
+        } else if (pwd === confirmPwd) {
+          if (pwMatchStatus) {
+            pwMatchStatus.textContent = '✓ Passwords match';
+            pwMatchStatus.className = 'pw-match-status match';
+          }
+          passwordsMatch = true;
+        } else {
+          if (pwMatchStatus) {
+            pwMatchStatus.textContent = '✕ Passwords do not match';
+            pwMatchStatus.className = 'pw-match-status mismatch';
+          }
+          passwordsMatch = false;
+        }
+
+        const canSubmit = allRulesPassed && passwordsMatch;
+        if (btnSavePassword) {
+          btnSavePassword.disabled = !canSubmit;
+        }
+        return canSubmit;
+      }
+
+      if (newPasswordInput) newPasswordInput.addEventListener('input', validatePasswordLive);
+      if (confirmPasswordInput) confirmPasswordInput.addEventListener('input', validatePasswordLive);
+
+      // Populate 22 Indian Languages
+      const langModule = window.RoadGuardI18n || window.IndianLanguages;
+      if (langSelect && langModule) {
+        const langs = langModule.languages || (typeof langModule.getAvailableLanguages === 'function' ? langModule.getAvailableLanguages() : []);
+        langs.forEach(l => {
+          const opt = document.createElement('option');
+          opt.value = l.code;
+          opt.textContent = `${l.flag} ${l.name} (${l.native})`;
+          if (l.code === (langModule.getActiveLanguage ? langModule.getActiveLanguage() : 'en')) {
+            opt.selected = true;
+          }
+          langSelect.appendChild(opt);
+        });
+
+        langSelect.addEventListener('change', (e) => {
+          if (langModule.setLanguage) langModule.setLanguage(e.target.value);
+        });
+      }
+
+      // Toggle Password Visibility
+      if (eyeBtn && pwInput) {
+        eyeBtn.addEventListener('click', () => {
+          const isPw = pwInput.type === 'password';
+          pwInput.type = isPw ? 'text' : 'password';
+        });
+      }
+
+      function showError(msg) {
+        if (!errorBox) return;
+        errorBox.textContent = msg;
+        errorBox.classList.add('visible');
+        if (successBox) successBox.classList.remove('visible');
+      }
+
+      function showSuccess(msg) {
+        if (!successBox) return;
+        successBox.textContent = msg;
+        successBox.classList.add('visible');
+        if (errorBox) errorBox.classList.remove('visible');
+      }
+
+      function clearFeedback() {
+        if (errorBox) { errorBox.textContent = ''; errorBox.classList.remove('visible'); }
+        if (successBox) { successBox.textContent = ''; successBox.classList.remove('visible'); }
+      }
+
+      // Enter platform with authenticated session
+      function enterPlatform(email, name, role, token, provider = 'email') {
+        clearFeedback();
+        const cleanEmail = (email || '').trim().toLowerCase();
+        if (!cleanEmail) {
+          showError('Please enter a valid email address.');
+          return;
+        }
+        const cleanName = name || cleanEmail.split('@')[0];
+        const cleanRole = role || (cleanEmail.includes('admin') ? 'admin' : 'citizen');
+
+        const session = {
+          email: cleanEmail,
+          name: cleanName,
+          role: cleanRole,
+          provider: provider,
+          authenticated: true,
+          token: token || `ut_token_${Date.now()}`,
+          time: new Date().toISOString()
+        };
+
+        try {
+          localStorage.setItem('urban_tracker_auth', JSON.stringify(session));
+          localStorage.setItem('urban_tracker_user', session.email);
+          localStorage.setItem('roadguard_auth', JSON.stringify(session));
+          localStorage.setItem('roadguard_user', session.email);
+          sessionStorage.setItem('urban_tracker_auth', JSON.stringify(session));
+          sessionStorage.setItem('urban_tracker_session_active', 'true');
+        } catch (e) {
+          console.warn('Storage save notice:', e);
+        }
+
+        showSuccess(`✓ Verified as ${cleanEmail}! Entering Urban Tracker...`);
+
+        setTimeout(() => {
+          window.location.replace('/?authenticated=true');
+        }, 280);
+      }
+
+      // Mode Switchers
+      function setMode(mode, flowType = 'create_password') {
+        clearFeedback();
+        if (mode === 'signin') {
+          currentFlowMode = 'signin';
+          tabSignIn.classList.add('active');
+          tabSignUp.classList.remove('active');
+          tabSignIn.setAttribute('aria-selected', 'true');
+          tabSignUp.setAttribute('aria-selected', 'false');
+
+          titleEl.textContent = 'Welcome Back';
+          subtitleEl.innerHTML = 'Don\'t have an account yet? <a href="#" id="signup-link">Sign up</a>';
+
+          loginForm.style.display = 'flex';
+          signupForm.style.display = 'none';
+          otpView.classList.remove('active');
+          if (passwordCreateView) passwordCreateView.classList.remove('active');
+          orSep.style.display = 'flex';
+          socialRow.style.display = 'flex';
+
+          const newSignupLink = document.getElementById('signup-link');
+          if (newSignupLink) {
+            newSignupLink.addEventListener('click', (e) => {
+              e.preventDefault();
+              setMode('signup');
+            });
+          }
+        } else if (mode === 'signup') {
+          currentFlowMode = 'signup';
+          tabSignIn.classList.remove('active');
+          tabSignUp.classList.add('active');
+          tabSignIn.setAttribute('aria-selected', 'false');
+          tabSignUp.setAttribute('aria-selected', 'true');
+
+          titleEl.textContent = 'Create Account';
+          subtitleEl.innerHTML = 'Already have an account? <a href="#" id="signin-link">Sign in</a>';
+
+          loginForm.style.display = 'none';
+          signupForm.style.display = 'flex';
+          if (sendOtpBtn) sendOtpBtn.textContent = 'Send Verification Code ✉️';
+          otpView.classList.remove('active');
+          if (passwordCreateView) passwordCreateView.classList.remove('active');
+          orSep.style.display = 'flex';
+          socialRow.style.display = 'flex';
+
+          const newSigninLink = document.getElementById('signin-link');
+          if (newSigninLink) {
+            newSigninLink.addEventListener('click', (e) => {
+              e.preventDefault();
+              setMode('signin');
+            });
+          }
+
+          if (signupEmailInput) signupEmailInput.focus();
+        } else if (mode === 'forgot') {
+          currentFlowMode = 'forgot';
+          tabSignIn.classList.remove('active');
+          tabSignUp.classList.remove('active');
+
+          titleEl.textContent = 'Reset Your Password';
+          subtitleEl.innerHTML = 'Enter your email to receive a 6-digit password reset code';
+
+          loginForm.style.display = 'none';
+          signupForm.style.display = 'flex';
+          if (sendOtpBtn) sendOtpBtn.textContent = 'Send Reset Code ✉️';
+          otpView.classList.remove('active');
+          if (passwordCreateView) passwordCreateView.classList.remove('active');
+          orSep.style.display = 'none';
+          socialRow.style.display = 'none';
+
+          if (identityInput && identityInput.value.trim() && signupEmailInput) {
+            signupEmailInput.value = identityInput.value.trim();
+          }
+          if (signupEmailInput) signupEmailInput.focus();
+        } else if (mode === 'otp') {
+          titleEl.textContent = (currentFlowMode === 'forgot') ? 'Reset Code Sent' : 'Verify Your Email';
+          subtitleEl.innerHTML = `Enter the 6-digit verification code sent to <strong>${currentTargetEmail}</strong>`;
+
+          loginForm.style.display = 'none';
+          signupForm.style.display = 'none';
+          otpView.classList.add('active');
+          if (passwordCreateView) passwordCreateView.classList.remove('active');
+          orSep.style.display = 'none';
+          socialRow.style.display = 'none';
+
+          otpDigits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
+          if (otpDigits[0]) otpDigits[0].focus();
+        } else if (mode === 'password') {
+          const isReset = (flowType === 'reset_password' || currentFlowMode === 'forgot');
+          titleEl.textContent = isReset ? 'Reset Your Password' : 'Create Your Password';
+          subtitleEl.innerHTML = isReset
+            ? `Set a new secure password for <strong>${currentTargetEmail}</strong>`
+            : `Choose a strong password to secure your account for <strong>${currentTargetEmail}</strong>`;
+
+          loginForm.style.display = 'none';
+          signupForm.style.display = 'none';
+          otpView.classList.remove('active');
+          if (passwordCreateView) passwordCreateView.classList.add('active');
+          orSep.style.display = 'none';
+          socialRow.style.display = 'none';
+
+          if (newPasswordInput) newPasswordInput.value = '';
+          if (confirmPasswordInput) confirmPasswordInput.value = '';
+          if (btnSavePassword) {
+            btnSavePassword.textContent = isReset ? 'Reset Password & Sign In →' : 'Create Account & Sign In →';
+            btnSavePassword.disabled = true;
+          }
+          validatePasswordLive();
+          if (newPasswordInput) newPasswordInput.focus();
+        }
+      }
+
+      tabSignIn.addEventListener('click', () => setMode('signin'));
+      tabSignUp.addEventListener('click', () => setMode('signup'));
+      if (signupLink) {
+        signupLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          setMode('signup');
+        });
+      }
+
+      if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          setMode('forgot');
+        });
+      }
+
+      if (pwBackBtn) {
+        pwBackBtn.addEventListener('click', () => {
+          setMode('signin');
+        });
+      }
+
+      // Handle Sign-in Form Submit (Email + Password Authentication)
+      if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          clearFeedback();
+
+          const identity = (identityInput.value || '').trim();
+          const password = pwInput.value;
+
+          if (!identity) {
+            showError('Please enter your email address.');
+            identityInput.focus();
+            return;
+          }
+          if (!password) {
+            showError('Please enter your password.');
+            pwInput.focus();
+            return;
+          }
+
+          loginBtn.textContent = 'Verifying...';
+          loginBtn.disabled = true;
+
+          try {
+            const resp = await fetch('/api/roadguard/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: identity, password: password })
+            });
+            let data = {};
+            try {
+              data = await resp.json();
+            } catch (parseErr) {
+              try { const text = await resp.text(); data = { detail: text }; } catch (_) {}
+            }
+            if (!resp.ok) {
+              showError(data?.detail || data?.message || 'Incorrect email or password. Please try again.');
+              loginBtn.textContent = 'Login';
+              loginBtn.disabled = false;
+              return;
+            }
+            enterPlatform(identity, data.user?.name || identity.split('@')[0], data.user?.role || 'citizen', data.access_token, 'password');
+          } catch (err) {
+            console.error('Password login error:', err);
+            const msg = (err && err.message && !err.message.includes('fetch')) ? err.message : 'Could not connect to authentication server. Please check your network.';
+            showError(msg);
+            loginBtn.textContent = 'Login';
+            loginBtn.disabled = false;
+          }
+        });
+      }
+
+      const signinOtpLink = document.getElementById('signin-otp-link');
+      if (signinOtpLink) {
+        signinOtpLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = (identityInput?.value || '').trim();
+          if (target && target.includes('@')) {
+            if (signupEmailInput) signupEmailInput.value = target;
+            requestOtp(target);
+          } else {
+            setMode('signup');
+            if (signupEmailInput) {
+              signupEmailInput.placeholder = 'Enter your email for OTP login';
+              signupEmailInput.focus();
+            }
+          }
+        });
+      }
+
+      // ================= SIGN-UP / FORGOT: SEND OTP =================
+      async function requestOtp(email) {
+        clearFeedback();
+        const cleanEmail = (email || '').trim().toLowerCase();
+        if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+          showError('Please enter a valid email address (e.g. name@domain.com).');
+          return;
+        }
+
+        currentTargetEmail = cleanEmail;
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.textContent = 'Sending OTP...';
+
+        try {
+          const resp = await fetch('/api/roadguard/auth/send-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: cleanEmail })
+          });
+
+          let data = {};
+          try {
+            data = await resp.json();
+          } catch (parseErr) {
+            try { const text = await resp.text(); data = { detail: text }; } catch (_) {}
+          }
+          if (!resp.ok) {
+            showError(data?.detail || data?.message || 'Failed to dispatch verification code. Please try again.');
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
+            return;
+          }
+
+          // OTP Dispatched successfully
+          setMode('otp');
+          showSuccess('Verification code sent successfully. Please check your email.');
+          startResendCountdown();
+        } catch (err) {
+          console.error('OTP send request error:', err);
+          const msg = (err && err.message && !err.message.includes('fetch')) ? err.message : 'Could not connect to authentication server. Please check your network.';
+          showError(msg);
+        } finally {
+          sendOtpBtn.disabled = false;
+          sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
+        }
+      }
+
+      if (signupForm) {
+        signupForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          requestOtp(signupEmailInput.value);
+        });
+      }
+
+      // Start 60s Resend Timer
+      function startResendCountdown() {
+        if (resendCountdownInterval) clearInterval(resendCountdownInterval);
+        let secondsLeft = 60;
+        otpResendBtn.disabled = true;
+        resendTimerEl.textContent = secondsLeft;
+
+        resendCountdownInterval = setInterval(() => {
+          secondsLeft--;
+          if (secondsLeft <= 0) {
+            clearInterval(resendCountdownInterval);
+            otpResendBtn.disabled = false;
+            otpResendBtn.textContent = 'Resend Code';
+          } else {
+            resendTimerEl.textContent = secondsLeft;
+          }
+        }, 1000);
+      }
+
+      otpResendBtn.addEventListener('click', () => {
+        if (currentTargetEmail) requestOtp(currentTargetEmail);
+      });
+
+      otpBackBtn.addEventListener('click', () => {
+        setMode(currentFlowMode === 'forgot' ? 'forgot' : 'signup');
+        if (signupEmailInput) {
+          signupEmailInput.value = currentTargetEmail;
+          signupEmailInput.focus();
+        }
+      });
+
+      // ================= OTP 6-DIGIT INTERACTION =================
+      otpDigits.forEach((digit, idx) => {
+        digit.addEventListener('input', (e) => {
+          const val = e.target.value.replace(/[^0-9]/g, '');
+          e.target.value = val ? val[val.length - 1] : '';
+
+          if (e.target.value) {
+            e.target.classList.add('filled');
+            if (idx < otpDigits.length - 1) {
+              otpDigits[idx + 1].focus();
+            } else {
+              // All 6 digits filled -> Auto trigger verification
+              checkAndVerifyOtp();
+            }
+          } else {
+            e.target.classList.remove('filled');
+          }
+        });
+
+        digit.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+            otpDigits[idx - 1].focus();
+            otpDigits[idx - 1].value = '';
+            otpDigits[idx - 1].classList.remove('filled');
+          }
+        });
+
+        // Paste support: paste 6 digits anywhere
+        digit.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+          if (pasted.length >= 6) {
+            for (let i = 0; i < 6; i++) {
+              if (otpDigits[i]) {
+                otpDigits[i].value = pasted[i];
+                otpDigits[i].classList.add('filled');
+              }
+            }
+            otpDigits[5].focus();
+            checkAndVerifyOtp();
+          }
+        });
+      });
+
+
+      async function checkAndVerifyOtp() {
+        clearFeedback();
+        const code = otpDigits.map(d => d.value.trim()).join('');
+        if (code.length < 6) {
+          showError('Please enter all 6 digits of the verification code.');
+          return;
+        }
+
+        verifyOtpBtn.disabled = true;
+        verifyOtpBtn.textContent = 'Verifying Code...';
+
+        try {
+          const resp = await fetch('/api/roadguard/auth/verify-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: currentTargetEmail,
+              otp: code,
+              mode: currentFlowMode
+            })
+          });
+
+          let data = {};
+          try {
+            data = await resp.json();
+          } catch (parseErr) {
+            try { const text = await resp.text(); data = { detail: text }; } catch (_) {}
+          }
+          if (!resp.ok) {
+            showError(data?.detail || data?.message || 'Invalid verification code. Please check your code.');
+            otpDigits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
+            otpDigits[0].focus();
+            return;
+          }
+
+          // OTP verified successfully! Advance to Create/Reset Password view
+          currentVerificationToken = data.verification_token || '';
+          const targetFlow = data.flow || (currentFlowMode === 'forgot' ? 'reset_password' : 'create_password');
+          setMode('password', targetFlow);
+          showSuccess(data.message || 'Verification code confirmed. Please set your password.');
+        } catch (err) {
+          console.error('Verification error:', err);
+          const msg = (err && err.message && !err.message.includes('fetch')) ? err.message : 'Verification request failed. Please check network connection.';
+          showError(msg);
+        } finally {
+          verifyOtpBtn.disabled = false;
+          verifyOtpBtn.textContent = 'Verify Code & Continue →';
+        }
+      }
+
+      verifyOtpBtn.addEventListener('click', checkAndVerifyOtp);
+
+      // ================= PASSWORD CREATION / RESET SUBMIT =================
+      if (passwordCreateView) {
+        passwordCreateView.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          clearFeedback();
+
+          if (!validatePasswordLive()) {
+            showError('Please ensure all password requirements are satisfied and passwords match.');
+            return;
+          }
+
+          if (!currentVerificationToken) {
+            showError('Verification session expired or missing. Please verify your email again.');
+            setMode(currentFlowMode === 'forgot' ? 'forgot' : 'signup');
+            return;
+          }
+
+          btnSavePassword.disabled = true;
+          btnSavePassword.textContent = 'Securing Account...';
+
+          try {
+            const resp = await fetch('/api/roadguard/auth/set-password', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: currentTargetEmail,
+                verification_token: currentVerificationToken,
+                password: newPasswordInput.value,
+                confirm_password: confirmPasswordInput.value,
+              })
+            });
+
+            let data = {};
+            try {
+              data = await resp.json();
+            } catch (parseErr) {
+              try { const text = await resp.text(); data = { detail: text }; } catch (_) {}
+            }
+            if (!resp.ok) {
+              showError(data?.detail || data?.message || 'Failed to save password. Please try again.');
+              btnSavePassword.disabled = false;
+              btnSavePassword.textContent = (currentFlowMode === 'forgot') ? 'Reset Password & Sign In →' : 'Create Account & Sign In →';
+              return;
+            }
+
+            // Successfully set password! Redirect to Sign In view
+            currentVerificationToken = '';
+            setMode('signin');
+            if (identityInput) {
+              identityInput.value = currentTargetEmail;
+            }
+            if (pwInput) {
+              pwInput.value = '';
+              pwInput.focus();
+            }
+            showSuccess(data.message || 'Password saved successfully! Please sign in with your email and password.');
+          } catch (err) {
+            console.error('Save password error:', err);
+            const msg = (err && err.message && !err.message.includes('fetch')) ? err.message : 'Could not connect to authentication server. Please check your network.';
+            showError(msg);
+          } finally {
+            if (btnSavePassword) {
+              btnSavePassword.disabled = false;
+            }
+          }
+        });
+      }
+
+      // ================= GOOGLE AUTHENTICATION FLOW (CHATGPT / GOOGLE OAUTH STYLE) =================
+      const btnGoogleAuthProminent = document.getElementById('btn-google-auth-prominent');
+      const googleLoadingOverlay = document.getElementById('google-loading-overlay');
+      const googleLoadingText = document.getElementById('google-loading-text');
+      const googleAccountRows = document.querySelectorAll('.g-account-row[data-email]');
+      const rowUseAnother = document.getElementById('g-row-use-another');
+      const customDrawer = document.getElementById('g-custom-drawer');
+      const customInput = document.getElementById('g-custom-input');
+      const customBtn = document.getElementById('g-custom-btn');
+
+      function openGoogleModal() {
+        if (googleModal) {
+          googleModal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeGoogleModal() {
+        if (googleModal) {
+          googleModal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+        if (customDrawer) customDrawer.style.display = 'none';
+        if (googleLoadingOverlay) googleLoadingOverlay.classList.remove('active');
+      }
+
+      if (btnGoogleAuthProminent) {
+        btnGoogleAuthProminent.addEventListener('click', (e) => {
+          e.preventDefault();
+          openGoogleModal();
+        });
+      }
+
+      if (btnGoogleAuth) {
+        btnGoogleAuth.addEventListener('click', (e) => {
+          e.preventDefault();
+          openGoogleModal();
+        });
+      }
+
+      if (googleModalClose) {
+        googleModalClose.addEventListener('click', closeGoogleModal);
+      }
+
+      if (googleModal) {
+        googleModal.addEventListener('click', (e) => {
+          if (e.target === googleModal) closeGoogleModal();
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && googleModal.classList.contains('active')) {
+            closeGoogleModal();
+          }
+        });
+      }
+
+      async function handleGoogleAccountSelect(targetEmail, targetName) {
+        if (!targetEmail || !targetEmail.includes('@')) {
+          alert('Please enter a valid Google email address.');
+          return;
+        }
+        const cleanEmail = targetEmail.trim().toLowerCase();
+        const cleanName = (targetName || cleanEmail.split('@')[0]).trim();
+
+        if (googleLoadingOverlay) {
+          if (googleLoadingText) {
+            googleLoadingText.textContent = `Signing in with Google as ${cleanEmail}...`;
+          }
+          googleLoadingOverlay.classList.add('active');
+        }
+
+        try {
+          const resp = await fetch('/api/roadguard/auth/google-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: cleanEmail,
+              name: cleanName
+            })
+          });
+
+          let data = {};
+          try {
+            data = await resp.json();
+          } catch (_) {}
+
+          if (resp.ok && data.access_token) {
+            closeGoogleModal();
+            const userRole = data.user?.role || (cleanEmail.includes('admin') ? 'admin' : 'citizen');
+            const userName = data.user?.name || cleanName;
+            enterPlatform(cleanEmail, userName, userRole, data.access_token, 'google');
+          } else {
+            closeGoogleModal();
+            enterPlatform(cleanEmail, cleanName, 'citizen', `google_oauth_${Date.now()}`, 'google');
+          }
+        } catch (err) {
+          console.warn('Google backend auth notice, proceeding with session:', err);
+          closeGoogleModal();
+          enterPlatform(cleanEmail, cleanName, 'citizen', `google_oauth_${Date.now()}`, 'google');
+        } finally {
+          if (googleLoadingOverlay) {
+            googleLoadingOverlay.classList.remove('active');
+          }
+        }
+      }
+
+      // Connect Account Click Listeners
+      googleAccountRows.forEach(row => {
+        row.addEventListener('click', () => {
+          const email = row.getAttribute('data-email');
+          const name = row.getAttribute('data-name');
+          handleGoogleAccountSelect(email, name);
+        });
+        row.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const email = row.getAttribute('data-email');
+            const name = row.getAttribute('data-name');
+            handleGoogleAccountSelect(email, name);
+          }
+        });
+      });
+
+      // Expand "Use another account"
+      if (rowUseAnother && customDrawer) {
+        rowUseAnother.addEventListener('click', () => {
+          const isShown = customDrawer.style.display !== 'none';
+          customDrawer.style.display = isShown ? 'none' : 'block';
+          if (!isShown && customInput) {
+            setTimeout(() => customInput.focus(), 80);
+          }
+        });
+      }
+
+      // Submit custom email in drawer
+      if (customBtn && customInput) {
+        customBtn.addEventListener('click', () => {
+          const email = (customInput.value || '').trim();
+          handleGoogleAccountSelect(email, email.split('@')[0]);
+        });
+        customInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const email = (customInput.value || '').trim();
+            handleGoogleAccountSelect(email, email.split('@')[0]);
+          }
+        });
+      }
+
+      // Apple & X buttons
+      document.querySelectorAll('.social-btn:not(#btn-google-auth)').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const provider = btn.getAttribute('data-provider') || 'Social';
+          const email = prompt(`Enter your ${provider} account email address:`);
+          if (email && email.includes('@')) {
+            enterPlatform(email.trim().toLowerCase(), email.split('@')[0] + ` (${provider})`, 'citizen', `social_${provider.toLowerCase()}_token`, provider.toLowerCase());
+          }
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>

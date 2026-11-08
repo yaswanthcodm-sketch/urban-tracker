@@ -32,6 +32,11 @@
     "visualization"
   ],
   "scripts": {
+    "start": "./start_fullstack.sh",
+    "fullstack": "./start_fullstack.sh",
+    "dev:fullstack": "./start_fullstack.sh --mode dev",
+    "activate:all": "./activate_all_links.sh",
+    "links": "./activate_all_links.sh",
     "doctor": "node scripts/setup-doctor.mjs",
     "dev": "vite",
     "dev:secure": "./scripts/dev-secure.sh",
@@ -43,6 +48,7 @@
     "qa:map-source-tray": "node scripts/qa-map-source-tray.mjs"
   },
   "dependencies": {
+    "@emailjs/nodejs": "^5.0.2",
     "@mapbox/vector-tile": "^3.0.0",
     "cesium": "^1.124.0",
     "egm96-universal": "^1.1.1",

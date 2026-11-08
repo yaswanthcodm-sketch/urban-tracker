@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoadGuard AI — Smart Road Intelligence & Repair Tracking System</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/static/index.html" class="brand">
+      <div class="brand-logo">🛡️</div>
+      <div class="brand-text">
+        <h1>RoadGuard AI</h1>
+        <p>Road Intelligence & Repair Tracking</p>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/static/index.html" class="active">Home</a></li>
+      <li><a href="/static/dashboard.html">Live Dashboard</a></li>
+      <li><a href="/static/detect.html">AI Detection</a></li>
+      <li><a href="/static/cameras.html">CCTV Feeds</a></li>
+      <li><a href="/static/satellite.html">Satellite Screening</a></li>
+      <li><a href="/static/map.html">Damage Map</a></li>
+      <li><a href="/static/report.html">Report Damage</a></li>
+      <li><a href="/static/track.html">Track Complaint</a></li>
+      <li><a href="/static/admin.html">Officer Portal</a></li>
+    </ul>
+
+    <div class="demo-mode-pill" title="System operating in Academic Demonstration Mode">
+      Demo Simulation Mode
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-left">
+        <div class="hero-badge">
+          <span>⚡</span> Next-Gen Computer Vision & Infrastructure GIS
+        </div>
+        <h2>Detect Road Damage. Track Repairs. Build Safer Roads.</h2>
+        <p>
+          RoadGuard AI bridges the gap between road users and public works authorities. 
+          By combining AI computer vision, highway CCTV streams, satellite corridor screening, 
+          and automated grievance registration, we turn reported potholes and cracks into 
+          auditable, independently verified repairs.
+        </p>
+        <div class="hero-actions">
+          <a href="/static/dashboard.html" class="btn btn-primary">
+            <span>📊</span> Explore Live Dashboard
+          </a>
+          <a href="/static/report.html" class="btn btn-secondary">
+            <span>📢</span> Report Road Damage
+          </a>
+          <a href="/static/track.html" class="btn btn-secondary">
+            <span>🔍</span> Track Complaint
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="card" style="border-color: var(--accent-cyan); background: linear-gradient(145deg, #162447, #1b1a47);">
+          <div class="card-header">
+            <h3 class="card-title">Live System Performance</h3>
+            <span class="badge badge-resolved">Active Network</span>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+            <div style="background: rgba(0,0,0,0.25); padding: 1rem; border-radius: 8px;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Detections</div>
+              <div id="stat-detections" style="font-size: 1.75rem; font-weight: 700; color: white;">--</div>
+              <div style="font-size: 0.75rem; color: var(--accent-cyan);">Vision Pipeline</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.25); padding: 1rem; border-radius: 8px;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Complaints</div>
+              <div id="stat-complaints" style="font-size: 1.75rem; font-weight: 700; color: white;">--</div>
+              <div style="font-size: 0.75rem; color: var(--accent-blue);">Registered & Assigned</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.25); padding: 1rem; border-radius: 8px;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">In Progress</div>
+              <div id="stat-repairs" style="font-size: 1.75rem; font-weight: 700; color: #a78bfa;">--</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Contractor Crews</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.25); padding: 1rem; border-radius: 8px;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Verified Repairs</div>
+              <div id="stat-verified" style="font-size: 1.75rem; font-weight: 700; color: #34d399;">--</div>
+              <div style="font-size: 0.75rem; color: #34d399;">Quality Approved</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.25rem; font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between;">
+            <span>SLA Resolution Rate: <strong style="color:white;">91.4%</strong></span>
+            <span>Target SLA: <strong style="color:white;">48-72h</strong></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workflow Illustration Section -->
+    <section style="margin: 3rem 0;">
+      <div style="text-align: center; margin-bottom: 2.5rem;">
+        <span class="hero-badge">End-to-End Governance Lifecycle</span>
+        <h2 style="font-size: 2rem; font-weight: 800; color: white;">How RoadGuard AI Works</h2>
+        <p style="color: var(--text-muted); max-width: 650px; margin: 0.5rem auto 0;">
+          A transparent, automated four-step lifecycle from defect discovery to independent repair certification.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+        
+        <div class="card" style="position: relative;">
+          <div style="font-size: 2rem; margin-bottom: 0.75rem;">📸</div>
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: white; margin-bottom: 0.5rem;">1. AI Damage Detection</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+            Detects potholes, alligator cracking, and damaged road shoulders from citizen photos, dashcams, or highway CCTV feeds with bounding boxes and severity estimation.
+          </p>
+        </div>
+
+        <div class="card" style="position: relative;">
+          <div style="font-size: 2rem; margin-bottom: 0.75rem;">📋</div>
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: white; margin-bottom: 0.5rem;">2. Jurisdiction Matching</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+            Generates a unique tracking ID (<code>RD-YYYY-XXXXXX</code>) and maps coordinates to the responsible agency (NHAI, State PWD, or Municipal Corporation).
+          </p>
+        </div>
+
+        <div class="card" style="position: relative;">
+          <div style="font-size: 2rem; margin-bottom: 0.75rem;">🚧</div>
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: white; margin-bottom: 0.5rem;">3. Crew Dispatch & Repair</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+            Field engineers conduct physical surveys, assign hot-mix asphalt patching teams, and monitor real-time SLA countdowns to prevent overdue backlog.
+          </p>
+        </div>
+
+        <div class="card" style="position: relative;">
+          <div style="font-size: 2rem; margin-bottom: 0.75rem;">✅</div>
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: white; margin-bottom: 0.5rem;">4. Independent Verification</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+            Computer-vision before-and-after texture comparison evaluates asphalt leveling. Independent auditors verify restoration before marking complaints resolved.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Multi-Sensor Technology Overview -->
+    <section class="card" style="margin: 2.5rem 0; background: var(--bg-secondary);">
+      <div class="card-header">
+        <h3 class="card-title">Multi-Sensor Intelligence Stack</h3>
+        <span class="badge badge-low">Verified Technical Boundaries</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <div>
+          <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem; font-size: 1rem;">🤖 Computer Vision & YOLO</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Extracts asphalt distress contours, classifies pothole geometric depth, and distinguishes between low-risk hairline cracks and structural alligator fatigue.
+          </p>
+        </div>
+        <div>
+          <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem; font-size: 1rem;">📹 Highway CCTV Streams</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Compatible with RTSP/HTTP feeds across toll plazas and junctions. Performs automated periodic keyframe extraction without streaming private credentials to clients.
+          </p>
+        </div>
+        <div>
+          <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem; font-size: 1rem;">🛰️ Geospatial & Satellite Screening</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Identifies macroscopic corridor surface washouts and shoulder subsidence across vast rural networks. Micro-distress is then investigated by street-level patrols.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div style="max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.25rem;">🛡️</span>
+        <strong style="color: white;">RoadGuard AI</strong> — Smart Road Intelligence & Repair Tracking Platform
+      </div>
+      <div>
+        <a href="/docs" target="_blank" style="margin-right: 1.25rem;">FastAPI Docs (Swagger)</a>
+        <a href="/static/dashboard.html" style="margin-right: 1.25rem;">Analytics</a>
+        <a href="/static/track.html">Complaint Lookup</a>
+      </div>
+    </div>
+    <p class="disclaimer">
+      <strong>Academic & Hackathon Demonstration Disclaimer:</strong> RoadGuard AI is an engineering showcase platform. 
+      Simulated grievance submissions use mock payloads to preserve integrity and comply with official public infrastructure security policies.
+    </p>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script>
+    // Fetch live metrics from database
+    async function loadLiveStats() {
+      try {
+        const stats = await api.get('/api/analytics/overview');
+        document.getElementById('stat-detections').textContent = stats.total_detections || 0;
+        document.getElementById('stat-complaints').textContent = stats.total_complaints || 0;
+        document.getElementById('stat-repairs').textContent = stats.repairs_in_progress || 0;
+        document.getElementById('stat-verified').textContent = stats.verified_repairs || 0;
+      } catch (err) {
+        console.warn('Could not load live analytics on index page:', err);
+      }
+    }
+    loadLiveStats();
+  </script>
+</body>
+</html>

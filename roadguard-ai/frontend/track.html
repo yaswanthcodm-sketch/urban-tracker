@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Road Complaint — RoadGuard AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/static/index.html" class="brand">
+      <div class="brand-logo">🛡️</div>
+      <div class="brand-text">
+        <h1>RoadGuard AI</h1>
+        <p>Public Tracking & Verification</p>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/static/index.html">Home</a></li>
+      <li><a href="/static/dashboard.html">Live Dashboard</a></li>
+      <li><a href="/static/detect.html">AI Detection</a></li>
+      <li><a href="/static/cameras.html">CCTV Feeds</a></li>
+      <li><a href="/static/satellite.html">Satellite Screening</a></li>
+      <li><a href="/static/map.html">Damage Map</a></li>
+      <li><a href="/static/report.html">Report Damage</a></li>
+      <li><a href="/static/track.html" class="active">Track Complaint</a></li>
+      <li><a href="/static/admin.html">Officer Portal</a></li>
+    </ul>
+
+    <div class="demo-mode-pill">Real-Time Audit Trail</div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <div style="max-width: 900px; margin: 0 auto;">
+      
+      <!-- Search Box -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <input type="text" id="track-id-input" class="form-control" placeholder="Enter Tracking ID (e.g. RD-2026-A109F2)..." style="flex: 1; min-width: 240px; font-size: 1.05rem;">
+          <button id="btn-search-tracking" class="btn btn-primary" style="padding: 0.65rem 1.5rem;">
+            <span>🔍</span> Track Status
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div id="track-loader" style="display: none; text-align: center; padding: 2rem;">
+        <div style="display: inline-block; width: 32px; height: 32px; border: 3px solid rgba(6,182,212,0.2); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+        <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Retrieving complaint audit record...</div>
+      </div>
+
+      <!-- Complaint Details Container -->
+      <div id="track-details" style="display: none;">
+        
+        <!-- Summary Header Card -->
+        <div class="card">
+          <div class="card-header" style="flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Public Tracking Record</div>
+              <h2 id="view-tracking-id" style="font-size: 1.6rem; font-weight: 800; color: white;">--</h2>
+            </div>
+            <div id="view-status-badge"></div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Defect Category</div>
+              <strong id="view-defect-type" style="color: white; font-size: 0.95rem;">--</strong>
+            </div>
+
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Assessed Severity & Priority</div>
+              <div style="display: flex; gap: 0.4rem; align-items: center; margin-top: 0.2rem;">
+                <span id="view-severity"></span>
+                <span id="view-priority" class="badge badge-low"></span>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Responsible Road Authority</div>
+              <strong id="view-department" style="color: var(--accent-cyan); font-size: 0.95rem;">--</strong>
+            </div>
+
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Target Resolution (SLA)</div>
+              <strong id="view-sla" style="color: #fbbf24; font-size: 0.95rem;">--</strong>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.25); padding: 0.85rem; border-radius: 6px; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            <div><strong>Location:</strong> <span id="view-road-name" style="color: white;">--</span></div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">
+              GPS Coordinates: <span id="view-coords">--</span>
+            </div>
+          </div>
+
+          <div id="view-desc" style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">--</div>
+        </div>
+
+        <!-- Before & After Repair Evidence Verification -->
+        <div id="card-verification-proof" class="card" style="display: none;">
+          <div class="card-header">
+            <h3 class="card-title">Independent Repair Verification Audit</h3>
+            <span id="badge-verif-result" class="badge badge-resolved">Approved</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <div style="font-size: 0.75rem; color: #f87171; font-weight: 700; margin-bottom: 0.35rem;">BEFORE (Distress Evidence)</div>
+              <div class="preview-container" style="margin: 0;">
+                <img id="img-verif-before" src="" alt="Before Damage" style="width: 100%; height: 220px; object-fit: cover;">
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 0.75rem; color: #34d399; font-weight: 700; margin-bottom: 0.35rem;">AFTER (Restored Asphalt)</div>
+              <div class="preview-container" style="margin: 0;">
+                <img id="img-verif-after" src="" alt="After Repair" style="width: 100%; height: 220px; object-fit: cover;">
+              </div>
+            </div>
+          </div>
+
+          <div style="background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; padding: 0.75rem 1rem; border-radius: 4px; font-size: 0.825rem;">
+            <div style="font-weight: 700; color: #34d399; margin-bottom: 0.2rem;">Quality Auditor Assessment</div>
+            <p id="view-verif-notes" style="color: var(--text-main);">--</p>
+            <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.35rem;">
+              Surface Smoothness Improvement Score: <strong id="view-verif-score" style="color: white;">--</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lifecycle Progression Timeline -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Full Lifecycle Audit Trail</h3>
+            <span class="badge badge-low">Tamper-Evident History</span>
+          </div>
+
+          <div id="timeline-container" class="timeline">
+            <!-- Timeline nodes rendered here -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <style>
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+
+  <footer>
+    <p>RoadGuard AI — Certified Redressal Tracking &bull; Tracking ID Format: <code>RD-YYYY-XXXXXX</code></p>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/track.js"></script>
+</body>
+</html>

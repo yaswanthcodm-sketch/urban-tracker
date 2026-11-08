@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="fav-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#020914" />
+      <stop offset="100%" stop-color="#061b30" />
+    </linearGradient>
+    <linearGradient id="fav-spire" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00f6ff" />
+      <stop offset="40%" stop-color="#1e7cb8" />
+      <stop offset="100%" stop-color="#0b2c4c" />
+    </linearGradient>
+    <linearGradient id="fav-bldg-mid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#144e7c" />
+      <stop offset="100%" stop-color="#08233d" />
+    </linearGradient>
+    <linearGradient id="fav-bldg-fore" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a639d" />
+      <stop offset="100%" stop-color="#0a2a4b" />
+    </linearGradient>
+    <filter id="fav-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Dark Rounded App Icon Base -->
+  <rect width="512" height="512" rx="108" fill="url(#fav-bg)" stroke="#00f6ff" stroke-width="12" />
+
+  <!-- Tactical HUD Corner Brackets -->
+  <path d="M 50 120 L 50 65 L 105 65" stroke="#00f6ff" stroke-width="14" stroke-linecap="round" fill="none" filter="url(#fav-glow)" />
+  <path d="M 462 120 L 462 65 L 407 65" stroke="#00f6ff" stroke-width="14" stroke-linecap="round" fill="none" filter="url(#fav-glow)" />
+  <path d="M 50 392 L 50 447 L 105 447" stroke="#00f6ff" stroke-width="14" stroke-linecap="round" fill="none" filter="url(#fav-glow)" />
+  <path d="M 462 392 L 462 447 L 407 447" stroke="#00f6ff" stroke-width="14" stroke-linecap="round" fill="none" filter="url(#fav-glow)" />
+
+  <!-- Radar Tracking Arcs -->
+  <circle cx="256" cy="270" r="160" fill="none" stroke="#00f6ff" stroke-width="6" stroke-dasharray="16 20" opacity="0.6" />
+  <circle cx="256" cy="270" r="110" fill="none" stroke="#00f6ff" stroke-width="5" stroke-dasharray="8 12" opacity="0.5" />
+
+  <!-- Signal Pulse Broadcast Arcs from Spire Apex -->
+  <path d="M 235 68 A 24 24 0 0 1 277 68" fill="none" stroke="#00f6ff" stroke-width="8" stroke-linecap="round" filter="url(#fav-glow)" />
+  <path d="M 220 50 A 42 42 0 0 1 292 50" fill="none" stroke="#00f6ff" stroke-width="6" stroke-linecap="round" opacity="0.75" />
+
+  <!-- 3D Perspective Base Grid -->
+  <line x1="50" y1="410" x2="462" y2="410" stroke="#00f6ff" stroke-width="8" filter="url(#fav-glow)" />
+  <line x1="256" y1="410" x2="100" y2="460" stroke="#00f6ff" stroke-width="5" opacity="0.6" />
+  <line x1="256" y1="410" x2="200" y2="460" stroke="#00f6ff" stroke-width="5" opacity="0.6" />
+  <line x1="256" y1="410" x2="256" y2="460" stroke="#ffffff" stroke-width="6" stroke-dasharray="6 6" filter="url(#fav-glow)" />
+  <line x1="256" y1="410" x2="312" y2="460" stroke="#00f6ff" stroke-width="5" opacity="0.6" />
+  <line x1="256" y1="410" x2="412" y2="460" stroke="#00f6ff" stroke-width="5" opacity="0.6" />
+
+  <!-- City Skyline Silhouette Buildings -->
+  <!-- Left Building 1 -->
+  <polygon points="75,320 125,320 125,410 75,410" fill="url(#fav-bldg-mid)" stroke="#00f6ff" stroke-width="6" />
+  <line x1="90" y1="335" x2="90" y2="400" stroke="#00f6ff" stroke-width="5" stroke-dasharray="6 6" />
+  <line x1="110" y1="335" x2="110" y2="400" stroke="#ffffff" stroke-width="5" stroke-dasharray="6 6" />
+
+  <!-- Left Building 2 (Angled Crown) -->
+  <polygon points="135,245 195,195 195,410 135,410" fill="url(#fav-bldg-fore)" stroke="#00f6ff" stroke-width="7" />
+  <line x1="145" y1="260" x2="185" y2="310" stroke="#00f6ff" stroke-width="5" opacity="0.8" />
+  <line x1="145" y1="310" x2="185" y2="260" stroke="#00f6ff" stroke-width="5" opacity="0.8" />
+  <line x1="145" y1="330" x2="185" y2="380" stroke="#00f6ff" stroke-width="5" opacity="0.8" />
+  <line x1="145" y1="380" x2="185" y2="330" stroke="#00f6ff" stroke-width="5" opacity="0.8" />
+
+  <!-- Right Building 2 (Twin Spires / Helipad) -->
+  <polygon points="317,235 377,235 377,410 317,410" fill="url(#fav-bldg-fore)" stroke="#00f6ff" stroke-width="7" />
+  <line x1="337" y1="250" x2="337" y2="400" stroke="#00f6ff" stroke-width="6" stroke-dasharray="7 7" />
+  <line x1="357" y1="250" x2="357" y2="400" stroke="#ffffff" stroke-width="6" stroke-dasharray="7 7" />
+
+  <!-- Right Building 1 -->
+  <polygon points="387,310 437,310 437,410 387,410" fill="url(#fav-bldg-mid)" stroke="#00f6ff" stroke-width="6" />
+  <line x1="400" y1="325" x2="424" y2="325" stroke="#00f6ff" stroke-width="5" />
+  <line x1="400" y1="350" x2="424" y2="350" stroke="#ffffff" stroke-width="5" />
+  <line x1="400" y1="375" x2="424" y2="375" stroke="#00f6ff" stroke-width="5" />
+  <line x1="400" y1="395" x2="424" y2="395" stroke="#00f6ff" stroke-width="5" />
+
+  <!-- Central Supertall Metropolis Spire (The Hero Tower) -->
+  <polygon points="205,275 307,275 307,410 205,410" fill="url(#fav-bldg-fore)" stroke="#00f6ff" stroke-width="8" />
+  <polygon points="218,185 294,185 300,275 212,275" fill="url(#fav-spire)" stroke="#00f6ff" stroke-width="8" />
+  <polygon points="256,115 285,185 227,185" fill="url(#fav-spire)" stroke="#00f6ff" stroke-width="8" />
+
+  <!-- Supertall Antenna Mast & Satellite Pulse Beacon -->
+  <line x1="256" y1="115" x2="256" y2="65" stroke="#ffffff" stroke-width="9" stroke-linecap="round" filter="url(#fav-glow)" />
+  <circle cx="256" cy="65" r="14" fill="#00f6ff" filter="url(#fav-glow)" />
+  <circle cx="256" cy="65" r="7" fill="#ffffff" />
+  <circle cx="256" cy="85" r="5" fill="#ff3b30" filter="url(#fav-glow)" />
+
+  <!-- Central Tower Glowing Data Spine -->
+  <line x1="256" y1="120" x2="256" y2="405" stroke="#00f6ff" stroke-width="8" filter="url(#fav-glow)" />
+  <line x1="256" y1="120" x2="256" y2="405" stroke="#ffffff" stroke-width="3" />
+
+  <!-- Windows on Central Tower -->
+  <line x1="228" y1="290" x2="228" y2="400" stroke="#00f6ff" stroke-width="6" stroke-dasharray="8 8" />
+  <line x1="242" y1="290" x2="242" y2="400" stroke="#ffffff" stroke-width="6" stroke-dasharray="8 8" />
+  <line x1="270" y1="290" x2="270" y2="400" stroke="#ffffff" stroke-width="6" stroke-dasharray="8 8" />
+  <line x1="284" y1="290" x2="284" y2="400" stroke="#00f6ff" stroke-width="6" stroke-dasharray="8 8" />
+
+  <!-- Target Reticle Box over Central Spire -->
+  <path d="M 232 150 L 222 150 L 222 160" fill="none" stroke="#00f6ff" stroke-width="6" />
+  <path d="M 280 150 L 290 150 L 290 160" fill="none" stroke="#00f6ff" stroke-width="6" />
+  <path d="M 232 205 L 222 205 L 222 195" fill="none" stroke="#00f6ff" stroke-width="6" />
+  <path d="M 280 205 L 290 205 L 290 195" fill="none" stroke="#00f6ff" stroke-width="6" />
+</svg>

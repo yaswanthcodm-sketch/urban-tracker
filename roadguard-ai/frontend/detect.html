@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Road Damage Detection — RoadGuard AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/static/index.html" class="brand">
+      <div class="brand-logo">🛡️</div>
+      <div class="brand-text">
+        <h1>RoadGuard AI</h1>
+        <p>Computer Vision Scanner</p>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/static/index.html">Home</a></li>
+      <li><a href="/static/dashboard.html">Live Dashboard</a></li>
+      <li><a href="/static/detect.html" class="active">AI Detection</a></li>
+      <li><a href="/static/cameras.html">CCTV Feeds</a></li>
+      <li><a href="/static/satellite.html">Satellite Screening</a></li>
+      <li><a href="/static/map.html">Damage Map</a></li>
+      <li><a href="/static/report.html">Report Damage</a></li>
+      <li><a href="/static/track.html">Track Complaint</a></li>
+      <li><a href="/static/admin.html">Officer Portal</a></li>
+    </ul>
+
+    <div class="demo-mode-pill">Vision Engine Active</div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <div style="margin-bottom: 1.5rem;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; color: white;">AI Road Distress & Damage Detection</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Upload road inspection photographs or dashcam clips. Our computer-vision pipeline extracts distress contours, generates bounding boxes, and assesses geometric structural severity.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem;">
+      
+      <!-- Input Panel -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Media Upload & Telemetry</h3>
+          <span class="badge badge-low">Multi-Format</span>
+        </div>
+
+        <!-- Mode Toggle Tabs -->
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem;">
+          <button id="tab-image" class="btn btn-secondary btn-sm" style="flex: 1; border-color: var(--accent-cyan);">Image Scanner</button>
+          <button id="tab-video" class="btn btn-secondary btn-sm" style="flex: 1;">Video Survey</button>
+        </div>
+
+        <form id="detection-form">
+          <!-- Drag & Drop Zone -->
+          <div id="dropzone" class="upload-dropzone">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" style="color: var(--accent-cyan);">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <div id="dropzone-text" style="font-weight: 600; color: white; margin-bottom: 0.25rem;">Drag & drop inspection image here</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">or click to browse local files (PNG, JPG, WebP &le; 25MB)</div>
+            <input type="file" id="media-file" name="file" accept="image/*" style="display: none;" required>
+          </div>
+
+          <div id="file-info" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--accent-cyan); display: none;"></div>
+
+          <!-- Location Telemetry -->
+          <div style="margin-top: 1.25rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+            <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem;">Verified Geotagging</h4>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label class="form-label">Latitude</label>
+                <input type="number" step="0.000001" id="input-lat" name="latitude" class="form-control" value="16.519500" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Longitude</label>
+                <input type="number" step="0.000001" id="input-lon" name="longitude" class="form-control" value="80.630800" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Road Name / Landmark</label>
+              <input type="text" id="input-road" name="road_name" class="form-control" value="NH-65 Vijayawada - Hyderabad Highway" required>
+            </div>
+
+            <button type="button" id="btn-geolocate" class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 1rem;">
+              <span>📍</span> Use Browser GPS Position
+            </button>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="btn-run-ai" class="btn btn-primary" style="width: 100%;">
+            <span>⚡</span> Run AI Defect Detection
+          </button>
+        </form>
+
+        <div id="loader" style="display: none; text-align: center; margin-top: 1.5rem;">
+          <div style="display: inline-block; width: 32px; height: 32px; border: 3px solid rgba(6,182,212,0.2); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Running computer vision analysis...</div>
+        </div>
+
+      </div>
+
+      <!-- Results & Review Panel -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Detection Result & Audit</h3>
+          <span id="badge-review-status" class="badge badge-submitted">Awaiting Media</span>
+        </div>
+
+        <div id="empty-results" style="text-align: center; padding: 3rem 1rem; color: var(--text-dim);">
+          <div style="font-size: 3rem; margin-bottom: 0.75rem;">🔬</div>
+          <div>Upload an image or sample frame to inspect road damage and bounding boxes.</div>
+        </div>
+
+        <div id="results-content" style="display: none;">
+          <!-- Visual Evidence Preview with Canvas Annotations -->
+          <div class="preview-container">
+            <img id="result-image" src="" alt="Detection Evidence">
+          </div>
+
+          <!-- Telemetry & Metrics Table -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem;">
+            <div style="background: rgba(0,0,0,0.25); padding: 0.75rem; border-radius: 6px;">
+              <div style="font-size: 0.7rem; color: var(--text-muted);">Defect Type</div>
+              <div id="res-defect-type" style="font-size: 1rem; font-weight: 700; color: white;">--</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.25); padding: 0.75rem; border-radius: 6px;">
+              <div style="font-size: 0.7rem; color: var(--text-muted);">Model Confidence</div>
+              <div id="res-confidence" style="font-size: 1rem; font-weight: 700; color: var(--accent-cyan);">--</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.25); padding: 0.75rem; border-radius: 6px;">
+              <div style="font-size: 0.7rem; color: var(--text-muted);">Estimated Severity</div>
+              <div id="res-severity" style="font-size: 1rem; font-weight: 700; color: #fbbf24;">--</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.25); padding: 0.75rem; border-radius: 6px;">
+              <div style="font-size: 0.7rem; color: var(--text-muted);">Detection ID</div>
+              <div id="res-detection-id" style="font-size: 1rem; font-weight: 700; color: white;">--</div>
+            </div>
+          </div>
+
+          <!-- Note about confidence vs severity -->
+          <div style="background: rgba(2, 132, 199, 0.1); border-left: 3px solid var(--accent-cyan); padding: 0.65rem 0.85rem; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            <strong>Governance Standard:</strong> Model confidence reflects algorithmic certainty (contour fidelity), whereas Severity reflects physical surface area & road hazard level.
+          </div>
+
+          <!-- Human Reviewer Actions -->
+          <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+            <h4 style="font-size: 0.85rem; font-weight: 700; color: white; margin-bottom: 0.75rem;">Inspector Quality Review</h4>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Correct Defect Class (Optional)</label>
+                <select id="review-correct-type" class="form-select">
+                  <option value="">Keep Detected Class</option>
+                  <option value="Pothole">Pothole</option>
+                  <option value="Road crack">Road crack</option>
+                  <option value="Longitudinal crack">Longitudinal crack</option>
+                  <option value="Transverse crack">Transverse crack</option>
+                  <option value="Alligator cracking">Alligator cracking</option>
+                  <option value="Damaged road edge">Damaged road edge</option>
+                  <option value="Other visible road damage">Other visible road damage</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Correct Severity</label>
+                <select id="review-correct-severity" class="form-select">
+                  <option value="">Keep Assessed Severity</option>
+                  <option value="Critical">Critical</option>
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <button id="btn-confirm-review" class="btn btn-secondary btn-sm" style="flex: 1;">
+                <span>👍</span> Confirm Detection
+              </button>
+              <button id="btn-reject-review" class="btn btn-danger btn-sm" style="flex: 1;">
+                <span>❌</span> Reject False Alarm
+              </button>
+              <button id="btn-generate-complaint" class="btn btn-primary btn-sm" style="flex: 1.5;">
+                <span>📝</span> Generate Official Complaint
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Keyframe animation for spinner -->
+  <style>
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
+  <footer>
+    <p>RoadGuard AI — Automated Defect Classification & Computer Vision System</p>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/detect.js"></script>
+</body>
+</html>

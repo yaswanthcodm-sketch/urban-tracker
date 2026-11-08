@@ -10,6 +10,8 @@ const CLASS_BY_MILITARY_TAG = {
   range: 'range',
   barracks: 'military_land',
   base: 'military_land',
+  nuclear_facility: 'nuclear_facility',
+  conflict_zone: 'conflict_zone',
 };
 
 /**
@@ -27,6 +29,8 @@ const LABEL_BY_CLASS = {
   naval_base: 'Naval base',
   range: 'Firing range',
   military_land: 'Military land',
+  nuclear_facility: 'Nuclear facility',
+  conflict_zone: 'Conflict zone',
 };
 
 const MAX_FOOTPRINT_POINTS = 400;

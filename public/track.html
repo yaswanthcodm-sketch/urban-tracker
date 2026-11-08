@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>RoadGuard AI · National Smart Road & Grievance Redressal Portal</title>
+  <meta name="description" content="National AI-powered road condition inspection, pothole complaint lifecycle tracking, and verified municipal repair portal.">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="icon" type="image/svg+xml" href="/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/login-civic.css">
+  <script src="/js/indianLanguages.js"></script>
+  <script src="/js/complaintTrackingData.js"></script>
+</head>
+<body>
+
+  <!-- Top Institutional Header -->
+  <header class="gov-topbar">
+    <div class="topbar-inner">
+      <div class="gov-brand">
+        <div class="gov-emblem">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none">
+            <rect width="40" height="40" rx="8" fill="#1e3a8a"/>
+            <path d="M20 6L9 11V20C9 27.5 13.7 34.5 20 36C26.3 34.5 31 27.5 31 20V11L20 6Z" fill="#2563eb" stroke="#60a5fa" stroke-width="1.5"/>
+            <path d="M20 13V29M14 26L20 29L26 26" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="20" cy="18" r="2.5" fill="#facc15"/>
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <div class="brand-main">
+            <span class="brand-name" data-i18n="portal_title">RoadGuard AI</span>
+            <span class="gov-tag" data-i18n="gov_badge">Govt. of India · Smart Cities Mission</span>
+          </div>
+          <div class="brand-sub" data-i18n="portal_tagline">National Smart Road & Grievance Redressal Portal</div>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Official 22 Languages Selector -->
+        <div class="lang-selector-wrap">
+          <label for="lang-select" class="lang-label">
+            <span class="globe-icon">🌐</span>
+            <span class="lang-text">Language:</span>
+          </label>
+          <select id="lang-select" class="lang-select" aria-label="Select from 22 official Indian languages">
+            <!-- Populated dynamically via JS -->
+          </select>
+        </div>
+
+        <button id="btn-open-tracker" class="topbar-btn track-btn" type="button">
+          <span>🔍</span> <span data-i18n="track_complaint">Track Road Complaint</span>
+        </button>
+
+        <a href="/?guest=true" class="topbar-btn map-btn">
+          <span>🗺️</span> <span>3D Road Map</span>
+        </a>
+
+        <div class="helpline-pill" title="National Highway & Municipal Emergency Road Helpline">
+          <span class="tel-icon">📞</span>
+          <div class="helpline-text">
+            <span class="helpline-lbl">Citizen Helpline</span>
+            <span class="helpline-num">1800-ROAD-AID</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Hero & Split Layout -->
+  <main class="portal-main">
+    <div class="portal-container">
+      
+      <!-- Left Column: Civic Infrastructure & 5 Road Types -->
+      <section class="portal-showcase">
+        <div class="showcase-badge">
+          <span class="pulse-dot"></span>
+          <span>Automated Pothole Redressal & Pavement Audit System</span>
+        </div>
+
+        <h1 class="showcase-title">
+          Smart Road Intelligence Across All Indian Roads
+        </h1>
+        <p class="showcase-desc">
+          Unified AI surveillance and citizen grievance tracking system supporting every classification of road—from village panchayat streets to national expressways—with mandatory photographic before-and-after audit verification.
+        </p>
+
+        <!-- Quick Complaint Tracking Bar on Landing Page -->
+        <div class="hero-tracking-card">
+          <div class="tracking-card-header">
+            <div class="tracking-card-title">
+              <span class="search-icon">🔍</span>
+              <strong data-i18n="track_complaint">Track Road Complaint Status</strong>
+            </div>
+            <span class="badge-sla" data-i18n="sla_title">48h SLA Guarantee</span>
+          </div>
+          <p class="tracking-hint" data-i18n="track_desc">
+            Enter your grievance token ID to view real-time authority assignment, appointed repair crew, and before-and-after verification photos.
+          </p>
+          <div class="tracking-input-group">
+            <input type="text" id="landing-track-input" class="tracking-input" placeholder="Enter Token ID (e.g. RG-2026-CC-8492)..." value="RG-2026-CC-8492">
+            <button id="btn-landing-track" class="btn-track-action" type="button" data-i18n="track_status_btn">Track Status</button>
+          </div>
+          <div class="tracking-demo-chips">
+            <span class="demo-chip-lbl">Quick Demo Tests:</span>
+            <button type="button" class="demo-chip" data-id="RG-2026-CC-8492">🧱 CC Road (Resolved)</button>
+            <button type="button" class="demo-chip" data-id="RG-2026-VG-5120">🏡 Village Street (In Progress)</button>
+            <button type="button" class="demo-chip" data-id="RG-2026-CT-3391">🏙️ City Road (Crew Appointed)</button>
+            <button type="button" class="demo-chip" data-id="RG-2026-MR-7744">🛣️ Main Road (Authority Assigned)</button>
+            <button type="button" class="demo-chip" data-id="RG-2026-HW-1092">⚡ Highway (Registered)</button>
+          </div>
+        </div>
+
+        <!-- Requirement 3: All 5 Road Types Highlight -->
+        <div class="road-types-showcase">
+          <h3 class="road-types-heading" data-i18n="all_roads_title">
+            Supported Road Classifications & Pavement Standards
+          </h3>
+          <div class="road-types-grid">
+            
+            <div class="road-type-item" data-id="RG-2026-CC-8492">
+              <div class="road-type-icon">🧱</div>
+              <div class="road-type-content">
+                <h4 data-i18n="cement_roads">Cement Roads (CC Roads)</h4>
+                <p data-i18n="cement_roads_sub">Residential colony streets, rigid concrete pavement & ward lanes</p>
+                <span class="road-type-tag cc">M30 Rigid Pavement</span>
+              </div>
+            </div>
+
+            <div class="road-type-item" data-id="RG-2026-VG-5120">
+              <div class="road-type-icon">🏡</div>
+              <div class="road-type-content">
+                <h4 data-i18n="village_streets">Village & Local Streets</h4>
+                <p data-i18n="village_streets_sub">Gram Panchayat roads, rural link routes & agricultural connectivity</p>
+                <span class="road-type-tag village">Gram Sadak (PRED)</span>
+              </div>
+            </div>
+
+            <div class="road-type-item" data-id="RG-2026-CT-3391">
+              <div class="road-type-icon">🏙️</div>
+              <div class="road-type-content">
+                <h4 data-i18n="city_roads">City Roads</h4>
+                <p data-i18n="city_roads_sub">Municipal corporation wards, commercial thoroughfares & avenues</p>
+                <span class="road-type-tag city">Municipal Corporation</span>
+              </div>
+            </div>
+
+            <div class="road-type-item" data-id="RG-2026-MR-7744">
+              <div class="road-type-icon">🛣️</div>
+              <div class="road-type-content">
+                <h4 data-i18n="main_roads">Main Roads</h4>
+                <p data-i18n="main_roads_sub">Major District Roads (MDR) & high-density urban arterial corridors</p>
+                <span class="road-type-tag main">State PWD / R&B</span>
+              </div>
+            </div>
+
+            <div class="road-type-item" data-id="RG-2026-HW-1092">
+              <div class="road-type-icon">⚡</div>
+              <div class="road-type-content">
+                <h4 data-i18n="highways">Highways & Expressways</h4>
+                <p data-i18n="highways_sub">National & State Expressways under NHAI jurisdiction with 24h SLA</p>
+                <span class="road-type-tag highway">NHAI Expressways</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 6-Stage Redressal Process Banner -->
+        <div class="process-ribbon">
+          <span class="ribbon-title">Complete 6-Stage Complaint Redressal Process:</span>
+          <div class="ribbon-steps">
+            <span class="step-pill">1. Registration</span>
+            <span class="step-arrow">➔</span>
+            <span class="step-pill">2. Authority</span>
+            <span class="step-arrow">➔</span>
+            <span class="step-pill">3. Worker Appointed</span>
+            <span class="step-arrow">➔</span>
+            <span class="step-pill">4. Repair In Progress</span>
+            <span class="step-arrow">➔</span>
+            <span class="step-pill">5. Before/After Audit</span>
+            <span class="step-arrow">➔</span>
+            <span class="step-pill resolved">6. Final Approval</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right Column: Clean, Natural, Realistic Sign-In Card -->
+      <section class="portal-auth">
+        <div class="auth-card">
+          <div class="auth-card-top">
+            <div class="auth-emblem">🛡️</div>
+            <h2 class="auth-heading" data-i18n="welcome">Welcome Back</h2>
+            <p class="auth-subheading" data-i18n="sign_in_desc">
+              Sign in to access your road maintenance operations and complaint records.
+            </p>
+          </div>
+
+          <!-- User Role Tabs -->
+          <div class="auth-tabs" role="tablist">
+            <button type="button" class="auth-tab active" data-tab="citizen" id="tab-citizen" role="tab" aria-selected="true" data-i18n="citizen_portal">
+              Citizen Access
+            </button>
+            <button type="button" class="auth-tab" data-tab="officer" id="tab-officer" role="tab" aria-selected="false" data-i18n="officer_portal">
+              Officer & Contractor
+            </button>
+          </div>
+
+          <!-- Alert / Error message -->
+          <div id="auth-alert" class="auth-alert hidden" role="alert">
+            <span class="alert-icon">⚠️</span>
+            <span id="auth-alert-text">Invalid credentials. Please verify your details.</span>
+          </div>
+
+          <!-- Login Form -->
+          <form id="portal-login-form" class="auth-form" novalidate>
+            <div class="form-group">
+              <label for="input-email" class="form-label" data-i18n="email_or_mobile">Email Address or 10-Digit Mobile</label>
+              <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                <input type="text" id="input-email" class="form-input" placeholder="yaswanth@roadguard.gov.in or 9492323535" value="yaswanth@roadguard.gov.in" required autocomplete="username">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="label-row">
+                <label for="input-password" class="form-label" data-i18n="password">Password</label>
+                <a href="#forgot" id="link-forgot" class="form-link" data-i18n="forgot_password">Forgot Password?</a>
+              </div>
+              <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="input-password" class="form-input" placeholder="Enter your portal password" value="RoadGuard2026!" required autocomplete="current-password">
+                <button type="button" id="btn-toggle-password" class="btn-eye" aria-label="Toggle password visibility">
+                  <svg id="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-options">
+              <label class="checkbox-label">
+                <input type="checkbox" id="chk-remember" checked>
+                <span class="checkbox-custom"></span>
+                <span class="checkbox-text" data-i18n="remember_me">Remember this device</span>
+              </label>
+            </div>
+
+            <button type="submit" id="btn-submit" class="btn-primary-auth">
+              <span id="btn-submit-text" data-i18n="sign_in_btn">Sign In to Portal</span>
+              <span id="btn-submit-spinner" class="spinner hidden"></span>
+            </button>
+          </form>
+
+          <div class="auth-divider">
+            <span>OR</span>
+          </div>
+
+          <a href="/?guest=true" class="btn-guest-entry" data-i18n="guest_btn">
+            <span>🌐</span> <span>Quick Guest Access · Open 3D Map</span>
+          </a>
+
+          <!-- Quick Fill Credentials Button for review -->
+          <div class="quick-admin-hint">
+            <span>Demo reviewer? </span>
+            <button type="button" id="btn-fill-admin" class="btn-inline-link">Fill Verified Admin Credentials</button>
+          </div>
+
+          <div class="auth-compliance-footer">
+            <div class="compliance-badge">
+              <span>🇮🇳 Indian Road Congress (IRC) SP:20 & IRC:82 Compliant</span>
+            </div>
+            <div class="audit-badge">
+              <span>🔒 256-Bit SSL Encrypted Government Portal</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Complete Complaint Tracking Modal (Requirement 4) -->
+  <div id="tracking-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-track-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-badge">
+            <span class="pulse-dot"></span>
+            <span>Public Pavement Redressal Audit</span>
+          </div>
+          <h2 id="modal-track-title" class="modal-title">Road Complaint Tracking System</h2>
+          <p class="modal-subtitle">Real-time verifiable progress from grievance registration to road repair approval.</p>
+        </div>
+        <button type="button" id="btn-close-modal" class="modal-close" aria-label="Close tracking modal">✕</button>
+      </div>
+
+      <!-- Search & Demo Quick Switch Bar -->
+      <div class="modal-search-row">
+        <div class="modal-search-box">
+          <input type="text" id="modal-track-input" class="modal-input" placeholder="Enter Token ID (e.g. RG-2026-CC-8492)...">
+          <button type="button" id="btn-modal-search" class="modal-search-btn">🔍 Search</button>
+        </div>
+        <div class="modal-quick-chips">
+          <span class="quick-lbl">Road Types:</span>
+          <button type="button" class="quick-chip active" data-id="RG-2026-CC-8492">🧱 CC Road</button>
+          <button type="button" class="quick-chip" data-id="RG-2026-VG-5120">🏡 Village Street</button>
+          <button type="button" class="quick-chip" data-id="RG-2026-CT-3391">🏙️ City Road</button>
+          <button type="button" class="quick-chip" data-id="RG-2026-MR-7744">🛣️ Main Road</button>
+          <button type="button" class="quick-chip" data-id="RG-2026-HW-1092">⚡ Highway</button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Dynamic Tracking Telemetry) -->
+      <div id="modal-track-body" class="modal-body">
+        
+        <!-- Summary Box -->
+        <div class="tracker-summary-card">
+          <div class="summary-top">
+            <div>
+              <span class="summary-token-lbl">Official Tracking Token:</span>
+              <h3 id="track-token-id" class="summary-token">RG-2026-CC-8492</h3>
+            </div>
+            <div id="track-status-pill" class="status-pill resolved">
+              ● RESOLVED & APPROVED
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span class="sum-lbl" data-i18n="road_type_label">Road Classification:</span>
+              <strong id="track-road-type" class="sum-val highlight">Cement Road (CC Road)</strong>
+            </div>
+            <div class="summary-item">
+              <span class="sum-lbl" data-i18n="location">Location:</span>
+              <strong id="track-location" class="sum-val">Ward 14 Gandhi Nagar 2nd Cross CC Road, Nuzvid</strong>
+            </div>
+            <div class="summary-item">
+              <span class="sum-lbl">GPS Coordinates:</span>
+              <strong id="track-coords" class="sum-val mono">16.7865° N, 80.8465° E</strong>
+            </div>
+            <div class="summary-item">
+              <span class="sum-lbl">Damage Category:</span>
+              <strong id="track-defect" class="sum-val danger">Concrete Spalling & Deep Pothole (14cm)</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6-Stage Visual Stepper -->
+        <div class="stepper-wrap">
+          <div class="stepper-title">Complaint Lifecycle Audit Trail (6 Stages)</div>
+          <div class="stepper-track" id="lifecycle-stepper">
+            
+            <div class="step-node active completed" data-step="1">
+              <div class="node-circle">1</div>
+              <div class="node-text">
+                <strong>Complaint Registered</strong>
+                <small id="step1-time">27 Oct 08:30</small>
+              </div>
+            </div>
+
+            <div class="step-connector completed"></div>
+
+            <div class="step-node active completed" data-step="2">
+              <div class="node-circle">2</div>
+              <div class="node-text">
+                <strong>Authority Assigned</strong>
+                <small id="step2-dept">Municipal Corp</small>
+              </div>
+            </div>
+
+            <div class="step-connector completed"></div>
+
+            <div class="step-node active completed" data-step="3">
+              <div class="node-circle">3</div>
+              <div class="node-text">
+                <strong>Worker Appointed</strong>
+                <small id="step3-worker">Crew Gamma</small>
+              </div>
+            </div>
+
+            <div class="step-connector completed"></div>
+
+            <div class="step-node active completed" data-step="4">
+              <div class="node-circle">4</div>
+              <div class="node-text">
+                <strong>Repair In Progress</strong>
+                <small id="step4-status">M30 Concrete</small>
+              </div>
+            </div>
+
+            <div class="step-connector completed"></div>
+
+            <div class="step-node active completed" data-step="5">
+              <div class="node-circle">5</div>
+              <div class="node-text">
+                <strong>Condition Review</strong>
+                <small id="step5-review">Before/After</small>
+              </div>
+            </div>
+
+            <div class="step-connector completed"></div>
+
+            <div class="step-node active completed" data-step="6">
+              <div class="node-circle">6</div>
+              <div class="node-text">
+                <strong>Final Approval</strong>
+                <small id="step6-approval">Approved</small>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Detailed Stage Cards Grid -->
+        <div class="stage-details-grid">
+          
+          <!-- Card A: Authority & Worker Appointment -->
+          <div class="stage-card">
+            <div class="stage-card-header">
+              <span class="card-icon">🏛️</span>
+              <h4>Authority & Worker Appointment</h4>
+            </div>
+            <div class="stage-card-body">
+              <div class="meta-row">
+                <span class="meta-k">Responsible Department:</span>
+                <span id="card-dept-name" class="meta-v">Greater Municipal Corporation (Nuzvid Engineering Wing)</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Jurisdiction & SLA:</span>
+                <span id="card-sla" class="meta-v">Urban Ward 14 · Target: 48 Hours Resolution</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Executive Engineer:</span>
+                <span id="card-engineer" class="meta-v">Er. P. Satyanarayana, M.Tech (Badge #EE-MNC-4402)</span>
+              </div>
+              <div class="divider-sub"></div>
+              <div class="meta-row">
+                <span class="meta-k">Appointed Contractor / Firm:</span>
+                <span id="card-contractor" class="meta-v highlight">Sri Sai Civil Infrastructure & Concrete Works Ltd.</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Lead Site Supervisor:</span>
+                <span id="card-supervisor" class="meta-v">Rajesh Kumar (Junior Site Engineer) · Badge: #SE-CIVIL-8841</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Assigned Repair Team:</span>
+                <span id="card-crew" class="meta-v">Rapid Pavement Patch Unit Gamma (4 Masons + 2 Compactors)</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Work Order ID:</span>
+                <span id="card-work-order" class="meta-v mono">WO-2026-CC-8492-NUV</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card B: Repair Execution & Log -->
+          <div class="stage-card">
+            <div class="stage-card-header">
+              <span class="card-icon">🛠️</span>
+              <h4>Repair Status & Work Execution Log</h4>
+            </div>
+            <div class="stage-card-body">
+              <div class="meta-row">
+                <span class="meta-k">Repair Methodology:</span>
+                <span id="card-repair-method" class="meta-v">M30 Rapid-Hardening Cement Concrete with Polymer Bonding Agent</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-k">Timeline:</span>
+                <span id="card-repair-timeline" class="meta-v">Started: 28 Oct 07:00 IST · Completed: 28 Oct 15:30 IST</span>
+              </div>
+              <div class="execution-log-box">
+                <div class="log-title">Site Action Progress Log:</div>
+                <ul id="card-execution-list" class="execution-list">
+                  <!-- Log entries dynamically rendered -->
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Before & After Photographic Verification (Requirement 4.5) -->
+        <div class="photometric-audit-card">
+          <div class="audit-card-header">
+            <div>
+              <span class="audit-badge-pill">Independent Photometric Verification</span>
+              <h4 class="audit-title">Road Condition Review (Before vs After Evidence)</h4>
+            </div>
+            <span id="audit-score-pill" class="audit-score-pill">Smoothness Index: 96.4% (Grade A)</span>
+          </div>
+
+          <div class="before-after-grid">
+            <div class="image-box before-box">
+              <div class="image-box-header">
+                <span class="badge-tag before">BEFORE REPAIR (Distress Evidence)</span>
+                <span class="badge-sub">GPS Exif & AI Timestamp Verified</span>
+              </div>
+              <div class="img-wrapper">
+                <img id="img-track-before" src="/assets/images/tracking/cement_road_cc_before.jpg" alt="Pothole Distress Before Repair">
+              </div>
+            </div>
+
+            <div class="image-box after-box">
+              <div class="image-box-header">
+                <span class="badge-tag after">AFTER REPAIR (Restored Surface)</span>
+                <span class="badge-sub">Post-Compaction Quality Sign-off</span>
+              </div>
+              <div class="img-wrapper">
+                <img id="img-track-after" src="/assets/images/tracking/cement_road_cc_after.jpg" alt="Pothole Restored Surface After Repair">
+              </div>
+            </div>
+          </div>
+
+          <div class="audit-assessment-row">
+            <div class="assessment-content">
+              <strong>Quality Control Auditor Findings:</strong>
+              <p id="audit-notes-text">
+                Deep concrete spalling fully restored with M30 grade concrete. Joint integrity and load-bearing capacity verified under 20-tonne roller test.
+              </p>
+            </div>
+            <div class="assessment-sign">
+              <div class="sign-seal">SEALED</div>
+              <div>
+                <strong id="audit-inspector-name">Dr. K. V. Raman</strong>
+                <small>Quality Control Auditor (R&B)</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Final Approval & Digital Resolution Sign-off -->
+        <div class="resolution-card">
+          <div class="res-left">
+            <div class="res-icon">🏆</div>
+            <div>
+              <h4>Final Approval & Grievance Closed</h4>
+              <p id="res-approved-by">Officially approved by Municipal Commissioner, Nuzvid Municipal Council.</p>
+              <small id="res-cert-id" class="cert-mono">Digital Audit Certificate: GOI-MORTH-AP-2026-98442</small>
+            </div>
+          </div>
+          <div class="res-right">
+            <div class="citizen-rating">
+              <span>Citizen Satisfaction Rating:</span>
+              <div class="stars">⭐⭐⭐⭐⭐ <strong>5.0 / 5.0</strong></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="btn-print-receipt" class="btn-outline-modal">🖨️ Print Grievance Certificate</button>
+        <button type="button" id="btn-close-modal-bottom" class="btn-primary-modal">Close Audit View</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Page Footer -->
+  <footer class="portal-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <strong>RoadGuard AI · National Road Intelligence System</strong>
+        <p>An initiative aligned with the Ministry of Road Transport & Highways (MoRTH) and Indian Road Congress (IRC) Specifications.</p>
+      </div>
+      <div class="footer-right">
+        <span>Emergency Contact: 1800-ROAD-AID</span>
+        <span>•</span>
+        <a href="/?guest=true" class="footer-link">Explore 3D Globe</a>
+        <span>•</span>
+        <span class="footer-copy">© 2026 RoadGuard AI Platform</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/login-civic.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Automatically pop open tracker modal on track.html
+      const modal = document.getElementById('tracking-modal');
+      if (modal) modal.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>

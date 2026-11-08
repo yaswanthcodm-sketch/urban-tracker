@@ -252,6 +252,20 @@ const CAMERA_SEEDS = [
 
   { id: 'austin-congress-s', cityId: 'austin', poiIndex: 0, label: 'Congress Southbound', offsetNorthM: -165, offsetEastM: 40, headingDeg: 12, fovDeg: 74, rangeM: 760, elevationM: 24 },
   { id: 'austin-downtown-west', cityId: 'austin', poiIndex: 1, label: 'Downtown West', offsetNorthM: -120, offsetEastM: -160, headingDeg: 120, fovDeg: 69, rangeM: 700, elevationM: 20 },
+
+  { id: 'delhi-rajpath-gate', cityId: 'delhi', poiIndex: 0, label: 'India Gate Kartavya Path', offsetNorthM: 100, offsetEastM: -50, headingDeg: 270, fovDeg: 72, rangeM: 750, elevationM: 22 },
+  { id: 'delhi-red-fort', cityId: 'delhi', poiIndex: 1, label: 'Red Fort Lahori Gate', offsetNorthM: -120, offsetEastM: 60, headingDeg: 310, fovDeg: 68, rangeM: 680, elevationM: 25 },
+  { id: 'delhi-rashtrapati-bhavan', cityId: 'delhi', poiIndex: 3, label: 'Rashtrapati Bhavan Plaza', offsetNorthM: 80, offsetEastM: 120, headingDeg: 260, fovDeg: 70, rangeM: 800, elevationM: 28 },
+
+  { id: 'mumbai-gateway-harbor', cityId: 'mumbai', poiIndex: 0, label: 'Gateway of India Harbor', offsetNorthM: 90, offsetEastM: 40, headingDeg: 95, fovDeg: 75, rangeM: 700, elevationM: 20 },
+  { id: 'mumbai-marine-drive', cityId: 'mumbai', poiIndex: 1, label: 'Marine Drive Promenade', offsetNorthM: 140, offsetEastM: -60, headingDeg: 190, fovDeg: 76, rangeM: 850, elevationM: 24 },
+  { id: 'mumbai-sea-link', cityId: 'mumbai', poiIndex: 2, label: 'Bandra-Worli Sea Link Toll', offsetNorthM: -110, offsetEastM: 85, headingDeg: 205, fovDeg: 72, rangeM: 900, elevationM: 32 },
+
+  { id: 'blr-vidhana-soudha', cityId: 'bengaluru', poiIndex: 0, label: 'Vidhana Soudha Central', offsetNorthM: 110, offsetEastM: -40, headingDeg: 265, fovDeg: 72, rangeM: 760, elevationM: 25 },
+  { id: 'blr-ub-city', cityId: 'bengaluru', poiIndex: 1, label: 'UB City Vittal Mallya Rd', offsetNorthM: -80, offsetEastM: 90, headingDeg: 340, fovDeg: 70, rangeM: 720, elevationM: 30 },
+
+  { id: 'hyd-charminar-chowk', cityId: 'hyderabad', poiIndex: 0, label: 'Charminar Heritage Plaza', offsetNorthM: 85, offsetEastM: -35, headingDeg: 180, fovDeg: 74, rangeM: 650, elevationM: 22 },
+  { id: 'hyd-cyber-towers', cityId: 'hyderabad', poiIndex: 2, label: 'HITEC City Cyber Towers', offsetNorthM: 120, offsetEastM: 70, headingDeg: 315, fovDeg: 70, rangeM: 780, elevationM: 30 },
 ];
 
 // ---------------------------------------------------------------------------
@@ -372,7 +386,7 @@ const CCTV_AMBIENT_CARD_DRAIN_CAP = 16;
 // 250 ms spacing; steady state keeps the salvaged Part C gate of at most one
 // request per second with an in-flight fetch blocking the tick, so slow
 // responses only lower the rate.
-const CARD_FETCH_TICK_MS = CCTV_CARD_FETCH_BURST_SPACING_MS;
+const CARD_FETCH_TICK_MS = Math.max(1200, CCTV_CARD_FETCH_BURST_SPACING_MS);
 // In-view margin so cards whose anchors sit just beyond an edge don't churn
 // while the operator makes minor camera adjustments (Part C recordIsInView).
 const CARD_VIEW_MARGIN = 0.06;

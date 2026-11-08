@@ -1,0 +1,19 @@
+{
+  "settings_version": "0.0.8",
+  "datasets_dir": "/Users/yaswanth/Downloads/gods-eye-view-0.1.1/datasets",
+  "weights_dir": "weights",
+  "runs_dir": "runs",
+  "uuid": "7fa0c726ef4650ff362fe394a4a8a4107baf7560a10502b905a9d77bd7a3b436",
+  "sync": true,
+  "api_key": "ul_086ff9330d959243bb9b7c9ddbe1aa89790e8fbc",
+  "openai_api_key": "",
+  "clearml": true,
+  "comet": true,
+  "dvc": true,
+  "mlflow": true,
+  "raytune": true,
+  "tensorboard": false,
+  "wandb": false,
+  "vscode_msg": true,
+  "openvino_msg": true
+}

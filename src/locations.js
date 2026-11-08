@@ -1,5 +1,7 @@
 import * as Cesium from 'cesium';
 import { viewportBias, placesNearViewRecovery } from './annotations/annotationResolver.js';
+import { findIndiaPlace } from './data/indiaData.js';
+import { findCountry, findPlaceInCountry } from './data/countriesData.js';
 
 /**
  * Points of Interest per city.
@@ -115,6 +117,66 @@ export const CITY_POIS = {
       { name: 'Lincoln Memorial', lat: 38.8893, lon: -77.0502, alt: 400, pitch: -25, heading: 90, buildingHeight: 20 },
       { name: 'Pentagon', lat: 38.8711, lon: -77.0559, alt: 800, pitch: -40, heading: 0, buildingHeight: 20 },
       { name: 'Jefferson Memorial', lat: 38.8814, lon: -77.0365, alt: 400, pitch: -30, heading: 0, buildingHeight: 25 },
+    ],
+  },
+  india: {
+    name: 'India',
+    groundElevation: 250,
+    viewBounds: { southwest: { lat: 6.55, lng: 68.10 }, northeast: { lat: 35.68, lng: 97.40 } },
+    pois: [
+      { name: 'India Gate', lat: 28.6129, lon: 77.2295, alt: 600, pitch: -25, heading: 0, buildingHeight: 42 },
+      { name: 'Taj Mahal', lat: 27.1751, lon: 78.0421, alt: 500, pitch: -22, heading: 180, buildingHeight: 73 },
+      { name: 'Gateway of India', lat: 18.9220, lon: 72.8347, alt: 550, pitch: -25, heading: 45, buildingHeight: 26 },
+      { name: 'Charminar', lat: 17.3616, lon: 78.4747, alt: 450, pitch: -28, heading: 0, buildingHeight: 56 },
+      { name: 'Vidhana Soudha', lat: 12.9797, lon: 77.5907, alt: 550, pitch: -25, heading: 270, buildingHeight: 45 },
+    ],
+  },
+  delhi: {
+    name: 'New Delhi',
+    groundElevation: 215,
+    viewBounds: { southwest: { lat: 28.40, lng: 76.85 }, northeast: { lat: 28.88, lng: 77.38 } },
+    pois: [
+      { name: 'India Gate', lat: 28.6129, lon: 77.2295, alt: 550, pitch: -25, heading: 0, buildingHeight: 42 },
+      { name: 'Red Fort', lat: 28.6562, lon: 77.2410, alt: 600, pitch: -28, heading: 315, buildingHeight: 33 },
+      { name: 'Qutub Minar', lat: 28.5245, lon: 77.1855, alt: 450, pitch: -20, heading: 180, buildingHeight: 72 },
+      { name: 'Rashtrapati Bhavan', lat: 28.6143, lon: 77.1995, alt: 650, pitch: -25, heading: 90, buildingHeight: 30 },
+      { name: 'Lotus Temple', lat: 28.5535, lon: 77.2588, alt: 450, pitch: -25, heading: 45, buildingHeight: 34 },
+    ],
+  },
+  mumbai: {
+    name: 'Mumbai',
+    groundElevation: 10,
+    viewBounds: { southwest: { lat: 18.88, lng: 72.75 }, northeast: { lat: 19.30, lng: 73.05 } },
+    pois: [
+      { name: 'Gateway of India', lat: 18.9220, lon: 72.8347, alt: 500, pitch: -25, heading: 45, buildingHeight: 26 },
+      { name: 'Marine Drive', lat: 18.9432, lon: 72.8230, alt: 650, pitch: -22, heading: 350, buildingHeight: 25 },
+      { name: 'Bandra-Worli Sea Link', lat: 19.0330, lon: 72.8160, alt: 800, pitch: -20, heading: 200, buildingHeight: 126 },
+      { name: 'CSMT Terminus', lat: 18.9400, lon: 72.8353, alt: 450, pitch: -28, heading: 270, buildingHeight: 40 },
+      { name: 'Taj Mahal Palace', lat: 18.9217, lon: 72.8333, alt: 400, pitch: -22, heading: 90, buildingHeight: 45 },
+    ],
+  },
+  bengaluru: {
+    name: 'Bengaluru',
+    groundElevation: 920,
+    viewBounds: { southwest: { lat: 12.82, lng: 77.45 }, northeast: { lat: 13.15, lng: 77.75 } },
+    pois: [
+      { name: 'Vidhana Soudha', lat: 12.9797, lon: 77.5907, alt: 550, pitch: -25, heading: 270, buildingHeight: 45 },
+      { name: 'UB City', lat: 12.9719, lon: 77.5958, alt: 500, pitch: -20, heading: 30, buildingHeight: 128 },
+      { name: 'Bangalore Palace', lat: 12.9988, lon: 77.5921, alt: 500, pitch: -28, heading: 180, buildingHeight: 30 },
+      { name: 'Lalbagh Glass House', lat: 12.9507, lon: 77.5848, alt: 450, pitch: -25, heading: 0, buildingHeight: 20 },
+      { name: 'ISRO Headquarters', lat: 13.0336, lon: 77.5647, alt: 500, pitch: -25, heading: 45, buildingHeight: 35 },
+    ],
+  },
+  hyderabad: {
+    name: 'Hyderabad',
+    groundElevation: 540,
+    viewBounds: { southwest: { lat: 17.25, lng: 78.25 }, northeast: { lat: 17.58, lng: 78.60 } },
+    pois: [
+      { name: 'Charminar', lat: 17.3616, lon: 78.4747, alt: 450, pitch: -28, heading: 0, buildingHeight: 56 },
+      { name: 'Golconda Fort', lat: 17.3833, lon: 78.4011, alt: 650, pitch: -30, heading: 45, buildingHeight: 40 },
+      { name: 'Cyber Towers', lat: 17.4504, lon: 78.3808, alt: 550, pitch: -20, heading: 330, buildingHeight: 70 },
+      { name: 'Buddha Statue', lat: 17.4156, lon: 78.4750, alt: 500, pitch: -25, heading: 180, buildingHeight: 22 },
+      { name: 'Chowmahalla Palace', lat: 17.3578, lon: 78.4717, alt: 450, pitch: -28, heading: 90, buildingHeight: 25 },
     ],
   },
 };
@@ -347,40 +409,154 @@ export const CANCELLED_SEARCH = Object.freeze({ cancelled: true });
  * default; precise landmarks/buildings use close landmark framing.
  */
 export async function searchAndFlyTo(viewer, query, options = {}) {
-  const apiKey = window.__GOOGLE_MAPS_API_KEY__ || import.meta.env.GOOGLE_MAPS_API_KEY;
-  if (!apiKey) throw new Error('No Google Maps API key available for geocoding');
-
+  const apiKey = (typeof window !== 'undefined' && window.__GOOGLE_MAPS_API_KEY__) || (typeof import.meta !== 'undefined' && import.meta.env?.GOOGLE_MAPS_API_KEY);
   const beforeFly = typeof options.beforeFly === 'function' ? options.beforeFly : null;
   const mayFly = () => beforeFly === null || beforeFly() !== false;
 
-  // Viewport-biased geocode — the same bias annotationResolver's geocodePlace uses:
-  // "Sixth Street" spoken over Austin must prefer the Sixth Street on screen, not a
-  // same-named road in another city (or the wrong end of town — the W 6th vs E 6th bug).
-  let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(query)}&key=${apiKey}`;
-  const bias = viewportBias(viewer);
-  if (bias) url += `&bounds=${bias}`;
-  const response = await fetch(url);
-  const data = await response.json();
+  let lat;
+  let lng;
+  let label = null;
+  let types = [];
+  let viewport = null;
 
-  const result = (data.status === 'OK' && data.results?.length) ? data.results[0] : null;
-  let lat = result?.geometry.location.lat;
-  let lng = result?.geometry.location.lng;
-  let label = result ? result.formatted_address : null;
-  let types = result?.types || [];
-  let viewport = result ? (result.geometry.bounds || result.geometry.viewport) : null;
+  // 1. Resolve country context if supplied
+  const selectedCountry = options.country ? findCountry(options.country) : null;
+  const countryName = selectedCountry ? selectedCountry.name : '';
+  const countryScopedQuery = countryName && !query.toLowerCase().includes(countryName.toLowerCase())
+    ? `${query}, ${countryName}`
+    : query;
 
-  // Places-near-view recovery (annotationResolver's twin): a missed geocode, or one
-  // that landed implausibly far from the view centre, snaps back to a view-biased
-  // Places hit within the trust bound — "the Capitol" means the one on screen.
-  const recovered = await placesNearViewRecovery(viewer, query, result ? { lat, lon: lng } : null);
-  if (recovered) {
-    lat = recovered.lat;
-    lng = recovered.lon;
-    label = recovered.label || label || query;
-    types = recovered.types || [];
-    viewport = placesViewportToBounds(recovered.viewport) || viewport;
-  } else if (!result) {
-    return null;
+  // 2. Check local hierarchical database first (instant zero-latency match)
+  let placeHit = selectedCountry ? findPlaceInCountry(selectedCountry.id, query) : null;
+  if (!placeHit) {
+    placeHit = findIndiaPlace(query);
+  }
+
+  if (placeHit) {
+    lat = placeHit.lat;
+    lng = placeHit.lon;
+    label = placeHit.label || `${placeHit.name}, ${placeHit.state ? placeHit.state + ', ' : ''}${placeHit.country || 'India'}`;
+    if (['country', 'state', 'ut'].includes(placeHit.type)) {
+      types = ['country', 'administrative_area_level_1', 'political'];
+    } else if (['city', 'town'].includes(placeHit.type)) {
+      types = ['locality', 'political'];
+    } else {
+      types = ['neighborhood', 'political'];
+    }
+    viewport = placeHit.viewBounds || null;
+  } else if (apiKey) {
+    // Viewport-biased geocode — the same bias annotationResolver's geocodePlace uses:
+    // "Sixth Street" spoken over Austin must prefer the Sixth Street on screen, not a
+    // same-named road in another city (or the wrong end of town — the W 6th vs E 6th bug).
+    let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(countryScopedQuery)}&key=${apiKey}`;
+    const bias = viewportBias(viewer);
+    if (bias) url += `&bounds=${bias}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const result = (data.status === 'OK' && data.results?.length) ? data.results[0] : null;
+    lat = result?.geometry.location.lat;
+    lng = result?.geometry.location.lng;
+    label = result ? result.formatted_address : null;
+    types = result?.types || [];
+    viewport = result ? (result.geometry.bounds || result.geometry.viewport) : null;
+
+    // Places-near-view recovery (annotationResolver's twin): a missed geocode, or one
+    // that landed implausibly far from the view centre, snaps back to a view-biased
+    // Places hit within the trust bound — "the Capitol" means the one on screen.
+    const recovered = await placesNearViewRecovery(viewer, countryScopedQuery, result ? { lat, lon: lng } : null);
+    if (recovered) {
+      lat = recovered.lat;
+      lng = recovered.lon;
+      label = recovered.label || label || query;
+      types = recovered.types || [];
+      viewport = placesViewportToBounds(recovered.viewport) || viewport;
+    } else if (!result) {
+      return null;
+    }
+  } else {
+    // Keyless geocoding: Try fast Photon (OSM) first, then Nominatim fallback
+    let geocoded = false;
+    try {
+      const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(countryScopedQuery)}&limit=1`;
+      const pRes = await fetch(photonUrl, { signal: AbortSignal.timeout(3000) });
+      const pData = await pRes.json();
+      if (pData?.features?.length) {
+        const feat = pData.features[0];
+        const coords = feat.geometry?.coordinates;
+        if (coords && coords.length >= 2) {
+          lng = parseFloat(coords[0]);
+          lat = parseFloat(coords[1]);
+          const props = feat.properties || {};
+          const namePart = props.name || query;
+          const statePart = props.state ? `${props.state}, ` : '';
+          const countryPart = props.country || (selectedCountry ? selectedCountry.name : '');
+          label = `${namePart}, ${statePart}${countryPart}`.trim().replace(/,\s*$/, '');
+          const pType = props.type || props.osm_value || '';
+          if (['country', 'state'].includes(pType)) {
+            types = ['country', 'administrative_area_level_1', 'political'];
+          } else if (['city', 'town', 'municipality', 'district', 'county'].includes(pType)) {
+            types = ['locality', 'political'];
+          } else if (['village', 'hamlet', 'suburb', 'neighbourhood', 'locality'].includes(pType)) {
+            types = ['neighborhood', 'political'];
+          } else {
+            types = ['locality', 'political'];
+          }
+          geocoded = true;
+        }
+      }
+    } catch (e) {
+      console.warn('[Search] Photon geocode fallback failed:', e);
+    }
+
+    if (!geocoded) {
+      try {
+        const nomUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(countryScopedQuery)}&format=json&addressdetails=1&limit=1`;
+        const response = await fetch(nomUrl, {
+          signal: AbortSignal.timeout(3500),
+          headers: { 'User-Agent': 'GodsEyeView/0.1 (+https://github.com/bilawalsidhu/gods-eye-view)' },
+        });
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const hit = data[0];
+          lat = parseFloat(hit.lat);
+          lng = parseFloat(hit.lon);
+          label = hit.display_name;
+          const addrType = hit.addresstype || hit.type || '';
+          if (['country', 'state'].includes(addrType)) {
+            types = ['country', 'administrative_area_level_1', 'political'];
+          } else if (['city', 'town', 'municipality', 'district', 'county'].includes(addrType)) {
+            types = ['locality', 'political'];
+          } else if (['village', 'hamlet', 'suburb', 'neighbourhood'].includes(addrType)) {
+            types = ['neighborhood', 'political'];
+          } else {
+            types = ['locality', 'political'];
+          }
+          if (hit.boundingbox && hit.boundingbox.length === 4) {
+            viewport = {
+              southwest: { lat: parseFloat(hit.boundingbox[0]), lng: parseFloat(hit.boundingbox[2]) },
+              northeast: { lat: parseFloat(hit.boundingbox[1]), lng: parseFloat(hit.boundingbox[3]) },
+            };
+          }
+          geocoded = true;
+        }
+      } catch (e) {
+        console.warn('[Search] Nominatim geocode fallback failed:', e);
+      }
+    }
+
+    if (!geocoded) {
+      // Secondary fallback: check preset CITY_POIS
+      const poiCity = Object.values(CITY_POIS).find((c) => c.name.toLowerCase() === query.trim().toLowerCase());
+      if (poiCity && poiCity.pois?.[0]) {
+        lat = poiCity.pois[0].lat;
+        lng = poiCity.pois[0].lon;
+        label = poiCity.name;
+        types = ['locality', 'political'];
+      } else {
+        return null;
+      }
+    }
   }
 
   const requestedRange = finitePositive(options.range);
@@ -451,15 +627,16 @@ export async function searchAndFlyTo(viewer, query, options = {}) {
     }
   }
 
-  const shouldResolveBuilding = navigationMode === 'precise-place';
+  const shouldResolveBuilding = !options.forceClose && navigationMode === 'precise-place';
   const buildingBounds = shouldResolveBuilding
     ? await resolveBuildingBounds(lat, lng, query)
     : null;
-  const range = requestedRange || defaultRangeForNavigationMode(navigationMode);
+  const range = requestedRange || (options.forceClose ? (navigationMode === 'neighborhood-close' || navigationMode === 'precise-place' ? 1200 : 2500) : defaultRangeForNavigationMode(navigationMode));
   if (!mayFly()) return CANCELLED_SEARCH;
+  const closePitch = options.forceClose ? -35 : buildingPitch(buildingBounds);
   const flight = flyToLandmark(viewer, buildingBounds?.lat ?? lat, buildingBounds?.lon ?? lng, {
     range,
-    pitch: buildingPitch(buildingBounds),
+    pitch: closePitch,
     heading: 30,
     buildingHeight: 30,
     buildingBounds,
@@ -470,6 +647,8 @@ export async function searchAndFlyTo(viewer, query, options = {}) {
   });
   return {
     label,
+    lat: buildingBounds?.lat ?? lat,
+    lng: buildingBounds?.lon ?? lng,
     navigationMode: requestedRange
       ? 'explicit-range'
       : (options.forceClose ? navigationMode.replace('-overview', '-close') : navigationMode),
@@ -728,10 +907,12 @@ export function regionFramingPlan(viewport) {
 }
 
 function defaultRangeForNavigationMode(mode) {
-  // Fallback ranges when the geocode has no usable viewport to frame.
+  // Calibrated ranges so roads, streets, and town geography are clearly visible
+  if (mode === 'city-overview') return 2800; // Optimal close road & street view for cities/towns
   if (mode === 'area-overview') return 1400;
-  if (mode === 'street-corridor') return 900;
-  return 250;
+  if (mode === 'neighborhood-close') return 1200; // Optimal close road & street view for villages/neighborhoods
+  if (mode === 'street-corridor') return 800; // Street & road corridor level
+  return 450;
 }
 
 function shouldFrameGeocodeViewport(mode) {
@@ -739,7 +920,7 @@ function shouldFrameGeocodeViewport(mode) {
     || mode === 'area-overview' || mode === 'street-corridor';
 }
 
-function flyToViewportBounds(viewer, viewport, options = {}) {
+export function flyToViewportBounds(viewer, viewport, options = {}) {
   const {
     duration = 3.0,
     beforeFly = null,

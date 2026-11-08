@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Urban Tracker & RoadGuard AI — Tech Stack & Architecture Voice Explainer</title>
+  <link rel="icon" type="image/svg+xml" href="/public/favicon.svg" />
+  <style>
+    :root {
+      --bg-dark: #030c16;
+      --card-bg: rgba(9, 26, 46, 0.92);
+      --card-border: rgba(0, 240, 255, 0.25);
+      --cyan: #00f0ff;
+      --amber: #ff9900;
+      --green: #10b981;
+      --red: #ef4444;
+      --purple: #a855f7;
+      --white: #ffffff;
+      --slate: #94a3b8;
+      --muted: #64748b;
+      --font-mono: 'Consolas', 'Courier New', monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--white);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 20px 80px 20px;
+      overflow-x: hidden;
+    }
+
+    /* Ambient glowing sphere */
+    .glow-aura {
+      position: fixed;
+      top: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 750px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.14) 0%, rgba(168, 85, 247, 0.08) 40%, rgba(255, 153, 0, 0.05) 70%, transparent 85%);
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 1060px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header Navigation */
+    header.top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: rgba(3, 12, 22, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 6px;
+      color: var(--white);
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--cyan);
+      color: #030c16;
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+
+    /* Hero Audio Player Card */
+    .hero-player-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 35px rgba(0, 240, 255, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .tag-live {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--amber);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .hero-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      color: var(--slate);
+      margin-top: 6px;
+      max-width: 680px;
+      line-height: 1.5;
+    }
+
+    /* Voice Switcher Chips */
+    .voice-chips-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 6px 10px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .v-chip {
+      padding: 5px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      background: transparent;
+      border: none;
+      border-radius: 20px;
+      color: var(--slate);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .v-chip.active {
+      background: var(--cyan);
+      color: #030c16;
+      font-weight: 800;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    /* Animated Visualizer */
+    #vis-canvas {
+      width: 100%;
+      height: 64px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+    }
+
+    /* Timeline Scrubber */
+    .scrubber-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .scrubber-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scrubber-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--amber));
+      border-radius: 4px;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    .time-readout {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--slate);
+    }
+
+    /* Control Buttons */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .transport-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .play-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--cyan);
+      border: none;
+      color: #030c16;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.08);
+      background: #38f4ff;
+    }
+
+    .skip-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 11.5px;
+      font-family: var(--font-mono);
+      transition: all 0.2s ease;
+    }
+
+    .skip-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .speed-btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .sp-btn {
+      padding: 4px 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      color: var(--slate);
+      cursor: pointer;
+    }
+
+    .sp-btn.active {
+      background: var(--amber);
+      color: #030c16;
+      border-color: var(--amber);
+      font-weight: 800;
+    }
+
+    .direct-downloads {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .dl-btn {
+      padding: 7px 14px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--green);
+      border-radius: 6px;
+      color: var(--green);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .dl-btn:hover {
+      background: var(--green);
+      color: #030c16;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+    }
+
+    .dl-btn.dl-whatsapp {
+      background: #25D366;
+      border-color: #25D366;
+      color: #030c16;
+      font-weight: 800;
+      box-shadow: 0 0 14px rgba(37, 211, 102, 0.4);
+    }
+
+    .dl-btn.dl-whatsapp:hover {
+      background: #1eb855;
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(37, 211, 102, 0.7);
+    }
+
+    /* 4-Pillar Grid */
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 850px) {
+      .pillar-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pillar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .pillar-card.active {
+      border-color: var(--cyan);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.25), inset 3px 0 0 var(--cyan);
+      background: rgba(9, 32, 58, 0.96);
+    }
+
+    .pillar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pillar-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .pillar-badge.frontend { background: rgba(0, 240, 255, 0.15); color: var(--cyan); border: 1px solid var(--cyan); }
+    .pillar-badge.backend { background: rgba(255, 153, 0, 0.15); color: var(--amber); border: 1px solid var(--amber); }
+    .pillar-badge.ui { background: rgba(168, 85, 247, 0.15); color: var(--purple); border: 1px solid var(--purple); }
+    .pillar-badge.ux { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); }
+
+    .pillar-time {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--muted);
+    }
+
+    .pillar-heading {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.3;
+    }
+
+    .tech-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      padding: 4px 9px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      color: var(--white);
+    }
+
+    .pillar-narrative {
+      font-size: 13.5px;
+      color: var(--slate);
+      line-height: 1.6;
+    }
+
+    .pillar-narrative strong {
+      color: var(--white);
+    }
+
+    /* Jump-to-Audio CTA */
+    .jump-cta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--cyan);
+      margin-top: 4px;
+    }
+
+    /* Direct Audio Files Box */
+    .audio-box {
+      background: rgba(3, 20, 36, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .audio-box-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .audio-box-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .audio-box-desc {
+      font-size: 12px;
+      color: var(--slate);
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-aura"></div>
+
+  <div class="container">
+    <!-- Top Nav -->
+    <header class="top-nav">
+      <div class="brand-group">
+        <span class="live-dot"></span>
+        <span class="brand-title">URBAN TRACKER & ROADGUARD AI</span>
+      </div>
+      <div class="nav-links">
+        <a href="/" class="nav-btn">🌍 3D LIVE TRACKER</a>
+        <a href="/presentation.html" class="nav-btn">📊 SLIDE DECK</a>
+        <a href="/voice-explainer.html" class="nav-btn">🎙️ GENERAL WALKTHROUGH</a>
+        <a href="/Urban_Tracker_RoadGuard_Smart_City_Presentation.pptx" download class="nav-btn">📥 PPTX</a>
+      </div>
+    </header>
+
+    <!-- Main Voice Audio Player Card -->
+    <section class="hero-player-card">
+      <div class="hero-header">
+        <div>
+          <div class="tag-live">🎙️ OFFICIAL ARCHITECTURE AUDIO WALKTHROUGH</div>
+          <h1 class="hero-title">Technical Deep-Dive: Frontend, Backend, UI & UX</h1>
+          <p class="hero-subtitle">Listen to our complete technical voice explanation detailing every library, engine, model, and design decision used to engineer Urban Tracker and RoadGuard AI.</p>
+        </div>
+        <div class="voice-chips-wrap">
+          <button class="v-chip active" data-voice="samantha" type="button">Samantha (Studio Accent)</button>
+          <button class="v-chip" data-voice="rishi" type="button">Rishi (Indian English)</button>
+        </div>
+      </div>
+
+      <!-- Real-Time Visualizer Waveform -->
+      <canvas id="vis-canvas"></canvas>
+
+      <!-- Scrubber -->
+      <div class="scrubber-wrap">
+        <div class="scrubber-track" id="scrubber-track">
+          <div class="scrubber-fill" id="scrubber-fill"></div>
+        </div>
+        <div class="time-readout">
+          <span id="curr-time">0:00</span>
+          <span id="dur-time">--:--</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-bar">
+        <div class="transport-controls">
+          <button class="skip-btn" id="btn-back" type="button" title="Rewind 10s">-10s</button>
+          <button class="play-btn" id="play-pause-btn" type="button" title="Play / Pause">▶</button>
+          <button class="skip-btn" id="btn-fwd" type="button" title="Forward 10s">+10s</button>
+        </div>
+
+        <div class="speed-btn-group">
+          <button class="sp-btn" data-speed="0.75" type="button">0.75x</button>
+          <button class="sp-btn active" data-speed="1.0" type="button">1.0x</button>
+          <button class="sp-btn" data-speed="1.25" type="button">1.25x</button>
+          <button class="sp-btn" data-speed="1.5" type="button">1.5x</button>
+        </div>
+
+        <div class="direct-downloads">
+          <a id="dl-whatsapp" href="/audio/urban_tracker_tech_stack_explanation.mp3" download="urban_tracker_tech_stack_explanation.mp3" class="dl-btn dl-whatsapp">
+            📲 DOWNLOAD FOR WHATSAPP (.MP3 — 2.3 MB)
+          </a>
+          <a id="dl-m4a" href="/audio/urban_tracker_tech_stack_explanation.m4a" download="urban_tracker_tech_stack_explanation.m4a" class="dl-btn">
+            📥 M4A (2.5 MB)
+          </a>
+          <a id="dl-wav" href="/audio/urban_tracker_tech_stack_explanation.wav" download="urban_tracker_tech_stack_explanation.wav" class="dl-btn">
+            📥 WAV (13 MB)
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4-Pillar Interactive Architectural Showcase -->
+    <div class="pillar-grid">
+      
+      <!-- PILLAR 1: FRONTEND -->
+      <div class="pillar-card" data-start="12" data-end="68" id="pillar-frontend">
+        <div class="pillar-top">
+          <span class="pillar-badge frontend">01. FRONTEND ARCHITECTURE</span>
+          <span class="pillar-time">0:12 — 1:08</span>
+        </div>
+        <h2 class="pillar-heading">CesiumJS 3D WebGL, Vanilla JS & Vite Proxy Pipeline</h2>
+        <div class="tech-chips">
+          <span class="chip">CesiumJS (v1.124)</span>
+          <span class="chip">Vanilla JavaScript (ES6 Modules)</span>
+          <span class="chip">HTML5 Canvas 2D Overlay</span>
+          <span class="chip">Vite 6 Middleware Proxies</span>
+        </div>
+        <p class="pillar-narrative">
+          • <strong>CesiumJS 3D Globe:</strong> Powers 60 FPS photorealistic 3D terrain streaming and dynamic street camera fly-to animations.<br/>
+          • <strong>Zero-Runtime Overhead:</strong> Replaced heavy React/Angular state bundles with pure, modular Vanilla JavaScript for instant execution.<br/>
+          • <strong>HTML5 Canvas AI Renderer:</strong> Custom 2D viewport draws bounding boxes, defect severity tags, and confidence badges over satellite rasters.<br/>
+          • <strong>Vite Reverse Proxy:</strong> Bypasses CORS restrictions to query live OpenStreetMap Overpass road vectors and RoadGuard FastAPI backend.
+        </p>
+        <div class="jump-cta">▶ CLICK TO LISTEN TO FRONTEND SECTION</div>
+      </div>
+
+      <!-- PILLAR 2: BACKEND -->
+      <div class="pillar-card" data-start="68" data-end="135" id="pillar-backend">
+        <div class="pillar-top">
+          <span class="pillar-badge backend">02. BACKEND & AI VISION</span>
+          <span class="pillar-time">1:08 — 2:15</span>
+        </div>
+        <h2 class="pillar-heading">FastAPI, Ultralytics YOLOv8 & OpenCV Morphology</h2>
+        <div class="tech-chips">
+          <span class="chip">FastAPI (Python 3.11)</span>
+          <span class="chip">Ultralytics YOLOv8</span>
+          <span class="chip">OpenCV 4 Morphology</span>
+          <span class="chip">SQLAlchemy ORM</span>
+          <span class="chip">Haversine 50m Deduplication</span>
+        </div>
+        <p class="pillar-narrative">
+          • <strong>Ultralytics YOLOv8 Neural Network:</strong> Detects asphalt cavities, alligator fatigue cracks, and edge erosion at <strong>94.2% AI confidence</strong>.<br/>
+          • <strong>OpenCV Morphology Analyzer:</strong> Calculates surface defect area ratio against road width to estimate damage severity (Grade 1–3) independently of confidence.<br/>
+          • <strong>SQLAlchemy & SQLite/PostgreSQL:</strong> Maintains 14-state complaint lifecycles, contractor repair verifications, and audit logs.<br/>
+          • <strong>Haversine Duplicate Engine:</strong> Prevents duplicate registrations within 50m of an existing road complaint.
+        </p>
+        <div class="jump-cta">▶ CLICK TO LISTEN TO BACKEND SECTION</div>
+      </div>
+
+      <!-- PILLAR 3: UI -->
+      <div class="pillar-card" data-start="135" data-end="195" id="pillar-ui">
+        <div class="pillar-top">
+          <span class="pillar-badge ui">03. USER INTERFACE (UI)</span>
+          <span class="pillar-time">2:15 — 3:15</span>
+        </div>
+        <h2 class="pillar-heading">Tactical Ops Dark vs. Pure White Paper Sunlight Mode</h2>
+        <div class="tech-chips">
+          <span class="chip">Tactical Dark (#030C16)</span>
+          <span class="chip">Pure White Paper (#FFFFFF)</span>
+          <span class="chip">Cesium Skybox Suppression</span>
+          <span class="chip">Side-by-Side Modal Docking</span>
+          <span class="chip">Strict Z-Index Isolation</span>
+        </div>
+        <p class="pillar-narrative">
+          • <strong>Tactical Ops Dark Mode:</strong> Deep obsidian background with neon cyan and amber accents designed for 24/7 Smart City Command Centers (ICCC).<br/>
+          • <strong>Pure White Paper Sunlight Mode:</strong> Disables Cesium skybox, sun, moon, and atmosphere, setting scene background to <strong>#FFFFFF</strong> with slate text (#0F172A) for 100% glare-free outdoor tablet use.<br/>
+          • <strong>Rigid Z-Index Layering:</strong> `#road-recon-modal` (z:10000) and `.village-roads-drawer` (z:9999) dock side-by-side with zero title bar overlap.
+        </p>
+        <div class="jump-cta">▶ CLICK TO LISTEN TO UI SECTION</div>
+      </div>
+
+      <!-- PILLAR 4: UX -->
+      <div class="pillar-card" data-start="195" data-end="255" id="pillar-ux">
+        <div class="pillar-top">
+          <span class="pillar-badge ux">04. USER EXPERIENCE (UX)</span>
+          <span class="pillar-time">3:15 — 4:15</span>
+        </div>
+        <h2 class="pillar-heading">0ms Locality Mesh, Sub-Meter Optics & 1-Click Dispatch</h2>
+        <div class="tech-chips">
+          <span class="chip">Offline India Geocoder</span>
+          <span class="chip">Procedural Road Generator</span>
+          <span class="chip">Sub-Meter Optical Pass</span>
+          <span class="chip">12-Frame Time Scrubbing</span>
+          <span class="chip">Jurisdiction Auto-Routing</span>
+        </div>
+        <p class="pillar-narrative">
+          • <strong>Universal Locality Engine:</strong> Reads every road in any village or town (Nuzvid, Eluru, Guntur, Delhi) with instant 0ms procedural fallback.<br/>
+          • <strong>Zero Fake Stock Photos:</strong> Exports real sub-meter optical satellite frames centered at exact road GPS coordinates with 1h/3h orbital passes.<br/>
+          • <strong>1-Click Jurisdiction Auto-Routing:</strong> Maps expressways to NHAI, state highways to PWD, and municipal lanes to Urban Local Bodies with unique tracking IDs.
+        </p>
+        <div class="jump-cta">▶ CLICK TO LISTEN TO UX SECTION</div>
+      </div>
+
+    </div>
+
+    <!-- Quick Audio Downloads Summary -->
+    <div class="audio-box">
+      <div class="audio-box-info">
+        <div class="audio-box-title">💾 Direct Audio Downloads (No Website Required)</div>
+        <div class="audio-box-desc">You can directly download or open these audio recordings on your computer or mobile phone:</div>
+      </div>
+      <div class="direct-downloads">
+        <a href="/audio/urban_tracker_tech_stack_explanation.mp3" download="urban_tracker_tech_stack_explanation.mp3" class="dl-btn dl-whatsapp">📲 WHATSAPP MP3 (2.3 MB)</a>
+        <a href="/audio/urban_tracker_tech_stack_explanation.m4a" download="urban_tracker_tech_stack_explanation.m4a" class="dl-btn">🎧 TECH STACK (M4A)</a>
+        <a href="/audio/urban_tracker_tech_stack_explanation.wav" download="urban_tracker_tech_stack_explanation.wav" class="dl-btn">🎧 TECH STACK (WAV)</a>
+        <a href="/audio/urban_tracker_voice_explanation.mp3" download="urban_tracker_voice_explanation.mp3" class="dl-btn dl-whatsapp">📲 GENERAL MP3 (1.8 MB)</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Player Element (Uses Universal MP3 for 100% WhatsApp / Web compatibility) -->
+  <audio id="audio-elem" src="/audio/urban_tracker_tech_stack_explanation.mp3" preload="auto"></audio>
+
+  <script>
+    const audio = document.getElementById('audio-elem');
+    const playBtn = document.getElementById('play-pause-btn');
+    const fill = document.getElementById('scrubber-fill');
+    const track = document.getElementById('scrubber-track');
+    const currTime = document.getElementById('curr-time');
+    const durTime = document.getElementById('dur-time');
+    const cards = document.querySelectorAll('.pillar-card');
+    const vChips = document.querySelectorAll('.v-chip');
+    const spBtns = document.querySelectorAll('.sp-btn');
+
+    const dlWhatsapp = document.getElementById('dl-whatsapp');
+    const dlM4a = document.getElementById('dl-m4a');
+    const dlWav = document.getElementById('dl-wav');
+
+    // Canvas Visualizer
+    const canvas = document.getElementById('vis-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    });
+
+    function fmt(s) {
+      if (!Number.isFinite(s)) return '0:00';
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return `${m}:${sec < 10 ? '0' : ''}${sec}`;
+    }
+
+    // Play/Pause
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play().catch(e => console.log('Playback error:', e));
+        playBtn.textContent = '⏸';
+      } else {
+        audio.pause();
+        playBtn.textContent = '▶';
+      }
+    });
+
+    audio.addEventListener('play', () => { playBtn.textContent = '⏸'; });
+    audio.addEventListener('pause', () => { playBtn.textContent = '▶'; });
+
+    // Timeupdate & Card highlighting
+    audio.addEventListener('timeupdate', () => {
+      const c = audio.currentTime;
+      const d = audio.duration || 260;
+      currTime.textContent = fmt(c);
+      durTime.textContent = fmt(d);
+
+      fill.style.width = `${(c / d) * 100}%`;
+
+      cards.forEach(card => {
+        const start = parseFloat(card.dataset.start);
+        const end = parseFloat(card.dataset.end);
+        if (c >= start && c < end) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      durTime.textContent = fmt(audio.duration);
+    });
+
+    // Scrubber click
+    track.addEventListener('click', (e) => {
+      const rect = track.getBoundingClientRect();
+      const pct = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = pct * (audio.duration || 260);
+    });
+
+    document.getElementById('btn-back').addEventListener('click', () => {
+      audio.currentTime = Math.max(0, audio.currentTime - 10);
+    });
+    document.getElementById('btn-fwd').addEventListener('click', () => {
+      audio.currentTime = Math.min(audio.duration || 260, audio.currentTime + 10);
+    });
+
+    // Card click to jump to section
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const start = parseFloat(card.dataset.start);
+        audio.currentTime = start;
+        audio.play().catch(() => {});
+      });
+    });
+
+    // Voice switching
+    vChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        vChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const v = chip.dataset.voice;
+        const wasPlaying = !audio.paused;
+        const cur = audio.currentTime;
+
+        if (v === 'rishi') {
+          audio.src = '/audio/urban_tracker_tech_stack_explanation_rishi.mp3';
+          dlWhatsapp.href = '/audio/urban_tracker_tech_stack_explanation_rishi.mp3';
+          dlWhatsapp.setAttribute('download', 'urban_tracker_tech_stack_explanation_rishi.mp3');
+          dlWhatsapp.innerHTML = '📲 DOWNLOAD FOR WHATSAPP (.MP3 — 2.5 MB)';
+          dlM4a.href = '/audio/urban_tracker_tech_stack_explanation_rishi.m4a';
+          dlM4a.setAttribute('download', 'urban_tracker_tech_stack_explanation_rishi.m4a');
+          dlWav.href = '/audio/urban_tracker_tech_stack_explanation_rishi.wav';
+          dlWav.setAttribute('download', 'urban_tracker_tech_stack_explanation_rishi.wav');
+        } else {
+          audio.src = '/audio/urban_tracker_tech_stack_explanation.mp3';
+          dlWhatsapp.href = '/audio/urban_tracker_tech_stack_explanation.mp3';
+          dlWhatsapp.setAttribute('download', 'urban_tracker_tech_stack_explanation.mp3');
+          dlWhatsapp.innerHTML = '📲 DOWNLOAD FOR WHATSAPP (.MP3 — 2.3 MB)';
+          dlM4a.href = '/audio/urban_tracker_tech_stack_explanation.m4a';
+          dlM4a.setAttribute('download', 'urban_tracker_tech_stack_explanation.m4a');
+          dlWav.href = '/audio/urban_tracker_tech_stack_explanation.wav';
+          dlWav.setAttribute('download', 'urban_tracker_tech_stack_explanation.wav');
+        }
+
+        audio.currentTime = cur;
+        if (wasPlaying) {
+          audio.play().catch(() => {});
+        }
+      });
+    });
+
+    // Playback rate
+    spBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        spBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        audio.playbackRate = parseFloat(btn.dataset.speed);
+      });
+    });
+
+    // Visualizer animation
+    let phase = 0;
+    function drawVis() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const isPlay = !audio.paused;
+      const bars = 56;
+      const w = canvas.width / bars;
+
+      for (let i = 0; i < bars; i++) {
+        let h = 6;
+        if (isPlay) {
+          const wave = Math.sin((i * 0.2) + phase) * Math.cos((i * 0.12) - phase);
+          h = 8 + (Math.abs(wave) * 44);
+        } else {
+          h = 4 + (Math.sin(i * 0.25) * 3);
+        }
+
+        const x = i * w;
+        const y = (canvas.height - h) / 2;
+
+        const grad = ctx.createLinearGradient(0, y, 0, y + h);
+        grad.addColorStop(0, '#00f0ff');
+        grad.addColorStop(0.5, '#a855f7');
+        grad.addColorStop(1, '#ff9900');
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(x + 1, y, w - 2, h);
+      }
+
+      if (isPlay) phase += 0.08;
+      requestAnimationFrame(drawVis);
+    }
+    drawVis();
+  </script>
+</body>
+</html>
