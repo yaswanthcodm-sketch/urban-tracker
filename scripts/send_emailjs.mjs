@@ -55,7 +55,11 @@ const privateKey = process.env.EMAILJS_PRIVATE_KEY || 'ms45r6xA3Ua4ZmtzepQbg';
 async function dispatch() {
   const templateParams = {
     email: toEmail,
+    to_email: toEmail,
+    recipient: toEmail,
+    recipient_email: toEmail,
     passcode: otpCode,
+    otp: otpCode,
     time: '5 minutes',
   };
 

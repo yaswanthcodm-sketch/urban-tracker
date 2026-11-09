@@ -131,7 +131,11 @@ def send_via_emailjs(to_email: str, otp_code: str) -> Optional[dict]:
         "user_id": public_key,
         "template_params": {
             "email": to_email,
+            "to_email": to_email,
+            "recipient": to_email,
+            "recipient_email": to_email,
             "passcode": otp_code,
+            "otp": otp_code,
             "time": "5 minutes",
         }
     }
@@ -152,18 +156,44 @@ def send_via_emailjs(to_email: str, otp_code: str) -> Optional[dict]:
             "--max-time", "12"
         ]
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
-        output = (res.stdout or "") + (res.stderr or "")
-        if "200" in output or "OK" in output:
-            print(f"[AUTH EMAILJS CURL SUCCESS] Delivered OTP to {to_email} via service {service_id}")
+        raw_output = res.stdout or ""
+
+        # Split headers and body to accurately inspect status code
+        header_end = raw_output.find("\r\n\r\n")
+        if header_end == -1:
+            header_end = raw_output.find("\n\n")
+
+        headers_part = raw_output[:header_end] if header_end != -1 else raw_output
+        body_part = raw_output[header_end:].strip() if header_end != -1 else ""
+
+        status_match = re.search(r"HTTP/\S+\s+(\d+)", headers_part)
+        status_code = int(status_match.group(1)) if status_match else None
+
+        if status_code == 200 or (status_code is None and ("200" in headers_part or body_part == "OK")):
+            print(f"[AUTH EMAILJS SUCCESS] Provider accepted request for recipient {to_email}. HTTP 200 OK.")
             return {
                 "delivered": True,
+                "status": "ACCEPTED",
+                "http_status": 200,
                 "provider": "EmailJS-CURL",
-                "message": f"Verification code successfully delivered to {to_email} via EmailJS."
+                "recipient": to_email,
+                "message": f"Verification code successfully accepted by EmailJS for delivery to {to_email}."
+            }
+        elif status_code:
+            print(f"[AUTH EMAILJS REJECTED] EmailJS rejected delivery to {to_email}. HTTP {status_code}: {body_part}")
+            return {
+                "delivered": False,
+                "status": "REJECTED",
+                "http_status": status_code,
+                "provider": "EmailJS-CURL",
+                "recipient": to_email,
+                "reason": "PROVIDER_REJECTED",
+                "message": f"EmailJS provider rejected request (HTTP {status_code}): {body_part or 'Service error'}"
             }
         else:
-            print(f"[AUTH EMAILJS CURL NOTICE] Output: {output}")
+            print(f"[AUTH EMAILJS NOTICE] Non-standard response for {to_email}: {body_part or raw_output[:200]}")
     except Exception as curl_err:
-        print(f"[AUTH EMAILJS CURL ERROR] {curl_err}")
+        print(f"[AUTH EMAILJS BACKEND_ERROR] Failed reaching EmailJS for {to_email}: {curl_err}")
 
     # Method 2: Node.js SDK script fallback
     try:
@@ -285,7 +315,7 @@ Sender: {sender_email}
             server.login(sender_email, clean_password)
             server.send_message(msg)
 
-        print(f"[AUTH SMTP SUCCESS] Sent verification email with OTP {otp_code} to {to_email} via {sender_email}")
+        print(f"[AUTH SMTP SUCCESS] Sent verification email to {to_email} via {sender_email}")
         return {
             "delivered": True,
             "provider": "Gmail-SMTP",
@@ -402,9 +432,8 @@ def send_otp(payload: OtpSendRequest, db: Session = Depends(get_db)):
     sender_email = settings.SMTP_USER or "Urban Tracker Security"
 
     print(f"\n==================================================")
-    print(f"[AUTH OTP DISPATCH] Target: {email}")
-    print(f"[AUTH OTP CODE] >>> {code} <<<")
-    print(f"[AUTH OTP STATUS] Sender: {sender_email} | Delivered: {delivery.get('delivered')} ({delivery.get('message')})")
+    print(f"[AUTH OTP DISPATCH] Recipient: {email}")
+    print(f"[AUTH OTP STATUS] Sender: {sender_email} | Accepted: {delivery.get('delivered')} ({delivery.get('message')})")
     print(f"==================================================\n")
 
     # Enforce strict real email delivery: if email delivery failed or credentials are missing, reject

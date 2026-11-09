@@ -2020,7 +2020,11 @@
           user_id: EMAILJS_CFG.publicKey,
           template_params: {
             email: targetEmail,
+            to_email: targetEmail,
+            recipient: targetEmail,
+            recipient_email: targetEmail,
             passcode: code,
+            otp: code,
             time: '5 minutes'
           }
         };
@@ -2035,7 +2039,7 @@
 
         if (!res.ok) {
           const errText = await res.text();
-          throw new Error(errText || 'EmailJS service response error');
+          throw new Error(errText || `EmailJS service response error (HTTP ${res.status})`);
         }
         return true;
       }
