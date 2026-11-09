@@ -2006,45 +2006,7 @@
         });
       }
 
-      // ================= EMAILJS CLIENT-SIDE DIRECT DISPATCH =================
-      const EMAILJS_CFG = {
-        serviceId: 'service_6lrm73n',
-        templateId: 'template_yzxx7gf',
-        publicKey: 'uSaF57l9OYZ3jQT5Z'
-      };
-
-      async function sendViaEmailJsBrowser(targetEmail, code) {
-        const payload = {
-          service_id: EMAILJS_CFG.serviceId,
-          template_id: EMAILJS_CFG.templateId,
-          user_id: EMAILJS_CFG.publicKey,
-          template_params: {
-            email: targetEmail,
-            to_email: targetEmail,
-            recipient: targetEmail,
-            recipient_email: targetEmail,
-            passcode: code,
-            otp: code,
-            time: '5 minutes'
-          }
-        };
-
-        const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) {
-          const errText = await res.text();
-          throw new Error(errText || `EmailJS service response error (HTTP ${res.status})`);
-        }
-        return true;
-      }
-
-      // ================= SIGN-UP / FORGOT: SEND OTP =================
+      // ================= REAL BACKEND OTP DISPATCH (GMAIL API) =================
       async function requestOtp(email) {
         clearFeedback();
         const cleanEmail = (email || '').trim().toLowerCase();
@@ -2055,11 +2017,8 @@
 
         currentTargetEmail = cleanEmail;
         sendOtpBtn.disabled = true;
-        sendOtpBtn.textContent = 'Sending OTP...';
+        sendOtpBtn.textContent = 'Sending Verification Code...';
 
-        let dispatched = false;
-
-        // 1. Try Backend if server is accessible
         try {
           const resp = await fetch('/api/roadguard/auth/send-otp', {
             method: 'POST',
@@ -2067,55 +2026,24 @@
             body: JSON.stringify({ email: cleanEmail })
           });
 
-          if (resp.ok) {
-            dispatched = true;
-            sessionStorage.removeItem('ut_client_otp');
-          } else if (resp.status === 429) {
-            let data = {};
-            try { data = await resp.json(); } catch (_) {}
-            showError(data?.detail || 'Please wait before requesting another code.');
-            sendOtpBtn.disabled = false;
-            sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
-            return;
-          } else if (resp.status === 400) {
-            let data = {};
-            try { data = await resp.json(); } catch (_) {}
-            showError(data?.detail || 'Invalid email format. Please enter a valid email address.');
-            sendOtpBtn.disabled = false;
-            sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
-            return;
-          }
-        } catch (backendErr) {
-          console.warn('[AUTH] Backend send-otp unreachable, falling back to direct EmailJS browser dispatch:', backendErr);
-        }
+          let data = {};
+          try { data = await resp.json(); } catch (_) {}
 
-        // 2. Direct browser EmailJS dispatch (guarantees delivery on GitHub Pages, Vercel, or when backend is sleeping)
-        if (!dispatched) {
-          const clientCode = String(Math.floor(100000 + Math.random() * 900000));
-          try {
-            await sendViaEmailJsBrowser(cleanEmail, clientCode);
-            dispatched = true;
-            sessionStorage.setItem('ut_client_otp', JSON.stringify({
-              email: cleanEmail,
-              code: clientCode,
-              expiresAt: Date.now() + 300000
-            }));
-          } catch (emailJsErr) {
-            console.error('[AUTH] Direct EmailJS send error:', emailJsErr);
-            const detailedMsg = (emailJsErr && emailJsErr.message) ? emailJsErr.message : 'Please check your email address and internet connection.';
-            showError('Unable to send verification code: ' + detailedMsg);
-            sendOtpBtn.disabled = false;
-            sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
-            return;
+          if (resp.ok && data.ok) {
+            setMode('otp');
+            showSuccess(`Verification code sent to ${cleanEmail}. Please check your inbox.`);
+            startResendCountdown();
+          } else {
+            const errorMsg = data?.detail || data?.message || 'Failed to dispatch verification code. Please try again.';
+            showError(errorMsg);
           }
+        } catch (netErr) {
+          console.error('[AUTH] Backend connection error:', netErr);
+          showError('Could not connect to authentication server. Please verify your connection.');
+        } finally {
+          sendOtpBtn.disabled = false;
+          sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
         }
-
-        // OTP Dispatched successfully
-        setMode('otp');
-        showSuccess('Verification code sent successfully. Please check your email.');
-        startResendCountdown();
-        sendOtpBtn.disabled = false;
-        sendOtpBtn.textContent = (currentFlowMode === 'forgot') ? 'Send Reset Code ✉️' : 'Send Verification Code ✉️';
       }
 
       if (signupForm) {
@@ -2213,65 +2141,41 @@
         verifyOtpBtn.disabled = true;
         verifyOtpBtn.textContent = 'Verifying Code...';
 
-        let verified = false;
         let token = '';
 
-        // Check if there is an active client-side OTP from direct EmailJS
-        const storedClientOtp = sessionStorage.getItem('ut_client_otp');
-        if (storedClientOtp) {
-          try {
-            const parsed = JSON.parse(storedClientOtp);
-            if (parsed.email === currentTargetEmail) {
-              if (Date.now() > parsed.expiresAt) {
-                showError('Verification code has expired. Please request a new code.');
-                verifyOtpBtn.disabled = false;
-                verifyOtpBtn.textContent = 'Verify Code & Continue →';
-                return;
-              }
-              if (parsed.code === code) {
-                verified = true;
-                token = 'client_token_' + Math.random().toString(36).slice(2);
-                sessionStorage.removeItem('ut_client_otp');
-              }
-            }
-          } catch (_) {}
-        }
+        // Real backend verification
+        try {
+          const resp = await fetch('/api/roadguard/auth/verify-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: currentTargetEmail,
+              otp: code,
+              mode: currentFlowMode
+            })
+          });
 
-        // If not verified via client OTP, try backend verification
-        if (!verified) {
-          try {
-            const resp = await fetch('/api/roadguard/auth/verify-otp', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                email: currentTargetEmail,
-                otp: code,
-                mode: currentFlowMode
-              })
-            });
-
-            if (resp.ok) {
-              const data = await resp.json();
-              verified = true;
-              token = data.verification_token || ('tok_' + Date.now());
-            } else {
-              let data = {};
-              try { data = await resp.json(); } catch (_) {}
-              showError(data?.detail || data?.message || 'Invalid verification code. Please check your code.');
-              otpDigits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
-              otpDigits[0].focus();
-              verifyOtpBtn.disabled = false;
-              verifyOtpBtn.textContent = 'Verify Code & Continue →';
-              return;
-            }
-          } catch (netErr) {
-            showError('Invalid verification code. Please check your code.');
+          if (resp.ok) {
+            const data = await resp.json();
+            token = data.verification_token;
+            if (!token) throw new Error('Verification token missing from response');
+          } else {
+            let data = {};
+            try { data = await resp.json(); } catch (_) {}
+            showError(data?.detail || data?.message || 'Invalid verification code. Please check your code.');
             otpDigits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
             otpDigits[0].focus();
             verifyOtpBtn.disabled = false;
             verifyOtpBtn.textContent = 'Verify Code & Continue →';
             return;
           }
+        } catch (netErr) {
+          showError('Verification failed: ' + (netErr.message || 'Please check your connection and try again.'));
+          otpDigits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
+          otpDigits[0].focus();
+          verifyOtpBtn.disabled = false;
+          verifyOtpBtn.textContent = 'Verify Code & Continue →';
+          return;
         }
 
         // OTP verified successfully! Advance to Create/Reset Password view
@@ -2304,28 +2208,6 @@
 
           btnSavePassword.disabled = true;
           btnSavePassword.textContent = 'Securing Account...';
-
-          // Client-side fallback registration for online static hosting
-          if (currentVerificationToken && currentVerificationToken.startsWith('client_token_')) {
-            try {
-              const registered = JSON.parse(localStorage.getItem('urban_tracker_registered_users') || '{}');
-              registered[currentTargetEmail] = {
-                email: currentTargetEmail,
-                password: newPasswordInput.value,
-                updatedAt: Date.now()
-              };
-              localStorage.setItem('urban_tracker_registered_users', JSON.stringify(registered));
-            } catch (_) {}
-
-            currentVerificationToken = '';
-            setMode('signin');
-            if (identityInput) identityInput.value = currentTargetEmail;
-            if (pwInput) { pwInput.value = ''; pwInput.focus(); }
-            showSuccess('Password saved successfully! Please sign in with your email and password.');
-            btnSavePassword.disabled = false;
-            btnSavePassword.textContent = (currentFlowMode === 'forgot') ? 'Reset Password & Sign In →' : 'Create Account & Sign In →';
-            return;
-          }
 
           try {
             const resp = await fetch('/api/roadguard/auth/set-password', {

@@ -57,6 +57,11 @@ class Settings(BaseSettings):
     PGPORTAL_API_KEY: str = ""
 
     # Notification & Email Services
+    GOOGLE_CLIENT_ID: str = "360174383437-h9a1861jct29n3bvsq0d0cv9l6va8dsk.apps.googleusercontent.com"
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REFRESH_TOKEN: str = ""
+    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/auth/google/callback"
+    GMAIL_SENDER_EMAIL: str = "oneh51522@gmail.com"
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USER: str = os.getenv("SMTP_USER", "")

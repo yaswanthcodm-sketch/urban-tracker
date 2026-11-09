@@ -15,13 +15,14 @@ from typing import Optional
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pydantic import BaseModel
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from ..config import settings
 from ..database import get_db
 from ..models import models
 from ..schemas import schemas
 from ..security import auth
+from ..services import gmail_service
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
@@ -332,30 +333,54 @@ Sender: {sender_email}
 
 def dispatch_email_otp(to_email: str, otp_code: str) -> dict:
     """
-    Attempts delivery via EmailJS first if configured, then falls back to direct Gmail SMTP.
+    Dispatches OTP email via the official Google Gmail API (OAuth 2.0).
+    Falls back to SMTP or EmailJS only if Gmail API is not yet authorized.
     """
+    # 1. Primary: Official Google Gmail API OAuth 2.0
+    gmail_creds = gmail_service.get_live_gmail_credentials()
+    if gmail_creds.get("client_id") and gmail_creds.get("client_secret") and gmail_creds.get("refresh_token"):
+        gmail_res = gmail_service.send_gmail_otp(to_email, otp_code)
+        if gmail_res.get("delivered"):
+            return gmail_res
+        print(f"[AUTH DISPATCH] Gmail API delivery attempt completed: {gmail_res.get('message')}")
+        # If Gmail API rejected explicitly (e.g. invalid recipient or quota), respect provider response
+        if gmail_res.get("status") in ["INVALID_EMAIL", "REJECTED"]:
+            return gmail_res
+
+    # 2. Secondary Fallback: Direct SMTP (if configured)
     creds = get_live_email_credentials()
+    if creds.get("smtp_password"):
+        smtp_res = send_via_smtp(to_email, otp_code)
+        if smtp_res.get("delivered"):
+            return smtp_res
+
+    # 3. Tertiary Fallback: EmailJS (if configured)
     service_id = creds["service_id"]
     template_id = creds["template_id"]
     public_key = creds["public_key"]
-
     emailjs_configured = bool(service_id and template_id and public_key)
-    emailjs_res = None
     if emailjs_configured:
         emailjs_res = send_via_emailjs(to_email, otp_code)
         if emailjs_res and emailjs_res.get("delivered"):
             return emailjs_res
-        print(f"[AUTH DISPATCH] EmailJS configured but delivery failed. Attempting SMTP fallback...")
+        if emailjs_res:
+            return emailjs_res
 
-    smtp_res = send_via_smtp(to_email, otp_code)
-    if smtp_res.get("delivered"):
-        return smtp_res
+    # If Gmail API was attempted, report its specific error
+    if gmail_creds.get("client_id") and gmail_creds.get("client_secret") and not gmail_creds.get("refresh_token"):
+        return {
+            "delivered": False,
+            "provider": "Gmail-API",
+            "reason": "REFRESH_TOKEN_REQUIRED",
+            "message": "Gmail API requires a one-time OAuth authorization. Please authorize at /api/auth/google/authorize or add GOOGLE_REFRESH_TOKEN to .env."
+        }
 
-    # If EmailJS was configured but failed, prioritize its specific error details
-    if emailjs_configured and emailjs_res:
-        return emailjs_res
-
-    return smtp_res
+    return {
+        "delivered": False,
+        "provider": "Gmail-API",
+        "reason": "DELIVERY_ERROR",
+        "message": f"Could not deliver verification code to {to_email}. Please check backend email configuration."
+    }
 
 
 class OtpSendRequest(BaseModel):
@@ -739,4 +764,105 @@ def google_oauth_login(payload: GoogleLoginRequest, db: Session = Depends(get_db
         "token_type": "bearer",
         "user": user,
     }
+
+
+@router.get("/google/authorize")
+def google_authorize_redirect(request: Request):
+    """
+    Redirects admin to Google OAuth 2.0 consent screen to authorize Gmail API sending.
+    Dynamically respects Cloudflare Tunnel, custom domains, or localhost.
+    """
+    from fastapi.responses import RedirectResponse
+    # Detect scheme and host from request headers
+    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "localhost:8000"
+    proto = request.headers.get("x-forwarded-proto") or ("https" if "trycloudflare.com" in host or "vercel.app" in host else "http")
+    prefix = "/api/roadguard/auth/google/callback" if "trycloudflare.com" in host or "4173" in host else "/api/auth/google/callback"
+    redirect_uri = f"{proto}://{host}{prefix}"
+
+    auth_url = gmail_service.get_oauth_authorization_url(redirect_uri=redirect_uri)
+    return RedirectResponse(url=auth_url)
+
+
+@router.get("/google/callback")
+def google_oauth_callback(request: Request, code: Optional[str] = None, error: Optional[str] = None):
+    """
+    Receives authorization code from Google OAuth 2.0, exchanges it for a permanent
+    refresh token, and persists it securely to backend environment.
+    """
+    from fastapi.responses import HTMLResponse
+
+    if error:
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html>
+        <head><title>Google Authorization Failed</title></head>
+        <body style="background:#080b18;color:#fff;font-family:sans-serif;padding:40px;text-align:center;">
+          <h1 style="color:#ef4444;">Authorization Rejected</h1>
+          <p>Google returned an error: {error}</p>
+          <a href="/login.html" style="color:#38bdf8;">Return to Login</a>
+        </body>
+        </html>
+        """, status_code=400)
+
+    if not code:
+        return HTMLResponse(content="""
+        <!DOCTYPE html>
+        <html>
+        <head><title>Missing Authorization Code</title></head>
+        <body style="background:#080b18;color:#fff;font-family:sans-serif;padding:40px;text-align:center;">
+          <h1 style="color:#ef4444;">No code received from Google</h1>
+          <a href="/api/auth/google/authorize" style="color:#38bdf8;">Try Authorizing Again</a>
+        </body>
+        </html>
+        """, status_code=400)
+
+    # Detect redirect_uri used in the original authorize step
+    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "localhost:8000"
+    proto = request.headers.get("x-forwarded-proto") or ("https" if "trycloudflare.com" in host or "vercel.app" in host else "http")
+    prefix = "/api/roadguard/auth/google/callback" if "trycloudflare.com" in host or "4173" in host else "/api/auth/google/callback"
+    redirect_uri = f"{proto}://{host}{prefix}"
+
+    res = gmail_service.exchange_code_for_tokens(code, redirect_uri=redirect_uri)
+    if res.get("ok"):
+        return HTMLResponse(content="""
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Gmail API Connected — Urban Tracker</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body { background: #080b18; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+            .card { background: #10172e; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 36px 32px; max-width: 520px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+            .icon { font-size: 52px; margin-bottom: 16px; }
+            h1 { font-size: 24px; font-weight: 700; margin: 0 0 12px; color: #38bdf8; }
+            p { font-size: 15px; color: #94a3b8; line-height: 1.6; margin: 0 0 24px; }
+            .btn { display: inline-block; background: #0284c7; color: #fff; font-weight: 600; padding: 12px 28px; border-radius: 8px; text-decoration: none; transition: background 0.2s; }
+            .btn:hover { background: #0369a1; }
+            .badge { display: inline-block; background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 18px; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="icon">🚀</div>
+            <div class="badge">✔ Gmail API Connected</div>
+            <h1>Google OAuth 2.0 Authorized</h1>
+            <p>Your Gmail account has been successfully linked. Urban Tracker is now authorized to deliver OTP verification codes to any valid email address directly via Google's official infrastructure.</p>
+            <a href="/login.html" class="btn">Go to Urban Tracker Login →</a>
+          </div>
+        </body>
+        </html>
+        """)
+    else:
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html>
+        <head><title>Token Exchange Failed</title></head>
+        <body style="background:#080b18;color:#fff;font-family:sans-serif;padding:40px;text-align:center;">
+          <h1 style="color:#ef4444;">Token Exchange Failed</h1>
+          <p>{res.get('message')}</p>
+          <a href="/api/auth/google/authorize" style="color:#38bdf8;">Retry Authorization</a>
+        </body>
+        </html>
+        """, status_code=500)
+
 
