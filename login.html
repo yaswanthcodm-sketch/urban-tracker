@@ -1296,7 +1296,7 @@
             <rect x="2" y="4" width="20" height="16" rx="2" />
             <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
           </svg>
-          <input class="text-input" id="signup-email-input" type="email" placeholder="Enter your email to receive OTP" value="" required spellcheck="false">
+          <input class="text-input" id="signup-email-input" type="email" placeholder="Enter your email to receive OTP" value="" required spellcheck="false" autocomplete="off" autocapitalize="off">
         </div>
 
         <button class="primary-btn" id="send-otp-btn" type="submit">
@@ -2145,9 +2145,10 @@
       });
 
       otpBackBtn.addEventListener('click', () => {
+        currentTargetEmail = '';
         setMode(currentFlowMode === 'forgot' ? 'forgot' : 'signup');
         if (signupEmailInput) {
-          signupEmailInput.value = currentTargetEmail;
+          signupEmailInput.value = '';
           signupEmailInput.focus();
         }
       });

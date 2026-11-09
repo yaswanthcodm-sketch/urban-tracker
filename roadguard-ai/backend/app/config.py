@@ -59,7 +59,7 @@ class Settings(BaseSettings):
     # Notification & Email Services
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
-    SMTP_USER: str = "oneh51522@gmail.com"
+    SMTP_USER: str = os.getenv("SMTP_USER", "")
     SMTP_PASSWORD: str = ""
     GMAIL_APP_PASSWORD: str = ""
     EMAILJS_SERVICE_ID: str = "service_6lrm73n"

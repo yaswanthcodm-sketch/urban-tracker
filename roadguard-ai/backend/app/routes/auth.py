@@ -102,7 +102,7 @@ def get_live_email_credentials() -> dict:
         "template_id": (merged.get("EMAILJS_TEMPLATE_ID") or settings.EMAILJS_TEMPLATE_ID or "").strip().strip('"').strip("'"),
         "public_key": (merged.get("EMAILJS_PUBLIC_KEY") or settings.EMAILJS_PUBLIC_KEY or "").strip().strip('"').strip("'"),
         "private_key": (merged.get("EMAILJS_PRIVATE_KEY") or settings.EMAILJS_PRIVATE_KEY or "").strip().strip('"').strip("'"),
-        "smtp_user": (merged.get("SMTP_USER") or settings.SMTP_USER or "oneh51522@gmail.com").strip().strip('"').strip("'"),
+        "smtp_user": (merged.get("SMTP_USER") or settings.SMTP_USER or "").strip().strip('"').strip("'"),
         "smtp_password": (merged.get("GMAIL_APP_PASSWORD") or merged.get("SMTP_PASSWORD") or settings.GMAIL_APP_PASSWORD or settings.SMTP_PASSWORD or "").strip().strip('"').strip("'"),
         "smtp_host": (merged.get("SMTP_HOST") or settings.SMTP_HOST or "smtp.gmail.com").strip().strip('"').strip("'"),
         "smtp_port": int(merged.get("SMTP_PORT") or settings.SMTP_PORT or 587),
@@ -206,7 +206,7 @@ def send_via_emailjs(to_email: str, otp_code: str) -> Optional[dict]:
 
 def send_via_smtp(to_email: str, otp_code: str) -> dict:
     """
-    Sends verification email via Gmail SMTP from oneh51522@gmail.com.
+    Sends verification email via SMTP.
     """
     creds = get_live_email_credentials()
     sender_email = creds["smtp_user"]
@@ -399,7 +399,7 @@ def send_otp(payload: OtpSendRequest, db: Session = Depends(get_db)):
     }
 
     delivery = dispatch_email_otp(email, code)
-    sender_email = settings.SMTP_USER or "oneh51522@gmail.com"
+    sender_email = settings.SMTP_USER or "Urban Tracker Security"
 
     print(f"\n==================================================")
     print(f"[AUTH OTP DISPATCH] Target: {email}")
