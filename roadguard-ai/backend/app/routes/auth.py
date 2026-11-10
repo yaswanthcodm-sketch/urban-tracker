@@ -345,53 +345,39 @@ Sender: {sender_email}
 
 def dispatch_email_otp(to_email: str, otp_code: str) -> dict:
     """
-    Dispatches OTP email via the official Google Gmail API (OAuth 2.0).
-    Falls back to SMTP or EmailJS only if Gmail API is not yet authorized.
+    Dispatches OTP email via EmailJS as primary service.
     """
-    # 1. Primary: Official Google Gmail API OAuth 2.0
-    gmail_creds = gmail_service.get_live_gmail_credentials()
-    if gmail_creds.get("client_id") and gmail_creds.get("client_secret") and gmail_creds.get("refresh_token"):
-        gmail_res = gmail_service.send_gmail_otp(to_email, otp_code)
-        if gmail_res.get("delivered"):
-            return gmail_res
-        print(f"[AUTH DISPATCH] Gmail API delivery attempt completed: {gmail_res.get('message')}")
-        # If Gmail API rejected explicitly (e.g. invalid recipient or quota), respect provider response
-        if gmail_res.get("status") in ["INVALID_EMAIL", "REJECTED"]:
-            return gmail_res
-
-    # 2. Secondary Fallback: Direct SMTP (if configured)
     creds = get_live_email_credentials()
-    if creds.get("smtp_password"):
-        smtp_res = send_via_smtp(to_email, otp_code)
-        if smtp_res.get("delivered"):
-            return smtp_res
-
-    # 3. Tertiary Fallback: EmailJS (if configured)
     service_id = creds["service_id"]
     template_id = creds["template_id"]
     public_key = creds["public_key"]
-    emailjs_configured = bool(service_id and template_id and public_key)
-    if emailjs_configured:
+
+    # 1. Primary: EmailJS
+    if service_id and template_id and public_key:
         emailjs_res = send_via_emailjs(to_email, otp_code)
         if emailjs_res and emailjs_res.get("delivered"):
             return emailjs_res
         if emailjs_res:
             return emailjs_res
 
-    # If Gmail API was attempted, report its specific error
-    if gmail_creds.get("client_id") and gmail_creds.get("client_secret") and not gmail_creds.get("refresh_token"):
-        return {
-            "delivered": False,
-            "provider": "Gmail-API",
-            "reason": "REFRESH_TOKEN_REQUIRED",
-            "message": "Gmail API requires a one-time OAuth authorization. Please authorize at /api/auth/google/authorize or add GOOGLE_REFRESH_TOKEN to .env."
-        }
+    # 2. Secondary: SMTP (if configured)
+    if creds.get("smtp_password"):
+        smtp_res = send_via_smtp(to_email, otp_code)
+        if smtp_res and smtp_res.get("delivered"):
+            return smtp_res
+
+    # 3. Tertiary: Gmail API (if refresh token exists)
+    gmail_creds = gmail_service.get_live_gmail_credentials()
+    if gmail_creds.get("refresh_token"):
+        gmail_res = gmail_service.send_gmail_otp(to_email, otp_code)
+        if gmail_res.get("delivered"):
+            return gmail_res
 
     return {
         "delivered": False,
-        "provider": "Gmail-API",
+        "provider": "EmailJS",
         "reason": "DELIVERY_ERROR",
-        "message": f"Could not deliver verification code to {to_email}. Please check backend email configuration."
+        "message": f"Could not deliver verification code to {to_email}. Please check EmailJS credentials in .env."
     }
 
 

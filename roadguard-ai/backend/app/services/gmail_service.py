@@ -195,8 +195,19 @@ def exchange_code_for_tokens(code: str, redirect_uri: Optional[str] = None) -> d
                 access_token = data.get("access_token")
                 expires_in = data.get("expires_in", 3600)
 
+                detected_email = None
+                try:
+                    prof_resp = client.get(
+                        "https://gmail.googleapis.com/gmail/v1/users/me/profile",
+                        headers={"Authorization": f"Bearer {access_token}"}
+                    )
+                    if prof_resp.status_code == 200:
+                        detected_email = prof_resp.json().get("emailAddress")
+                except Exception:
+                    pass
+
                 if refresh_token:
-                    save_refresh_token_to_env(refresh_token)
+                    save_refresh_token_to_env(refresh_token, sender_email=detected_email)
 
                 _TOKEN_CACHE["access_token"] = access_token
                 _TOKEN_CACHE["expires_at"] = time.time() + expires_in - 60
@@ -204,8 +215,9 @@ def exchange_code_for_tokens(code: str, redirect_uri: Optional[str] = None) -> d
                 return {
                     "ok": True,
                     "refresh_token_saved": bool(refresh_token),
+                    "sender_email": detected_email,
                     "expires_in": expires_in,
-                    "message": "Gmail API OAuth tokens successfully generated and saved!"
+                    "message": f"Gmail API OAuth tokens successfully generated and saved for {detected_email or 'authorized account'}!"
                 }
             else:
                 error_desc = data.get("error_description") or data.get("error") or resp.text
