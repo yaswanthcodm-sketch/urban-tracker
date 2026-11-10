@@ -494,6 +494,20 @@ def send_otp(payload: OtpSendRequest, db: Session = Depends(get_db)):
     }
 
 
+@router.get("/test-send-otp")
+def test_send_otp(to: str):
+    """
+    Diagnostic helper to test OTP delivery to any recipient and return exact dispatch results.
+    """
+    clean_to = to.strip().lower()
+    code = f"{secrets.randbelow(900000) + 100000}"
+    res = dispatch_email_otp(clean_to, code)
+    return {
+        "recipient": clean_to,
+        "delivery_result": res,
+    }
+
+
 @router.post("/verify-otp")
 def verify_otp(payload: OtpVerifyRequest, db: Session = Depends(get_db)):
     """
@@ -896,10 +910,49 @@ def google_oauth_callback(request: Request, code: Optional[str] = None, state: O
         """, status_code=500)
 
 
+def save_app_password_to_env(app_password: str):
+    from pathlib import Path
+    current_file = Path(__file__).resolve()
+    rg_dir = current_file.parent.parent.parent.parent
+    workspace_dir = rg_dir.parent if rg_dir.name == "roadguard-ai" else rg_dir
+
+    for env_path in [workspace_dir / ".env", rg_dir / ".env"]:
+        lines = []
+        if env_path.exists():
+            with open(env_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+        has_pw = False
+        has_smtp_pw = False
+        new_lines = []
+        for line in lines:
+            if line.startswith("GMAIL_APP_PASSWORD="):
+                new_lines.append(f'GMAIL_APP_PASSWORD="{app_password}"\n')
+                has_pw = True
+            elif line.startswith("SMTP_PASSWORD="):
+                new_lines.append(f'SMTP_PASSWORD="{app_password}"\n')
+                has_smtp_pw = True
+            else:
+                new_lines.append(line)
+        if not has_pw:
+            new_lines.append(f'GMAIL_APP_PASSWORD="{app_password}"\n')
+        if not has_smtp_pw:
+            new_lines.append(f'SMTP_PASSWORD="{app_password}"\n')
+        try:
+            with open(env_path, "w", encoding="utf-8") as f:
+                f.writelines(new_lines)
+        except Exception:
+            pass
+    settings.GMAIL_APP_PASSWORD = app_password
+    settings.SMTP_PASSWORD = app_password
+    os.environ["GMAIL_APP_PASSWORD"] = app_password
+    os.environ["SMTP_PASSWORD"] = app_password
+
+
 class GoogleTokenSaveRequest(BaseModel):
     refresh_token: Optional[str] = ""
     code: Optional[str] = ""
     redirect_uri: Optional[str] = ""
+    app_password: Optional[str] = ""
 
 
 @router.get("/google/status")
@@ -907,22 +960,48 @@ def google_status():
     """Returns current Gmail API OAuth configuration and health status."""
     creds = gmail_service.get_live_gmail_credentials()
     has_rt = bool(creds.get("refresh_token"))
+    email_creds = get_live_email_credentials()
+    has_app_pw = bool(email_creds.get("smtp_password"))
+    ready = has_rt or has_app_pw
+    provider = "Gmail API (OAuth 2.0)" if has_rt else ("Gmail SMTP (App Password)" if has_app_pw else "EmailJS Fallback")
+
     return {
         "ok": True,
-        "gmail_api_ready": has_rt,
+        "email_delivery_ready": ready,
+        "active_provider": provider,
         "client_id": creds.get("client_id")[:20] + "..." if creds.get("client_id") else "",
         "sender_email": creds.get("sender_email"),
-        "status": "CONNECTED" if has_rt else "AWAITING_AUTHORIZATION",
-        "message": "Gmail API is authorized and active!" if has_rt else "Gmail API requires one-time OAuth authorization."
+        "status": "CONNECTED" if ready else "AWAITING_SETUP",
+        "message": f"Real email delivery active via {provider}!" if ready else "Direct email delivery requires one-time Google authorization or App Password."
     }
 
 
 @router.post("/google/save-token")
 def google_save_token(payload: GoogleTokenSaveRequest):
     """
-    Directly validates and persists a Google refresh token or authorization code.
+    Directly validates and persists a Google refresh token, authorization code, or App Password.
     Allows completing authorization even when mobile devices cannot directly access localhost.
     """
+    # 0. Direct App Password verification
+    if payload.app_password and payload.app_password.strip():
+        clean_pw = payload.app_password.strip().replace(" ", "")
+        creds = get_live_email_credentials()
+        sender = creds["smtp_user"] or "oneh51522@gmail.com"
+        try:
+            with smtplib.SMTP("smtp.gmail.com", 587, timeout=12) as s:
+                s.ehlo()
+                s.starttls()
+                s.ehlo()
+                s.login(sender, clean_pw)
+            save_app_password_to_env(clean_pw)
+            return {
+                "ok": True,
+                "provider": "Gmail-SMTP",
+                "message": f"Gmail App Password verified and connected for {sender}! OTPs will now be sent directly to any user inbox."
+            }
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Google rejected App Password: {str(e)}")
+
     # 1. Direct refresh token submission
     if payload.refresh_token and payload.refresh_token.strip():
         res = gmail_service.validate_and_save_refresh_token(payload.refresh_token.strip())
@@ -945,7 +1024,7 @@ def google_save_token(payload: GoogleTokenSaveRequest):
             raise HTTPException(status_code=400, detail=res.get("message"))
         return res
 
-    raise HTTPException(status_code=400, detail="Please provide either a refresh_token or an authorization code.")
+    raise HTTPException(status_code=400, detail="Please provide either a Gmail App Password, Refresh Token, or Authorization Code.")
 
 
 @router.get("/google/connect")
@@ -1005,14 +1084,18 @@ def google_connect_page(request: Request):
 
         <form id="token-form">
           <div class="field">
-            <label>Authorization Code OR Redirect URL:</label>
+            <label>Option A: Gmail 16-Character App Password (Fastest & Most Reliable):</label>
+            <input type="password" id="app-pw-input" placeholder="abcd efgh ijkl mnop (from myaccount.google.com/apppasswords)" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label>Option B: Authorization Code OR Redirect URL:</label>
             <input type="text" id="code-input" placeholder="http://localhost:8000/api/auth/google/callback?code=4/0A... OR 4/0A..." />
           </div>
           <div class="field">
-            <label>OR Direct Refresh Token:</label>
+            <label>Option C: Direct OAuth Refresh Token:</label>
             <input type="text" id="rt-input" placeholder="1//04... (from Google OAuth Playground)" />
           </div>
-          <button type="submit" class="btn btn-secondary" id="save-btn">Save & Activate Gmail API</button>
+          <button type="submit" class="btn btn-secondary" id="save-btn">Save & Activate Email Service</button>
         </form>
 
         <div id="feedback"></div>
@@ -1030,12 +1113,13 @@ def google_connect_page(request: Request):
         form.addEventListener('submit', async (e) => {{
           e.preventDefault();
           feedback.style.display = 'none';
+          const appPwVal = document.getElementById('app-pw-input').value.trim();
           const codeVal = document.getElementById('code-input').value.trim();
           const rtVal = document.getElementById('rt-input').value.trim();
 
-          if (!codeVal && !rtVal) {{
+          if (!appPwVal && !codeVal && !rtVal) {{
             feedback.className = 'feedback-error';
-            feedback.textContent = 'Please enter an authorization code or refresh token.';
+            feedback.textContent = 'Please enter an App Password, Authorization Code, or Refresh Token.';
             feedback.style.display = 'block';
             return;
           }}
@@ -1047,18 +1131,18 @@ def google_connect_page(request: Request):
             const resp = await fetch('/api/auth/google/save-token', {{
               method: 'POST',
               headers: {{ 'Content-Type': 'application/json' }},
-              body: JSON.stringify({{ code: codeVal, refresh_token: rtVal }})
+              body: JSON.stringify({{ app_password: appPwVal, code: codeVal, refresh_token: rtVal }})
             }});
             const data = await resp.json();
 
             if (resp.ok && data.ok) {{
               feedback.className = 'feedback-success';
-              feedback.textContent = '✔ Success! Gmail API is now connected. Returning to login...';
+              feedback.textContent = '✔ Success! ' + data.message + ' Returning to login...';
               feedback.style.display = 'block';
               setTimeout(() => {{ window.location.href = '/login.html'; }}, 1500);
             }} else {{
               feedback.className = 'feedback-error';
-              feedback.textContent = 'Error: ' + (data.detail || data.message || 'Token verification failed.');
+              feedback.textContent = 'Error: ' + (data.detail || data.message || 'Verification failed.');
               feedback.style.display = 'block';
             }}
           }} catch (err) {{
@@ -1067,7 +1151,7 @@ def google_connect_page(request: Request):
             feedback.style.display = 'block';
           }} finally {{
             saveBtn.disabled = false;
-            saveBtn.textContent = 'Save & Activate Gmail API';
+            saveBtn.textContent = 'Save & Activate Email Service';
           }}
         }});
       </script>
