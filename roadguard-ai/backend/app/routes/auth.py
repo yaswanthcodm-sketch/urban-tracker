@@ -896,3 +896,184 @@ def google_oauth_callback(request: Request, code: Optional[str] = None, state: O
         """, status_code=500)
 
 
+class GoogleTokenSaveRequest(BaseModel):
+    refresh_token: Optional[str] = ""
+    code: Optional[str] = ""
+    redirect_uri: Optional[str] = ""
+
+
+@router.get("/google/status")
+def google_status():
+    """Returns current Gmail API OAuth configuration and health status."""
+    creds = gmail_service.get_live_gmail_credentials()
+    has_rt = bool(creds.get("refresh_token"))
+    return {
+        "ok": True,
+        "gmail_api_ready": has_rt,
+        "client_id": creds.get("client_id")[:20] + "..." if creds.get("client_id") else "",
+        "sender_email": creds.get("sender_email"),
+        "status": "CONNECTED" if has_rt else "AWAITING_AUTHORIZATION",
+        "message": "Gmail API is authorized and active!" if has_rt else "Gmail API requires one-time OAuth authorization."
+    }
+
+
+@router.post("/google/save-token")
+def google_save_token(payload: GoogleTokenSaveRequest):
+    """
+    Directly validates and persists a Google refresh token or authorization code.
+    Allows completing authorization even when mobile devices cannot directly access localhost.
+    """
+    # 1. Direct refresh token submission
+    if payload.refresh_token and payload.refresh_token.strip():
+        res = gmail_service.validate_and_save_refresh_token(payload.refresh_token.strip())
+        if not res.get("ok"):
+            raise HTTPException(status_code=400, detail=res.get("message"))
+        return res
+
+    # 2. Authorization code exchange
+    raw_code = (payload.code or "").strip()
+    if raw_code:
+        # If user pasted the full redirect URL containing ?code=...
+        if "code=" in raw_code:
+            match = re.search(r"code=([^&]+)", raw_code)
+            if match:
+                raw_code = urllib.parse.unquote(match.group(1))
+
+        redirect_uri = (payload.redirect_uri or "").strip() or "http://localhost:8000/api/auth/google/callback"
+        res = gmail_service.exchange_code_for_tokens(raw_code, redirect_uri=redirect_uri)
+        if not res.get("ok"):
+            raise HTTPException(status_code=400, detail=res.get("message"))
+        return res
+
+    raise HTTPException(status_code=400, detail="Please provide either a refresh_token or an authorization code.")
+
+
+@router.get("/google/connect")
+def google_connect_page(request: Request):
+    """
+    Interactive setup assistant for Google Gmail API OAuth 2.0.
+    Enables instant one-click connection or manual code exchange across any device.
+    """
+    from fastapi.responses import HTMLResponse
+    creds = gmail_service.get_live_gmail_credentials()
+    has_rt = bool(creds.get("refresh_token"))
+
+    return HTMLResponse(content=f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Urban Tracker — Google Gmail API Connection</title>
+      <style>
+        body {{ background: #080b18; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }}
+        .box {{ background: #10172e; border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 16px; max-width: 580px; width: 100%; padding: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }}
+        h1 {{ font-size: 22px; margin: 0 0 8px; color: #38bdf8; display: flex; align-items: center; gap: 10px; }}
+        p {{ font-size: 14px; color: #94a3b8; line-height: 1.5; margin: 0 0 20px; }}
+        .status-badge {{ display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 20px; background: {'rgba(34, 197, 94, 0.15)' if has_rt else 'rgba(234, 179, 8, 0.15)'}; color: {'#4ade80' if has_rt else '#facc15'}; border: 1px solid {'rgba(34, 197, 94, 0.3)' if has_rt else 'rgba(234, 179, 8, 0.3)'}; }}
+        .btn {{ display: block; width: 100%; box-sizing: border-box; background: #0284c7; color: #fff; text-align: center; font-weight: 600; padding: 13px; border-radius: 8px; text-decoration: none; border: none; cursor: pointer; font-size: 15px; margin-bottom: 12px; transition: background 0.2s; }}
+        .btn:hover {{ background: #0369a1; }}
+        .btn-secondary {{ background: #1e293b; color: #cbd5e1; border: 1px solid #334155; }}
+        .btn-secondary:hover {{ background: #334155; }}
+        .divider {{ display: flex; align-items: center; text-align: center; color: #64748b; font-size: 12px; margin: 24px 0; text-transform: uppercase; letter-spacing: 1px; }}
+        .divider::before, .divider::after {{ content: ''; flex: 1; border-bottom: 1px solid #1e293b; }}
+        .divider span {{ padding: 0 10px; }}
+        .field {{ margin-bottom: 14px; }}
+        .field label {{ display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }}
+        .field input {{ width: 100%; box-sizing: border-box; background: #030712; border: 1px solid #1e293b; border-radius: 8px; padding: 10px 14px; color: #fff; font-size: 14px; outline: none; }}
+        .field input:focus {{ border-color: #38bdf8; }}
+        #feedback {{ margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 13px; display: none; }}
+        .feedback-success {{ background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }}
+        .feedback-error {{ background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }}
+      </style>
+    </head>
+    <body>
+      <div class="box">
+        <div class="status-badge">
+          {'✔ Gmail API Connected & Ready' if has_rt else '⚠️ Awaiting Google Authorization'}
+        </div>
+        <h1>✉️ Google Gmail API Setup</h1>
+        <p>Connect your authorized Gmail account (<strong>{creds.get('sender_email')}</strong>) so Urban Tracker delivers 6-digit OTP codes directly to any user inbox with zero restrictions.</p>
+
+        <a href="/api/auth/google/authorize" class="btn">
+          🚀 Authorize with Google (1-Click)
+        </a>
+
+        <div class="divider"><span>OR PASTE CODE / REFRESH TOKEN</span></div>
+
+        <p style="font-size:12px;color:#64748b;margin-bottom:12px;">If you authorized on a mobile device and saw "localhost refused to connect", simply paste the URL (or code) from your phone's browser address bar here:</p>
+
+        <form id="token-form">
+          <div class="field">
+            <label>Authorization Code OR Redirect URL:</label>
+            <input type="text" id="code-input" placeholder="http://localhost:8000/api/auth/google/callback?code=4/0A... OR 4/0A..." />
+          </div>
+          <div class="field">
+            <label>OR Direct Refresh Token:</label>
+            <input type="text" id="rt-input" placeholder="1//04... (from Google OAuth Playground)" />
+          </div>
+          <button type="submit" class="btn btn-secondary" id="save-btn">Save & Activate Gmail API</button>
+        </form>
+
+        <div id="feedback"></div>
+
+        <div style="margin-top:24px;text-align:center;">
+          <a href="/login.html" style="color:#38bdf8;font-size:13px;text-decoration:none;">← Return to Urban Tracker Login</a>
+        </div>
+      </div>
+
+      <script>
+        const form = document.getElementById('token-form');
+        const feedback = document.getElementById('feedback');
+        const saveBtn = document.getElementById('save-btn');
+
+        form.addEventListener('submit', async (e) => {{
+          e.preventDefault();
+          feedback.style.display = 'none';
+          const codeVal = document.getElementById('code-input').value.trim();
+          const rtVal = document.getElementById('rt-input').value.trim();
+
+          if (!codeVal && !rtVal) {{
+            feedback.className = 'feedback-error';
+            feedback.textContent = 'Please enter an authorization code or refresh token.';
+            feedback.style.display = 'block';
+            return;
+          }}
+
+          saveBtn.disabled = true;
+          saveBtn.textContent = 'Verifying with Google...';
+
+          try {{
+            const resp = await fetch('/api/auth/google/save-token', {{
+              method: 'POST',
+              headers: {{ 'Content-Type': 'application/json' }},
+              body: JSON.stringify({{ code: codeVal, refresh_token: rtVal }})
+            }});
+            const data = await resp.json();
+
+            if (resp.ok && data.ok) {{
+              feedback.className = 'feedback-success';
+              feedback.textContent = '✔ Success! Gmail API is now connected. Returning to login...';
+              feedback.style.display = 'block';
+              setTimeout(() => {{ window.location.href = '/login.html'; }}, 1500);
+            }} else {{
+              feedback.className = 'feedback-error';
+              feedback.textContent = 'Error: ' + (data.detail || data.message || 'Token verification failed.');
+              feedback.style.display = 'block';
+            }}
+          }} catch (err) {{
+            feedback.className = 'feedback-error';
+            feedback.textContent = 'Network error connecting to backend.';
+            feedback.style.display = 'block';
+          }} finally {{
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save & Activate Gmail API';
+          }}
+        }});
+      </script>
+    </body>
+    </html>
+    """)
+
+
+

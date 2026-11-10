@@ -219,7 +219,61 @@ def exchange_code_for_tokens(code: str, redirect_uri: Optional[str] = None) -> d
         return {
             "ok": False,
             "error": "NETWORK_ERROR",
-            "message": f"Could not reach Google OAuth server: {str(e)}"
+            "message": f"Could not reach Google token endpoint: {str(e)}"
+        }
+
+
+def validate_and_save_refresh_token(refresh_token: str) -> dict:
+    """
+    Validates a provided refresh token directly against Google's token endpoint.
+    If valid, saves it to .env and updates the token cache.
+    """
+    creds = get_live_gmail_credentials()
+    clean_token = refresh_token.strip()
+
+    if not creds["client_secret"]:
+        return {
+            "ok": False,
+            "error": "MISSING_CLIENT_SECRET",
+            "message": "GOOGLE_CLIENT_SECRET is missing in .env."
+        }
+
+    payload = {
+        "client_id": creds["client_id"],
+        "client_secret": creds["client_secret"],
+        "refresh_token": clean_token,
+        "grant_type": "refresh_token",
+    }
+
+    try:
+        with httpx.Client(timeout=15.0) as client:
+            resp = client.post(GOOGLE_TOKEN_ENDPOINT, data=payload)
+            data = resp.json()
+
+            if resp.status_code == 200:
+                access_token = data.get("access_token")
+                expires_in = data.get("expires_in", 3600)
+
+                save_refresh_token_to_env(clean_token)
+                _TOKEN_CACHE["access_token"] = access_token
+                _TOKEN_CACHE["expires_at"] = time.time() + expires_in - 60
+
+                return {
+                    "ok": True,
+                    "message": "Google Refresh Token is valid and successfully connected!"
+                }
+            else:
+                err_desc = data.get("error_description") or data.get("error") or resp.text
+                return {
+                    "ok": False,
+                    "error": "INVALID_REFRESH_TOKEN",
+                    "message": f"Google rejected refresh token: {err_desc}"
+                }
+    except Exception as e:
+        return {
+            "ok": False,
+            "error": "NETWORK_ERROR",
+            "message": f"Could not reach Google servers: {str(e)}"
         }
 
 

@@ -8453,6 +8453,14 @@ function roadguardProxy() {
   const forwardToBackend = async (targetUrl, req, res) => {
     try {
       const headers = { ...req.headers };
+      if (req.headers.host) {
+        headers['x-forwarded-host'] = req.headers.host;
+      }
+      if (req.headers['x-forwarded-proto']) {
+        headers['x-forwarded-proto'] = req.headers['x-forwarded-proto'];
+      } else if (req.headers.host?.includes('trycloudflare.com') || req.headers.host?.includes('vercel.app')) {
+        headers['x-forwarded-proto'] = 'https';
+      }
       delete headers.host;
       delete headers.connection;
       delete headers['content-length'];
