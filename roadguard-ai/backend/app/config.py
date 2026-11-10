@@ -68,7 +68,7 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     GMAIL_APP_PASSWORD: str = ""
     EMAILJS_SERVICE_ID: str = "service_6lrm73n"
-    EMAILJS_TEMPLATE_ID: str = "template_yzxx7gf"
+    EMAILJS_TEMPLATE_ID: str = "template_a3sgnoq"
     EMAILJS_PUBLIC_KEY: str = "uSaF57l9OYZ3jQT5Z"
     EMAILJS_PRIVATE_KEY: str = "ms45r6xA3Ua4ZmtzepQbg"
     TWILIO_ACCOUNT_SID: str = ""

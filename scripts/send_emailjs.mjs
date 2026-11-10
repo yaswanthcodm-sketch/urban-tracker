@@ -48,7 +48,7 @@ if (!toEmail || !otpCode) {
 }
 
 const serviceId = process.env.EMAILJS_SERVICE_ID || 'service_6lrm73n';
-const templateId = process.env.EMAILJS_TEMPLATE_ID || 'template_yzxx7gf';
+const templateId = process.env.EMAILJS_TEMPLATE_ID || 'template_a3sgnoq';
 const publicKey = process.env.EMAILJS_PUBLIC_KEY || 'uSaF57l9OYZ3jQT5Z';
 const privateKey = process.env.EMAILJS_PRIVATE_KEY || 'ms45r6xA3Ua4ZmtzepQbg';
 
