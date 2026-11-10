@@ -142,7 +142,7 @@ def save_refresh_token_to_env(refresh_token: str, sender_email: Optional[str] = 
     os.environ["GOOGLE_REFRESH_TOKEN"] = refresh_token
 
 
-def get_oauth_authorization_url(redirect_uri: Optional[str] = None) -> str:
+def get_oauth_authorization_url(redirect_uri: Optional[str] = None, state: Optional[str] = None) -> str:
     """
     Generates the Google OAuth 2.0 consent URL for Gmail sending.
     """
@@ -157,6 +157,8 @@ def get_oauth_authorization_url(redirect_uri: Optional[str] = None) -> str:
         "access_type": "offline",
         "prompt": "consent",
     }
+    if state:
+        params["state"] = state
     return f"{GOOGLE_AUTH_URL}?{urllib.parse.urlencode(params)}"
 
 

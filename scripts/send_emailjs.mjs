@@ -58,9 +58,21 @@ async function dispatch() {
     to_email: toEmail,
     recipient: toEmail,
     recipient_email: toEmail,
+    user_email: toEmail,
+    to_name: toEmail,
+    to: toEmail,
+    send_to: toEmail,
+    reply_to: toEmail,
+    client_email: toEmail,
     passcode: otpCode,
     otp: otpCode,
+    code: otpCode,
+    otp_code: otpCode,
+    token: otpCode,
+    verification_code: otpCode,
     time: '5 minutes',
+    expiry: '5 minutes',
+    message: `Your Urban Tracker verification code is: ${otpCode}. This code expires in 5 minutes.`,
   };
 
   try {

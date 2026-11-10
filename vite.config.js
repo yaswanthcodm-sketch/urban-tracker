@@ -8505,6 +8505,13 @@ function roadguardProxy() {
         await forwardToBackend(targetUrl, req, res);
       });
 
+      // Unified Auth API proxy: forward /api/auth directly to backend /api/auth
+      server.middlewares.use('/api/auth', async (req, res) => {
+        const rawSubpath = req.url || '';
+        const targetUrl = 'http://127.0.0.1:8000/api/auth' + (rawSubpath.startsWith('/') ? rawSubpath : '/' + rawSubpath);
+        await forwardToBackend(targetUrl, req, res);
+      });
+
       // Unified Full-Stack Docs: forward /docs to FastAPI Swagger Docs
       server.middlewares.use('/docs', async (req, res) => {
         const query = req.url?.includes('?') ? '?' + req.url.split('?')[1] : '';

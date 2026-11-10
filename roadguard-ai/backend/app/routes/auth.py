@@ -135,9 +135,21 @@ def send_via_emailjs(to_email: str, otp_code: str) -> Optional[dict]:
             "to_email": to_email,
             "recipient": to_email,
             "recipient_email": to_email,
+            "user_email": to_email,
+            "to_name": to_email,
+            "to": to_email,
+            "send_to": to_email,
+            "reply_to": to_email,
+            "client_email": to_email,
             "passcode": otp_code,
             "otp": otp_code,
+            "code": otp_code,
+            "otp_code": otp_code,
+            "token": otp_code,
+            "verification_code": otp_code,
             "time": "5 minutes",
+            "expiry": "5 minutes",
+            "message": f"Your Urban Tracker verification code is: {otp_code}. This code expires in 5 minutes.",
         }
     }
     if private_key:
@@ -773,23 +785,33 @@ def google_authorize_redirect(request: Request):
     Dynamically respects Cloudflare Tunnel, custom domains, or localhost.
     """
     from fastapi.responses import RedirectResponse
-    # Detect scheme and host from request headers
-    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "localhost:8000"
-    proto = request.headers.get("x-forwarded-proto") or ("https" if "trycloudflare.com" in host or "vercel.app" in host else "http")
-    prefix = "/api/roadguard/auth/google/callback" if "trycloudflare.com" in host or "4173" in host else "/api/auth/google/callback"
-    redirect_uri = f"{proto}://{host}{prefix}"
+    import base64
 
-    auth_url = gmail_service.get_oauth_authorization_url(redirect_uri=redirect_uri)
+    req_redirect = request.query_params.get("redirect_uri")
+    if req_redirect:
+        redirect_uri = req_redirect
+    elif os.environ.get("GOOGLE_REDIRECT_URI"):
+        redirect_uri = os.environ.get("GOOGLE_REDIRECT_URI")
+    else:
+        # Detect scheme and host from request headers
+        host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "localhost:8000"
+        proto = request.headers.get("x-forwarded-proto") or ("https" if "trycloudflare.com" in host or "vercel.app" in host else "http")
+        prefix = "/api/roadguard/auth/google/callback" if "trycloudflare.com" in host or "4173" in host else "/api/auth/google/callback"
+        redirect_uri = f"{proto}://{host}{prefix}"
+
+    state = base64.urlsafe_b64encode(redirect_uri.encode("utf-8")).decode("utf-8")
+    auth_url = gmail_service.get_oauth_authorization_url(redirect_uri=redirect_uri, state=state)
     return RedirectResponse(url=auth_url)
 
 
 @router.get("/google/callback")
-def google_oauth_callback(request: Request, code: Optional[str] = None, error: Optional[str] = None):
+def google_oauth_callback(request: Request, code: Optional[str] = None, state: Optional[str] = None, error: Optional[str] = None):
     """
     Receives authorization code from Google OAuth 2.0, exchanges it for a permanent
     refresh token, and persists it securely to backend environment.
     """
     from fastapi.responses import HTMLResponse
+    import base64
 
     if error:
         return HTMLResponse(content=f"""
@@ -816,11 +838,19 @@ def google_oauth_callback(request: Request, code: Optional[str] = None, error: O
         </html>
         """, status_code=400)
 
-    # Detect redirect_uri used in the original authorize step
-    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "localhost:8000"
-    proto = request.headers.get("x-forwarded-proto") or ("https" if "trycloudflare.com" in host or "vercel.app" in host else "http")
-    prefix = "/api/roadguard/auth/google/callback" if "trycloudflare.com" in host or "4173" in host else "/api/auth/google/callback"
-    redirect_uri = f"{proto}://{host}{prefix}"
+    # Decode redirect_uri used in the original authorize step from state
+    redirect_uri = None
+    if state:
+        try:
+            redirect_uri = base64.urlsafe_b64decode(state.encode("utf-8")).decode("utf-8")
+        except Exception:
+            pass
+
+    if not redirect_uri:
+        host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "localhost:8000"
+        proto = request.headers.get("x-forwarded-proto") or ("https" if "trycloudflare.com" in host or "vercel.app" in host else "http")
+        prefix = "/api/roadguard/auth/google/callback" if "trycloudflare.com" in host or "4173" in host else "/api/auth/google/callback"
+        redirect_uri = f"{proto}://{host}{prefix}"
 
     res = gmail_service.exchange_code_for_tokens(code, redirect_uri=redirect_uri)
     if res.get("ok"):
