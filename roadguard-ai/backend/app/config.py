@@ -57,10 +57,10 @@ class Settings(BaseSettings):
     PGPORTAL_API_KEY: str = ""
 
     # Urban Tracker MailBot — Transactional Email Service
-    MAILBOT_PROVIDER: str = "resend"  # "resend", "brevo", or "smtp"
-    RESEND_API_KEY: str = ""
+    MAILBOT_PROVIDER: str = "brevo"  # "brevo", "resend", or "smtp"
     BREVO_API_KEY: str = ""
-    MAILBOT_FROM_EMAIL: str = "Urban Tracker MailBot <onboarding@resend.dev>"
+    RESEND_API_KEY: str = ""
+    MAILBOT_FROM_EMAIL: str = "Urban Tracker MailBot <oneh51522@gmail.com>"
     MAILBOT_REPLY_TO: str = "no-reply@urban-tracker.io"
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587

@@ -217,10 +217,10 @@ class UrbanTrackerMailBot:
         # Extract name and email from from_email (e.g. "Name <email@dom.com>")
         sender_name = "Urban Tracker MailBot"
         sender_email = self.from_email
-        match = re.match(r"^([^<]+)<([^>]+)>$", self.from_email)
-        if match:
-            sender_name = match.group(1).strip()
-            sender_email = match.group(2).strip()
+        if "<" in self.from_email and ">" in self.from_email:
+            parts = self.from_email.split("<")
+            sender_name = parts[0].strip() or "Urban Tracker MailBot"
+            sender_email = parts[1].replace(">", "").strip()
 
         payload = {
             "sender": {"name": sender_name, "email": sender_email},
@@ -238,6 +238,7 @@ class UrbanTrackerMailBot:
             headers={
                 "api-key": api_key,
                 "Content-Type": "application/json",
+                "Accept": "application/json",
                 "User-Agent": "UrbanTrackerMailBot/1.0",
             },
             method="POST",
