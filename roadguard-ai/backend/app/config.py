@@ -56,21 +56,12 @@ class Settings(BaseSettings):
     PGPORTAL_INTEGRATION_MODE: str = "demo_simulation"
     PGPORTAL_API_KEY: str = ""
 
-    # Notification & Email Services
-    GOOGLE_CLIENT_ID: str = "360174383437-h9a1861jct29n3bvsq0d0cv9l6va8dsk.apps.googleusercontent.com"
-    GOOGLE_CLIENT_SECRET: str = ""
-    GOOGLE_REFRESH_TOKEN: str = ""
-    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/auth/google/callback"
-    GMAIL_SENDER_EMAIL: str = "oneh51522@gmail.com"
-    SMTP_HOST: str = "smtp.gmail.com"
-    SMTP_PORT: int = 587
-    SMTP_USER: str = os.getenv("SMTP_USER", "")
-    SMTP_PASSWORD: str = ""
-    GMAIL_APP_PASSWORD: str = ""
-    EMAILJS_SERVICE_ID: str = "service_6lrm73n"
-    EMAILJS_TEMPLATE_ID: str = "template_a3sgnoq"
-    EMAILJS_PUBLIC_KEY: str = "uSaF57l9OYZ3jQT5Z"
-    EMAILJS_PRIVATE_KEY: str = "ms45r6xA3Ua4ZmtzepQbg"
+    # EmailJS credentials are server-only. No credential defaults belong in code.
+    EMAILJS_SERVICE_ID: str = ""
+    EMAILJS_PUBLIC_KEY: str = ""
+    EMAILJS_PRIVATE_KEY: str = ""
+    EMAILJS_OTP_TEMPLATE_ID: str = ""
+    EMAILJS_CONTACT_TEMPLATE_ID: str = ""
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""
     TWILIO_FROM_NUMBER: str = ""

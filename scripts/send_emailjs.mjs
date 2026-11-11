@@ -47,10 +47,10 @@ if (!toEmail || !otpCode) {
   process.exit(1);
 }
 
-const serviceId = process.env.EMAILJS_SERVICE_ID || 'service_6lrm73n';
-const templateId = process.env.EMAILJS_TEMPLATE_ID || 'template_a3sgnoq';
-const publicKey = process.env.EMAILJS_PUBLIC_KEY || 'uSaF57l9OYZ3jQT5Z';
-const privateKey = process.env.EMAILJS_PRIVATE_KEY || 'ms45r6xA3Ua4ZmtzepQbg';
+const serviceId = process.env.EMAILJS_SERVICE_ID || 'service_qyj09cr';
+const templateId = process.env.EMAILJS_OTP_TEMPLATE_ID || process.env.EMAILJS_TEMPLATE_ID || 'template_qxy7sen';
+const publicKey = process.env.EMAILJS_PUBLIC_KEY || '';
+const privateKey = process.env.EMAILJS_PRIVATE_KEY || '';
 
 async function dispatch() {
   const templateParams = {
