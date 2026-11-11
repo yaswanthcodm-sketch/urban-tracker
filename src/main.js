@@ -76,10 +76,20 @@ function describeError(error) {
  */
 async function init() {
   const loadingScreen = document.getElementById('loading-screen');
-  const loaderStatus = loadingScreen.querySelector('.loader-status');
+  const loaderStatus = loadingScreen ? loadingScreen.querySelector('.loader-status') : null;
+
+  const hideLoadingCover = () => {
+    if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+      loadingScreen.classList.add('hidden');
+      loadingScreen.style.pointerEvents = 'none';
+      loadingScreen.style.display = 'none';
+    }
+  };
+  // Fast startup: dismiss loading cover in 1.2s so the UI opens immediately
+  setTimeout(hideLoadingCover, 1200);
 
   try {
-    loaderStatus.textContent = 'Configuring viewer...';
+    if (loaderStatus) loaderStatus.textContent = 'Configuring viewer...';
 
     // A direct Google key provides Google 3D plus GEV place search. Cesium ion
     // can host the same 3D tiles and also powers Bing/world-terrain stacks.

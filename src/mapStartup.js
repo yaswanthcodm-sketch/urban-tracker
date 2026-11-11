@@ -37,9 +37,14 @@ export async function loadPhotorealisticTileset(
   for (const attempt of attempts) {
     Cesium.GoogleMaps.defaultApiKey = attempt.googleKey;
     try {
-      const tileset = await Cesium.createGooglePhotorealistic3DTileset({
+      const tilesetPromise = Cesium.createGooglePhotorealistic3DTileset({
         onlyUsingWithGoogleGeocoder: true,
       });
+      // Cap initial tileset connection at 3.5s so remote network latency never hangs startup
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Tileset network timeout (falling back to fast globe)')), 3500)
+      );
+      const tileset = await Promise.race([tilesetPromise, timeoutPromise]);
       return { tileset, route: attempt.route, errors };
     } catch (error) {
       errors.push(error instanceof Error ? error : new Error(String(error)));
