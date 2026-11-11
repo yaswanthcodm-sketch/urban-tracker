@@ -56,12 +56,16 @@ class Settings(BaseSettings):
     PGPORTAL_INTEGRATION_MODE: str = "demo_simulation"
     PGPORTAL_API_KEY: str = ""
 
-    # EmailJS credentials are server-only. No credential defaults belong in code.
-    EMAILJS_SERVICE_ID: str = ""
-    EMAILJS_PUBLIC_KEY: str = ""
-    EMAILJS_PRIVATE_KEY: str = ""
-    EMAILJS_OTP_TEMPLATE_ID: str = ""
-    EMAILJS_CONTACT_TEMPLATE_ID: str = ""
+    # Urban Tracker MailBot — Transactional Email Service
+    MAILBOT_PROVIDER: str = "resend"  # "resend", "brevo", or "smtp"
+    RESEND_API_KEY: str = ""
+    BREVO_API_KEY: str = ""
+    MAILBOT_FROM_EMAIL: str = "Urban Tracker MailBot <onboarding@resend.dev>"
+    MAILBOT_REPLY_TO: str = "no-reply@urban-tracker.io"
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""
     TWILIO_FROM_NUMBER: str = ""

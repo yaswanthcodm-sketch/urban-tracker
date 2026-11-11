@@ -1,31 +1,26 @@
 """
-RoadGuard AI — Authentication Routes
-EmailJS-backed OTP verification and JWT issuance.
+RoadGuard AI / Urban Tracker — Authentication Routes
+Urban Tracker MailBot integration, persistent database OTP verification, and JWT issuance.
 """
+import hashlib
+import re
 import secrets
 import time
-import re
-import json
-import hashlib
-import urllib.request
-import urllib.error
+from datetime import datetime, timedelta
 from typing import Optional
-from pydantic import BaseModel
+
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
+
 from ..config import settings
 from ..database import get_db
 from ..models import models
 from ..schemas import schemas
 from ..security import auth
+from ..services.mailbot import mailbot
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
-
-# In-memory OTP registry: email -> salted hash, expiry, attempts and rate history.
-OTP_STORE = {}
-
-# In-memory verified registration tokens: email -> { token, expires_at, mode }
-VERIFIED_REGISTRATIONS = {}
 
 # In-memory failed login tracking: email -> { attempts, locked_until }
 LOGIN_ATTEMPTS = {}
@@ -63,72 +58,6 @@ def validate_password_complexity(password: str) -> None:
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Password must not contain spaces."
         )
-
-
-def _emailjs_credentials() -> dict:
-    """Return only the new EmailJS configuration; never expose these values."""
-    return {
-        "service_id": settings.EMAILJS_SERVICE_ID.strip(),
-        "public_key": settings.EMAILJS_PUBLIC_KEY.strip(),
-        "private_key": settings.EMAILJS_PRIVATE_KEY.strip(),
-        "otp_template_id": settings.EMAILJS_OTP_TEMPLATE_ID.strip(),
-        "contact_template_id": settings.EMAILJS_CONTACT_TEMPLATE_ID.strip(),
-    }
-
-
-def _send_emailjs(template_id: str, template_params: dict) -> dict:
-    """Submit one EmailJS request and report only provider acceptance state."""
-    creds = _emailjs_credentials()
-    if not all((creds["service_id"], creds["public_key"], creds["private_key"], template_id)):
-        return {"accepted": False, "reason": "Email delivery is not configured."}
-
-    body = json.dumps({
-        "service_id": creds["service_id"],
-        "template_id": template_id,
-        "user_id": creds["public_key"],
-        "accessToken": creds["private_key"],
-        "template_params": template_params,
-    }).encode("utf-8")
-
-    headers = {
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Origin": "https://yaswanthcodm-sketch.github.io",
-    }
-
-    import ssl
-    try:
-        import certifi
-        ssl_ctx = ssl.create_default_context(cafile=certifi.where())
-    except Exception:
-        ssl_ctx = ssl.create_default_context()
-        ssl_ctx.check_hostname = False
-        ssl_ctx.verify_mode = ssl.CERT_NONE
-
-    request = urllib.request.Request(
-        "https://api.emailjs.com/api/v1.0/email/send",
-        data=body,
-        headers=headers,
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=15, context=ssl_ctx) as response:
-            accepted = response.status == 200
-            return {"accepted": accepted, "status": response.status}
-    except urllib.error.HTTPError as error:
-        return {"accepted": False, "status": error.code, "reason": "EmailJS rejected the request."}
-    except (urllib.error.URLError, TimeoutError):
-        return {"accepted": False, "reason": "EmailJS could not be reached."}
-
-
-def dispatch_email_otp(to_email: str, otp_code: str) -> dict:
-    """Send an OTP using the dedicated EmailJS template and exact variables."""
-    return _send_emailjs(settings.EMAILJS_OTP_TEMPLATE_ID.strip(), {
-        "email": to_email,
-        "to_email": to_email,
-        "passcode": otp_code,
-        "time": "5 minutes",
-    })
 
 
 class OtpSendRequest(BaseModel):
@@ -172,24 +101,32 @@ def _otp_digest(email: str, otp: str, salt: str) -> str:
 @router.post("/send-otp")
 def send_otp(payload: OtpSendRequest, db: Session = Depends(get_db)):
     """
-    Generates a cryptographically secure 6-digit OTP valid for 5 minutes,
-    invalidates any previous code for this email, and dispatches it.
+    Urban Tracker MailBot OTP Dispatcher.
+    Generates a secure 6-digit OTP, stores a salted SHA-256 hash in the database,
+    enforces 30s resend cooldown and 5/hour rate limits, and dispatches via MailBot.
     """
     email = _valid_email(payload.email)
-    phone = (payload.phone or "").strip()
+    now = datetime.utcnow()
+    one_hour_ago = now - timedelta(hours=1)
 
-    # Rate limiting: minimum 30 seconds between requests + max 5 per hour
-    existing_record = OTP_STORE.get(email)
-    now = time.time()
-    send_history = []
-    if existing_record:
-        send_history = [t for t in existing_record.get("send_history", []) if now - t < 3600]
-        if len(send_history) >= 5:
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Maximum verification requests reached for this hour (5 requests max). Please wait before requesting another code."
-            )
-        elapsed = now - existing_record["created_at"]
+    # 1. Hourly rate limit check (max 5 per hour per email)
+    recent_count = db.query(models.OtpRecord).filter(
+        models.OtpRecord.email == email,
+        models.OtpRecord.created_at >= one_hour_ago
+    ).count()
+    if recent_count >= 5:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Maximum verification requests reached for this hour (5 max). Please wait before requesting another code."
+        )
+
+    # 2. Cooldown check (min 30 seconds since last sent OTP)
+    latest_record = db.query(models.OtpRecord).filter(
+        models.OtpRecord.email == email
+    ).order_by(models.OtpRecord.created_at.desc()).first()
+
+    if latest_record:
+        elapsed = (now - latest_record.created_at).total_seconds()
         if elapsed < 30:
             retry_after = int(30 - elapsed)
             raise HTTPException(
@@ -197,53 +134,66 @@ def send_otp(payload: OtpSendRequest, db: Session = Depends(get_db)):
                 detail=f"Please wait {retry_after} seconds before requesting a new verification code."
             )
 
-    # Generate a fresh OTP, but retain only a per-record salted hash.
+    # Invalidate all prior unused OTPs for this email immediately
+    db.query(models.OtpRecord).filter(
+        models.OtpRecord.email == email,
+        models.OtpRecord.is_used == False
+    ).update({"is_used": True})
+    db.commit()
+
+    # Generate fresh secure 6-digit OTP
     code = f"{secrets.randbelow(900000) + 100000}"
-    salt = secrets.token_urlsafe(16)
+    salt = secrets.token_hex(16)
+    code_hash = _otp_digest(email, code, salt)
 
-    send_history.append(now)
-    # Invalidate previous code: overwrite with fresh OTP, 5-minute expiry (300 seconds), 0 attempts
-    OTP_STORE[email] = {
-        "code_hash": _otp_digest(email, code, salt),
-        "salt": salt,
-        "phone": phone,
-        "created_at": now,
-        "expires_at": now + 300,  # Exactly 5 minutes
-        "attempts": 0,
-        "send_history": send_history,
-    }
-
-    delivery = dispatch_email_otp(email, code)
-    # Never claim inbox delivery: success means EmailJS accepted the request.
+    # Dispatch via Urban Tracker MailBot
+    delivery = mailbot.send_otp(email, code)
     if not delivery.get("accepted", False):
-        if email in OTP_STORE:
-            del OTP_STORE[email]
         failure_msg = delivery.get("reason") or "Email delivery failed."
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=failure_msg
         )
 
+    # Store persistent record in database
+    otp_record = models.OtpRecord(
+        email=email,
+        code_hash=code_hash,
+        salt=salt,
+        created_at=now,
+        expires_at=now + timedelta(minutes=5),
+        attempts=0,
+        is_used=False,
+        resend_count=recent_count + 1,
+        last_sent_at=now,
+    )
+    db.add(otp_record)
+    db.commit()
+
     return {
         "ok": True,
-        "message": "EmailJS accepted the verification request. Check your email for the code.",
+        "message": "Urban Tracker MailBot dispatched your verification code. Check your inbox.",
         "expires_in_seconds": 300,
-        "emailjs_accepted": True,
+        "mailbot_accepted": True,
     }
 
 
 @router.post("/verify-otp")
 def verify_otp(payload: OtpVerifyRequest, db: Session = Depends(get_db)):
     """
-    Verifies that the 6-digit code typed by the user matches the active code.
+    Verifies that the 6-digit code typed by the user matches the active database code hash.
     Rejects expired, already used, or invalid codes, limits failed attempts to 5,
     and returns a single-use verification token to proceed to password creation or reset.
     """
     email = _valid_email(payload.email)
-    phone = (payload.phone or "").strip()
     typed_code = payload.otp.strip()
+    now = datetime.utcnow()
 
-    record = OTP_STORE.get(email)
+    record = db.query(models.OtpRecord).filter(
+        models.OtpRecord.email == email,
+        models.OtpRecord.is_used == False
+    ).order_by(models.OtpRecord.created_at.desc()).first()
+
     if not record:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -251,43 +201,57 @@ def verify_otp(payload: OtpVerifyRequest, db: Session = Depends(get_db)):
         )
 
     # Enforce 5-minute expiry
-    if time.time() > record["expires_at"]:
-        del OTP_STORE[email]
+    if now > record.expires_at:
+        record.is_used = True
+        db.commit()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="The verification code has expired (valid for 5 minutes). Please request a new code."
         )
 
     # Track verification attempts (Max 5 attempts)
-    record["attempts"] += 1
-    if record["attempts"] > 5:
-        del OTP_STORE[email]
+    record.attempts += 1
+    if record.attempts > 5:
+        record.is_used = True
+        db.commit()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Too many incorrect attempts. For your security, this verification code has been invalidated. Please request a new code."
         )
 
     # Constant-time comparison to prevent timing attacks
-    expected_digest = _otp_digest(email, typed_code, record["salt"])
-    if not secrets.compare_digest(expected_digest, record["code_hash"]):
-        remaining = 5 - record["attempts"]
+    expected_digest = _otp_digest(email, typed_code, record.salt)
+    if not secrets.compare_digest(expected_digest, record.code_hash):
+        remaining = 5 - record.attempts
+        db.commit()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid verification code. Please check your code. ({remaining} attempts remaining)"
         )
 
-    # Match confirmed! Immediately invalidate OTP so it cannot be reused
-    del OTP_STORE[email]
+    # Match confirmed! Immediately mark OTP as used so it cannot be reused (Single use!)
+    record.is_used = True
+
+    # Invalidate any old verification sessions for this email
+    db.query(models.VerificationSession).filter(
+        models.VerificationSession.email == email,
+        models.VerificationSession.is_used == False
+    ).update({"is_used": True})
 
     # Generate cryptographically secure single-use verification token valid for 15 minutes
     verification_token = secrets.token_urlsafe(32)
     mode = (payload.mode or "signup").strip().lower()
-    VERIFIED_REGISTRATIONS[email] = {
-        "token": verification_token,
-        "expires_at": time.time() + 900,  # 15 minutes
-        "mode": mode,
-        "phone": phone,
-    }
+
+    session_rec = models.VerificationSession(
+        email=email,
+        token=verification_token,
+        expires_at=now + timedelta(minutes=15),
+        is_used=False,
+        mode=mode,
+        created_at=now
+    )
+    db.add(session_rec)
+    db.commit()
 
     user = db.query(models.User).filter(models.User.email == email).first()
     has_existing_account = bool(user and user.password_hash and not user.password_hash.startswith("otp_auth_"))
@@ -306,28 +270,30 @@ def verify_otp(payload: OtpVerifyRequest, db: Session = Depends(get_db)):
 
 @router.post("/contact")
 def send_contact_message(payload: ContactRequest):
-    """Deliver the existing Contact Us form through its dedicated EmailJS template."""
+    """Deliver the Contact Us form through Urban Tracker MailBot."""
     email = _valid_email(payload.email)
     message = (payload.message or "").strip()
     if not message or len(message) > 5000:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Enter a message up to 5,000 characters.")
-    result = _send_emailjs(settings.EMAILJS_CONTACT_TEMPLATE_ID.strip(), {
-        "email": email,
-        "to_email": email,
-        "name": (payload.name or "").strip()[:160],
-        "subject": (payload.subject or "").strip()[:240],
-        "message": message,
-    })
+    result = mailbot.send_contact(
+        name=(payload.name or "").strip()[:160],
+        from_email=email,
+        subject=(payload.subject or "").strip()[:240],
+        message=message,
+    )
     if not result.get("accepted"):
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=result.get("reason") or "EmailJS rejected the contact request.")
-    return {"ok": True, "message": "EmailJS accepted your contact request."}
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=result.get("reason") or "MailBot could not send contact inquiry."
+        )
+    return {"ok": True, "message": "Urban Tracker MailBot accepted your inquiry."}
 
 
 @router.post("/set-password")
 def set_password(payload: SetPasswordRequest, db: Session = Depends(get_db)):
     """
     Sets or resets an account password securely using bcrypt after successful OTP verification.
-    Validates token, enforces all 6 password complexity rules, prevents duplicate accounts on signup,
+    Validates token from database, enforces all 6 password complexity rules,
     and invalidates the verification token immediately.
     """
     email = payload.email.strip().lower()
@@ -335,17 +301,24 @@ def set_password(payload: SetPasswordRequest, db: Session = Depends(get_db)):
     pwd = payload.password
     confirm_pwd = payload.confirm_password
     name = (payload.name or "").strip()
+    now = datetime.utcnow()
 
-    # 1. Verify single-use verification token
-    reg = VERIFIED_REGISTRATIONS.get(email)
-    if not reg or not secrets.compare_digest(reg.get("token", ""), token):
+    # 1. Verify single-use verification token from database
+    session_rec = db.query(models.VerificationSession).filter(
+        models.VerificationSession.email == email,
+        models.VerificationSession.token == token,
+        models.VerificationSession.is_used == False
+    ).first()
+
+    if not session_rec:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired verification session. Please verify your email again."
         )
 
-    if time.time() > reg.get("expires_at", 0):
-        del VERIFIED_REGISTRATIONS[email]
+    if now > session_rec.expires_at:
+        session_rec.is_used = True
+        db.commit()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Verification session has expired (valid for 15 minutes). Please request a new verification code."
@@ -365,8 +338,7 @@ def set_password(payload: SetPasswordRequest, db: Session = Depends(get_db)):
     hashed = auth.get_password_hash(pwd)
 
     # 5. Invalidate verification token immediately (single use)
-    mode = reg.get("mode", "signup")
-    del VERIFIED_REGISTRATIONS[email]
+    session_rec.is_used = True
 
     # 6. Database save or update
     user = db.query(models.User).filter(models.User.email == email).first()
@@ -384,8 +356,6 @@ def set_password(payload: SetPasswordRequest, db: Session = Depends(get_db)):
         db.refresh(user)
         action_type = "created"
     else:
-        # Prevent duplicate account creation if existing user already set a password and mode was signup
-        # But if user was an OTP placeholder or user requested reset, update password
         user.password_hash = hashed
         user.account_status = "active"
         if name and not user.name:
@@ -529,5 +499,3 @@ def google_oauth_login(payload: GoogleLoginRequest, db: Session = Depends(get_db
         "token_type": "bearer",
         "user": user,
     }
-
-

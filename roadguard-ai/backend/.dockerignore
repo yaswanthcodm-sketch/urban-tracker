@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.coverage
+htmlcov
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite3
+.git
+.gitignore
+uploads/*
+!uploads/.gitkeep

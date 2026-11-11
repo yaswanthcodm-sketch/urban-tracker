@@ -276,3 +276,37 @@ class AuditLog(Base):
     entity_id = Column(String(80), nullable=False)
     details = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+
+class OtpRecord(Base):
+    """
+    Persistent OTP security ledger for Urban Tracker MailBot.
+    Stores salted SHA-256 hashes with 5-minute expiry, single-use flags, and rate-limiting history.
+    """
+    __tablename__ = "otp_records"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(180), index=True, nullable=False)
+    code_hash = Column(String(128), nullable=False)
+    salt = Column(String(64), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    attempts = Column(Integer, default=0, nullable=False)
+    is_used = Column(Boolean, default=False, nullable=False)
+    resend_count = Column(Integer, default=0, nullable=False)
+    last_sent_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+
+class VerificationSession(Base):
+    """
+    Persistent single-use registration session token issued upon successful OTP verification.
+    """
+    __tablename__ = "verification_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(180), index=True, nullable=False)
+    token = Column(String(128), unique=True, index=True, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    is_used = Column(Boolean, default=False, nullable=False)
+    mode = Column(String(30), default="signup", nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
